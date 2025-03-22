@@ -1,52 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const themeToggleButton = document.getElementById('theme-toggle');
-    const bodyElement = document.body;
-    const profileCover = document.getElementById('profile-cover');
+  const themeToggleButton = document.getElementById('theme-toggle');
+  const bodyElement = document.body;
+  const profileCover = document.getElementById('profile-cover');
 
-    if (!bodyElement.classList.contains('bright') && !bodyElement.classList.contains('dark')) {
-        bodyElement.classList.add('bright');
-        profileCover.classList.add('shallow-bg');
-        themeToggleButton.classList.add('fas', 'fa-moon');
-    }
+  // 初始化页面主题
+  function initializeTheme() {
+      // 检查localStorage中是否有保存的主题模式
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+          bodyElement.classList.add('dark', 'dark-mode');
+          profileCover.classList.add('deep-bg');
+          themeToggleButton.classList.add('fas', 'fa-sun');
+      } else {
+          // 如果没有保存主题模式，或者保存的主题模式不是'dark'，则默认使用'light-mode'
+          bodyElement.classList.add('bright', 'light-mode');
+          profileCover.classList.add('shallow-bg');
+          themeToggleButton.classList.add('fas', 'fa-moon');
+      }
+  }
 
-    themeToggleButton.addEventListener('click', () => {
-        if (bodyElement.classList.contains('bright')) {
-            bodyElement.classList.remove('bright');
-            bodyElement.classList.add('dark');
+  // 切换主题的逻辑
+  themeToggleButton.addEventListener('click', () => {
+      if (bodyElement.classList.contains('light-mode')) {
+          bodyElement.classList.replace('light-mode', 'dark-mode');
+          bodyElement.classList.replace('bright', 'dark');
 
-            profileCover.classList.remove('shallow-bg');
-            profileCover.classList.add('deep-bg');
+          themeToggleButton.classList.replace('fa-moon', 'fa-sun');
 
-            themeToggleButton.classList.remove('fas', 'fa-moon');
-            themeToggleButton.classList.add('fas', 'fa-sun');
-        } else {
-            bodyElement.classList.remove('dark');
-            bodyElement.classList.add('bright');
+          localStorage.setItem('theme', 'dark'); // 保存当前模式为黑夜模式
+      } else {
+          bodyElement.classList.replace('dark-mode', 'light-mode');
+          bodyElement.classList.replace('dark', 'bright');
 
-            profileCover.classList.remove('deep-bg');
-            profileCover.classList.add('shallow-bg');
+          themeToggleButton.classList.replace('fa-sun', 'fa-moon');
 
-            themeToggleButton.classList.remove('fas', 'fa-sun');
-            themeToggleButton.classList.add('fas', 'fa-moon');
-        }
-    });
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-        body.classList.add('light-mode');
-        themeToggle.classList.add('fa-moon');
-        // 切换主题的逻辑
-        themeToggle.addEventListener('click', function() {
-          if (body.classList.contains('light-mode')) {
-            body.classList.remove('light-mode');
-            body.classList.add('dark-mode');
-            themeToggle.classList.replace('fa-moon', 'fa-sun'); // 切换图标
-          } else {
-            body.classList.remove('dark-mode');
-            body.classList.add('light-mode');
-            themeToggle.classList.replace('fa-sun', 'fa-moon'); // 切换图标
-          }
-        });
+          localStorage.setItem('theme', 'light'); // 保存当前模式为白天模式
+      }
+  });
+
+  // 页面加载时初始化主题
+  initializeTheme();
 });
-
-
-
