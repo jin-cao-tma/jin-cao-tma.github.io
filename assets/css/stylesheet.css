@@ -475,15 +475,34 @@ body::before {
 }
 
 body.light-mode::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url("../../images/kaibi.gif");
+  background-size: cover; /* 确保背景图填满屏幕 */
+  background-attachment: fixed; /* 背景图固定在视口中 */
+  background-position: center; /* 背景图居中显示 */
   opacity: 0.6;
+  z-index: -1; /* 确保背景图在内容下方 */
 }
 
 body.dark-mode::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url("../../images/kimi.gif");
+  background-size: cover; /* 确保背景图填满屏幕 */
+  background-attachment: fixed; /* 背景图固定在视口中 */
+  background-position: center; /* 背景图居中显示 */
   opacity: 0.4;
+  z-index: -1; /* 确保背景图在内容下方 */
 }
-
 .icon-button.email.xjtu-email {
   background-color: #cacae2; /* 蓝色背景 */
   color: white; /* 白色文字 */
