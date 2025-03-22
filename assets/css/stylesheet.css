@@ -1,0 +1,580 @@
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Lato Italic'), local('Lato-Italic'), url(https://fonts.gstatic.com/s/lato/v15/S6u8w4BMUTPHjxsAUi-qNiXg7eU0.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Lato Italic'), local('Lato-Italic'), url(https://fonts.gstatic.com/s/lato/v15/S6u8w4BMUTPHjxsAXC-qNiXg7Q.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Lato Bold Italic'), local('Lato-BoldItalic'), url(https://fonts.gstatic.com/s/lato/v15/S6u_w4BMUTPHjxsI5wq_FQftx9897sxZ.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Lato Bold Italic'), local('Lato-BoldItalic'), url(https://fonts.gstatic.com/s/lato/v15/S6u_w4BMUTPHjxsI5wq_Gwftx9897g.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v15/S6uyw4BMUTPHjxAwXiWtFCfQ7A.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v15/S6uyw4BMUTPHjx4wXiWtFCc.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v15/S6u9w4BMUTPHh6UVSwaPGQ3q5d0N7w.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v15/S6u9w4BMUTPHh6UVSwiPGQ3q5d0.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+a {
+  color: #b509ac !important;
+  text-decoration: none;
+}
+
+a:focus,
+a:hover {
+  color: #df682e !important;
+  text-decoration: none;
+}
+
+body,
+td,
+th,
+tr,
+p,
+a {
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+p {
+  margin-bottom: 0px; 
+}
+
+strong {
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+h2 {
+  margin: 0;
+  font-weight: normal;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 24px;
+}
+
+.papertitle {
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.name {
+  padding-top: 22px;
+  margin: 0;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 34px;
+}
+
+.cname {
+  /* font-family: 'FangSong', 'STFangsong', '仿宋', serif; */
+  color: #2698ba;
+}
+
+.cname {
+  /* font-family: "TeXGyrePagella", "Palatino Linotype", "Book Antiqua", Palatino, serif; */
+  /* font-family: 'FangSong', 'STFangsong', serif, 'Lato', Verdana, Helvetica, sans-serif; */
+  font-weight: 800;
+  font-size: 32px;
+}
+
+.one {
+  width: 160px;
+  height: 160px;
+  position: relative;
+}
+
+.two {
+  width: 160px;
+  height: 160px;
+  position: absolute;
+  transition: opacity .2s ease-in-out;
+  -moz-transition: opacity .2s ease-in-out;
+  -webkit-transition: opacity .2s ease-in-out;
+}
+
+.fade {
+  transition: opacity .2s ease-in-out;
+  -moz-transition: opacity .2s ease-in-out;
+  -webkit-transition: opacity .2s ease-in-out;
+}
+
+span.highlight {
+  background-color: #ffffd0;
+}
+
+.icon-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: #333;
+  margin: 5px 0;
+  transition: 0.2s;
+}
+
+.slideshow-container {
+  position: relative;
+}
+
+.profile-container {
+  position: relative;
+  max-width: 850px;
+  margin: auto;
+}
+
+.profile-content {
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 可选的，添加一些阴影效果 */
+  position: relative; /* 确保这个内容区域相对于其容器定位 */
+  z-index: 3; /* 保证文本内容在图片上方 */
+}
+
+.image-container {
+  position: absolute;
+  top: -20px; /* 调整图片与边框重叠的上方部分 */
+  left: -20px; /* 调整图片与边框重叠的左侧部分 */
+  width: calc(100% + 40px); /* 扩展图片宽度，使其超出边框 */
+  z-index: 1; /* 确保图片位于边框下方 */
+}
+
+.profile-cover {
+  position: relative;
+  width: 100%; /* 图片宽度占满整个.container */
+  height: auto; /* 高度自适应 */
+  display: block; /* 防止底部留白 */
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.other-content {
+  position: relative; /* 相对定位，以确保能正确覆盖 #profile-cover */
+  z-index: 2;
+}
+
+.slideshow-container-cover {
+  position: absolute;
+  bottom: -50px; /* 控制图片溢出的程度 */
+  left: 0;
+  width: 100%;
+  z-index: 1; /* 确保图片在内容下方 */
+}
+
+.mySlides {
+  display: none;
+}
+
+.mySlides img {
+  width: 100%; /* Adjusted to ensure width is controlled here */
+  object-fit: cover;
+  border-radius: 10px; /* Gives a slightly rounded corner for the square images */
+  transition: border-radius 0.3s ease; /* Ensures smooth transition */
+}
+
+.mySlides img:hover {
+  border-radius: 50%; /* Makes the image fully round when hovered */
+}
+
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-block
+}
+
+.icon-button {
+  background-color: white;
+  border-radius: 3rem;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 2.0rem;
+  height: 3rem;
+  line-height: 3rem;
+  margin: 0 5px;
+  position: relative;
+  text-align: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: 3rem
+}
+
+.icon-button span {
+  border-radius: 0;
+  display: block;
+  height: 0;
+  left: 50%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  width: 0
+}
+
+.icon-button:hover span {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 3rem;
+  margin: -1.5rem
+}
+
+.twitter span {
+  background-color: #4099ff
+}
+
+.facebook span {
+  background-color: #3B5998
+}
+
+.linkedin span {
+  background-color: #0077B5
+}
+
+.github span {
+  background-color: #000
+}
+
+.email span {
+  background-color: #000
+}
+
+.cv span {
+  background-color: #8c1515
+}
+
+.social-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-button i {
+  background: none;
+  color: white;
+  height: 3rem;
+  left: 0;
+  line-height: 3rem;
+  position: absolute;
+  top: 0;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  width: 3rem;
+  z-index: 10;
+  font-size: 1.8rem
+}
+
+.icon-button .icon-twitter {
+  color: #4099ff
+}
+
+.icon-button .icon-facebook {
+  color: #3B5998
+}
+
+.icon-button .icon-github {
+  color: #000
+}
+
+.icon-button .icon-linkedin {
+  color: #0077B5
+}
+
+.icon-button .icon-email {
+  color: #0077B5
+}
+
+.icon-button .icon-cv {
+  color: #8c1515
+}
+
+.icon-button:hover .icon-twitter,.icon-button:hover .icon-facebook,.icon-button:hover .icon-github,.icon-button:hover .icon-linkedin, .icon-button:hover .icon-email, .icon-button:hover .icon-cv {
+  color: white
+}
+
+.bordered-section {
+  position: relative;
+  border: 2px solid white; /* 黑色实体边框 */
+  background-color: lightgrey; /* 浅灰色背景 */
+  margin: -33% auto 0;
+  padding: 0px; /* 内容和边框之间的空间 */
+  border-radius: 15px;
+  background-color: rgba(237, 227, 231, 0.8);
+  z-index: 3;
+}
+
+.rest-section {
+  position: relative;
+  /* top: -170px; */
+  /* top: -250px; */
+}
+
+.content-container {
+  position: relative;
+  margin: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0
+}
+
+body {
+    height: 100%
+}
+
+body {
+    z-index: initial;
+    font-family: "Roboto", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 300;
+    color: #111;
+    background-color: #f9f9f9;
+    -webkit-text-size-adjust: 100%
+}
+
+body:after {
+    display: none;
+    content: url("../../images/hello.png") url("../../images/hello.png")
+}
+
+@media screen and (max-width: 800px) {
+  .wrapper {
+      max-width: -webkit-calc(1024px - (30px));
+      max-width: calc(1024px - (30px));
+      padding-right: 15px;
+      padding-left: 15px
+  }
+}
+
+.wrapper:after,
+.footer-col-wrapper:after,
+.cover:after,
+.profile-wrapper:after {
+  content: "";
+  display: table;
+  clear: both
+}
+
+.cover {
+  max-width: 100%;
+  height: 320px;
+  z-index: initial;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 0px;
+  padding-left: 0px
+}
+
+@media screen and (max-width: 800px) {
+  .cover {
+      max-width: -webkit-calc(1024px - (30px));
+      max-width: calc(1024px - (30px));
+      padding-right: 15px;
+      padding-left: 15px
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .cover {
+      height: 400px
+  }
+}
+
+/* .shallow-bg {
+  background-image: url("../../images/hello_dark.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+} */
+
+
+body {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  transition: background-color 0.3s; /* 平滑过渡背景颜色变化 */
+}
+
+body::before {
+  content: '';
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  transition: opacity 0.3s; /* 平滑过渡背景图变化 */
+}
+
+body.light-mode::before {
+  background-image: url("../../images/kaibi.gif");
+  opacity: 0.6;
+}
+
+body.dark-mode::before {
+  background-image: url("../../images/kimi.gif");
+  opacity: 0.4;
+}
+
+.icon-button.email.xjtu-email {
+  background-color: #cacae2; /* 蓝色背景 */
+  color: white; /* 白色文字 */
+}
+
+.icon-button.email.stanford-email {
+  background-color: #47ddff; /* 红色背景 */
+  color: white; /* 白色文字 */
+}
+
+/* .deep-bg {
+  background-image: url("../../images/hello_dark.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+} */
+
+.profile-wrapper {
+  border-radius: 25px;
+  position: relative;
+  top: 15%;
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto
+}
+
+@media screen and (max-width: 600px) {
+  .profile-wrapper {
+      top: 5%;
+      border-radius: 25px;
+      position: relative;
+      width: -webkit-calc(90% - (30px / 2));
+      width: calc(90% - (30px / 2));
+      margin-left: auto;
+      margin-right: auto
+  }
+}
+
+.wrapper-light {
+  background-color: rgba(255, 255, 255, 0.5)
+}
+
+.wrapper-dark {
+  background-color: rgba(150, 150, 150, 0.8)
+}
+
+.profile-col {
+  float: left !important;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center
+}
+
+.profile-col-1 {
+  width: -webkit-calc(40% - (30px / 2));
+  width: calc(40% - (30px / 2))
+}
+
+.profile-col-2 {
+  width: -webkit-calc(60% - (30px / 2));
+  width: calc(60% - (30px / 2))
+}
+
+@media screen and (max-width: 800px) {
+
+  .profile-col-1,
+  .profile-col-2 {
+      width: -webkit-calc(50% - (30px / 2));
+      width: calc(50% - (30px / 2))
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .profile-col {
+      position: relative;
+      margin: 10px auto;
+      float: none;
+      width: -webkit-calc(100%);
+      width: calc(100%)
+  }
+}
+
+html {
+  scroll-padding-top: 60px; /* 调整这个值以匹配你的导航栏高度 */
+}
+
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-left: 20px;
+}

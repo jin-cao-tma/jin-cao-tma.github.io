@@ -1,0 +1,155 @@
+:root {
+    --transition-time: 0.5s;
+}
+
+body {
+    transition: background-color var(--transition-time), color var(--transition-time);
+}
+
+.bright {
+    background-color: #ffffff; /* White background */
+    /* color: #000000; */
+}
+
+.dark {
+    background-color: #1c1c1d; /* Dark background */
+    /* color: #ffffff; */
+}
+
+.fas.fa-sun:hover {
+    color: #2698ba;
+}
+
+.fas.fa-sun {
+    color: #ffffff;
+}
+
+.fas.fa-moon:hover {
+    color: #b509ac;
+}
+
+.bright a {
+    color: #b509ac;
+}
+
+.dark a {
+    color: #2698ba !important;
+}
+
+.dark a:hover {
+    color: #df682e !important;
+}
+
+.dark p{
+    color: #ffffff;
+}
+
+.dark strong {
+    color: #ffffff;
+}
+
+.dark h2 {
+    color: #ffffff;
+}
+
+.dark em {
+    color: #ffffff;
+}
+
+.caption {
+    color: #000;
+}
+
+li {
+    color: #000; 
+}
+
+li::marker {
+    color: #000; 
+}
+
+/* Dark Mode */
+.dark li {
+    color: #ffffff; 
+}
+
+.dark li::marker {
+    color: #ffffff;
+}
+
+.dark .papertitle {
+    color: #ffffff;
+}
+
+.dark .caption {
+    color: #ffffff;
+}
+
+.bright .navbar-custom {
+    background-color: rgba(237, 227, 231, 0.85);
+}
+
+.dark .navbar-custom {
+    background-color: rgba(35, 37, 38, 0.85);
+}
+
+.dark .nav-item {
+    color: #2698ba;
+}
+
+.bright .bordered-section {
+    background-color: rgba(237, 227, 231, 0.8);
+}
+
+.dark .bordered-section {
+    background-color: rgba(35, 37, 38, 0.8);
+}
+
+.dark .name {
+    color: #ffffff;
+}
+
+.dark .cname {
+    color: #b509ac;
+}
+
+nav[data-toggle=toc] .dark .nav-link.active {
+    color: #ffffff; 
+}
+
+.dark .navbar.navbar-light .navbar-nav .nav-item .nav-link {
+    color: white;
+}
+
+.dark .navbar.navbar-light .navbar-nav .nav-item.active>.nav-link {
+    color: #2698ba;
+}
+
+.dark progress::-webkit-progress-value {
+    background-color: #2698ba;
+}
+
+.bright .bibtex {
+    background-color:#ede3e7;
+}
+
+.dark .bibtex {
+    background-color:#333333;
+}
+
+.dark .bibtex_text {
+    color: #000;
+}
+
+.dark .bibtex_text {
+    color: #ffffff;
+}
+
+.dark footer.fixed-bottom {
+    background-color: white;
+}
+
+.dark footer.fixed-bottom .container {
+    color: black;
+}
+
