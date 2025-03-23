@@ -160,9 +160,9 @@ span.highlight {
   transition: 0.2s;
 }
 
-/* .slideshow-container {
+.slideshow-container {
   position: relative;
-} */
+}
 
 .profile-container {
   position: relative;
@@ -596,27 +596,4 @@ html {
   align-items: center;
   height: 100%;
   margin-left: 20px;
-}
-
-/* 确保图片自适应容器 */
-img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
-/* 确保容器响应式 */
-.slideshow-container {
-  width: 100%;
-  max-width: 100%;
-  padding: 2.5%;
-  box-sizing: border-box;
-}
-
-/* 确保表格单元格响应式 */
-td {
-  padding: 2.5%;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
 }
