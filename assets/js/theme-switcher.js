@@ -5,33 +5,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 初始化页面主题
     function initializeTheme() {
-        // 检查localStorage中是否有保存的主题模式
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
+        // 检查URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const themeParam = urlParams.get('theme');
+        
+        if (themeParam === 'dark') {
+            // 黑夜模式
             bodyElement.classList.add('dark', 'dark-mode');
             themeToggleButton.classList.replace('fa-moon', 'fa-sun');
             themeTooltip.textContent = 'Go to Day';
+            
+            // 更新页面显示的图片 - 黑夜模式用selfie2.jpg
+            const profileImage = document.getElementById('profile-image');
+            if (profileImage) profileImage.src = 'images/selfie2.jpg';
+            
+            // 更新og:image为黑夜模式图片
+            const ogImage = document.getElementById('og-image');
+            const twitterImage = document.getElementById('twitter-image');
+            if (ogImage) ogImage.setAttribute('content', 'https://jin-cao-tma.github.io/images/selfie2.jpg');
+            if (twitterImage) twitterImage.setAttribute('content', 'https://jin-cao-tma.github.io/images/selfie2.jpg');
         } else {
+            // 白天模式（默认）
             bodyElement.classList.add('bright', 'light-mode');
             themeToggleButton.classList.replace('fa-sun', 'fa-moon');
             themeTooltip.textContent = 'Go to Night';
+            
+            // 更新页面显示的图片 - 白天模式用selfie_sun.png
+            const profileImage = document.getElementById('profile-image');
+            if (profileImage) profileImage.src = 'images/selfie_sun.png';
+            
+            // 确保og:image为白天模式图片
+            const ogImage = document.getElementById('og-image');
+            const twitterImage = document.getElementById('twitter-image');
+            if (ogImage) ogImage.setAttribute('content', 'https://jin-cao-tma.github.io/images/selfie_sun.png');
+            if (twitterImage) twitterImage.setAttribute('content', 'https://jin-cao-tma.github.io/images/selfie_sun.png');
         }
     }
 
     // 切换主题的逻辑
     function toggleTheme() {
         if (bodyElement.classList.contains('light-mode')) {
-            bodyElement.classList.replace('light-mode', 'dark-mode');
-            bodyElement.classList.replace('bright', 'dark');
-            themeToggleButton.classList.replace('fa-moon', 'fa-sun');
-            themeTooltip.textContent = 'Go to Day';
-            localStorage.setItem('theme', 'dark'); // 保存当前模式为黑夜模式
+            // 切换到黑夜模式，重定向到带参数的URL
+            window.location.href = window.location.origin + window.location.pathname + '?theme=dark';
         } else {
-            bodyElement.classList.replace('dark-mode', 'light-mode');
-            bodyElement.classList.replace('dark', 'bright');
-            themeToggleButton.classList.replace('fa-sun', 'fa-moon');
-            themeTooltip.textContent = 'Go to Night';
-            localStorage.setItem('theme', 'light'); // 保存当前模式为白天模式
+            // 切换到白天模式，重定向到不带参数的URL
+            window.location.href = window.location.origin + window.location.pathname;
         }
     }
 
