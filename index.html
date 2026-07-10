@@ -442,13 +442,18 @@
     .pub-thumb {
       flex: none;
       width: 232px;
-      align-self: center;
+      align-self: stretch;   /* run the full height of the text block */
       border-radius: 10px;
       overflow: hidden;
       border: 1px solid var(--border-soft);
       background: var(--bg-soft);
     }
-    .pub-thumb img { display: block; width: 100%; height: auto; }
+    .pub-thumb img, .pub-thumb video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     .pub-body { min-width: 0; }
     .pub-venue {
       display: inline-block;
@@ -582,7 +587,8 @@
       .nav-links .nav-sec { display: none; }
       .page { padding: 0 20px 72px; }
       .pub { flex-direction: column; gap: 16px; }
-      .pub-thumb { width: 100%; }
+      .pub-thumb { width: 100%; align-self: auto; }
+      .pub-thumb img, .pub-thumb video { height: auto; }
       .news li { flex-direction: column; gap: 2px; }
       .news time { width: auto; }
     }
@@ -690,7 +696,10 @@
       <div class="pub-list">
 
         <article class="pub">
-          <div class="pub-thumb"><img src="images/teaser_wonderzoom.png" alt="WonderZoom teaser"></div>
+          <div class="pub-thumb">
+            <video src="assets/thumbnail_wonderzoom.mp4" poster="images/teaser_wonderzoom.png"
+                   autoplay loop muted playsinline preload="metadata" aria-label="WonderZoom teaser video"></video>
+          </div>
           <div class="pub-body">
             <span class="pub-venue"><span>CVPR 2026</span></span>
             <h3 class="pub-title">WonderZoom: Multi-Scale 3D World Generation</h3>
