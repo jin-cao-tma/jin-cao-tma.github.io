@@ -801,45 +801,67 @@
         pts.push({ x: Math.cos(theta) * r, y: y, z: Math.sin(theta) * r });
       }
 
-      /* --- night: stars, sparkles, arc trails, meteors, moon --- */
-      let stars = [], sparkles = [], meteors = [];
+      /* --- night: golden stars, ring comets, moons --- */
+      const GOLD = '#ffd952', PALE_GOLD = '#ffe9a3', ICE = '#dbe6ff';
+      const TRAIL_COLORS = ['#7fe3d0', '#ffd952', '#9fc5ff', '#ffe9a3'];
+      let stars = [], sparkles = [], deco = [], comets = [];
+
+      // ring-comet geometry: all rings share one center high above the page
+      function arcCenter() { return { x: w * 0.5, y: -h * 0.55 }; }
+
       function seedSky() {
-        stars = []; sparkles = [];
-        const count = Math.round((w * h) / 9000);
+        stars = []; sparkles = []; deco = []; comets = [];
+        const count = Math.round((w * h) / 10000);
         for (let i = 0; i < count; i++) {
           stars.push({
             x: Math.random() * w,
             y: Math.random() * h,
-            r: 0.4 + Math.random() * 1.3,
-            tw: 0.5 + Math.random() * 1.6,   // twinkle speed
-            ph: Math.random() * TAU,          // twinkle phase
-            a: 0.25 + Math.random() * 0.65,
+            r: 0.4 + Math.random() * 1.2,
+            gold: Math.random() < 0.35,
+            tw: 0.5 + Math.random() * 1.6,
+            ph: Math.random() * TAU,
+            a: 0.25 + Math.random() * 0.6,
           });
         }
-        for (let i = 0; i < Math.max(4, Math.round(w / 320)); i++) {
+        // golden four-point sparkles
+        for (let i = 0; i < Math.max(4, Math.round(w / 340)); i++) {
           sparkles.push({
             x: Math.random() * w,
-            y: Math.random() * h * 0.8,
+            y: Math.random() * h * 0.85,
             r: 4 + Math.random() * 7,
             tw: 0.3 + Math.random() * 0.7,
             ph: Math.random() * TAU,
           });
         }
+        // a sparse sprinkle of little gold five-point stars and crescents
+        const nDeco = Math.max(6, Math.round((w * h) / 220000));
+        for (let i = 0; i < nDeco; i++) {
+          deco.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            r: 3.5 + Math.random() * 5.5,
+            rot: Math.random() * TAU,
+            moon: Math.random() < 0.4,
+            a: 0.16 + Math.random() * 0.22,
+          });
+        }
+        // comets riding the rings
+        const nComets = 5;
+        for (let i = 0; i < nComets; i++) comets.push(newComet(true));
       }
 
-      function spawnMeteor() {
-        const fromLeft = Math.random() < 0.5;
-        meteors.push({
-          x: w * (0.15 + Math.random() * 0.7),
-          y: -30,
-          vx: (fromLeft ? 1 : -1) * (2.4 + Math.random() * 2.2),
-          vy: 3.4 + Math.random() * 2.4,
-          life: 1,
-        });
+      function newComet(anywhere) {
+        return {
+          rr: h * (0.85 + Math.random() * 0.85),                 // ring radius
+          th: anywhere ? (0.15 + Math.random() * 0.7) * Math.PI  // angle on ring
+                       : (Math.random() < 0.5 ? 0.12 : 0.88) * Math.PI,
+          sp: (0.0009 + Math.random() * 0.0016) * (Math.random() < 0.5 ? 1 : -1),
+          tail: 0.10 + Math.random() * 0.10,                     // tail arc length (rad)
+          color: TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)],
+        };
       }
 
       function drawStar4(x, y, r, alpha, color) {
-        // four-point sparkle (P5R-style)
         ctx.save();
         ctx.translate(x, y);
         ctx.fillStyle = color;
@@ -856,6 +878,39 @@
         ctx.restore();
       }
 
+      function drawStar5(x, y, r, rot, alpha, color) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          const a0 = (i / 5) * TAU - Math.PI / 2;
+          const a1 = a0 + TAU / 10;
+          ctx.lineTo(Math.cos(a0) * r, Math.sin(a0) * r);
+          ctx.lineTo(Math.cos(a1) * r * 0.45, Math.sin(a1) * r * 0.45);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawCrescent(x, y, r, rot, alpha, color) {
+        // little moon cut with two arcs — no composite tricks needed
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, Math.PI * 0.25, Math.PI * 1.75);
+        ctx.arc(r * 0.55, 0, r * 0.72, Math.PI * 1.6, Math.PI * 0.4, true);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
       let w, h, dpr;
       function resize() {
         dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -866,7 +921,7 @@
         seedSky();
       }
 
-      let angle = 0, t = 0, meteorTimer = 140;
+      let angle = 0, t = 0;
 
       function drawDay() {
         // globe anchored to the hero (document coords), clipped to it, fades on scroll
@@ -913,16 +968,13 @@
       }
 
       function drawNight() {
-        const starColor = '#dbe6ff';
-        const glowColor = '#f0f5ff';
-
-        // crescent moon, top right, drawn first so the punch-out stays clean
+        // glowing golden crescent moon, top right (drawn first: punch-out stays clean)
         const mx = w * 0.86, my = h * 0.16, mr = Math.min(w, h) * 0.045 + 18;
         ctx.save();
-        ctx.shadowColor = 'rgba(190, 210, 255, 0.55)';
-        ctx.shadowBlur = 42;
-        ctx.fillStyle = '#e8eefc';
-        ctx.globalAlpha = 0.9;
+        ctx.shadowColor = 'rgba(255, 219, 100, 0.5)';
+        ctx.shadowBlur = 46;
+        ctx.fillStyle = '#ffe9a3';
+        ctx.globalAlpha = 0.92;
         ctx.beginPath();
         ctx.arc(mx, my, mr, 0, TAU);
         ctx.fill();
@@ -934,26 +986,48 @@
         ctx.fill();
         ctx.restore();
 
-        // faint concentric star-trail arcs sweeping from high center
+        // faint concentric ring guides
+        const ac = arcCenter();
         ctx.save();
-        ctx.strokeStyle = starColor;
+        ctx.strokeStyle = ICE;
         ctx.lineWidth = 1;
-        const acx = w * 0.5, acy = -h * 0.55;
         for (let i = 0; i < 4; i++) {
-          const rr = h * (0.9 + i * 0.22);
-          ctx.globalAlpha = 0.05 + 0.015 * Math.sin(t * 0.004 + i);
-          ctx.setLineDash([90 + i * 40, 160 + i * 60]);
-          ctx.lineDashOffset = -t * (0.12 + i * 0.05);
+          ctx.globalAlpha = 0.04;
           ctx.beginPath();
-          ctx.arc(acx, acy, rr, 0.15 * Math.PI, 0.85 * Math.PI);
+          ctx.arc(ac.x, ac.y, h * (0.9 + i * 0.22), 0.12 * Math.PI, 0.88 * Math.PI);
           ctx.stroke();
         }
         ctx.restore();
 
-        // twinkling stars
+        // ring comets — 一圈一圈的流星, gradient tails sweeping along the rings
+        for (const c of comets) {
+          if (!reduceMotion) c.th += c.sp;
+          if (c.th < 0.08 * Math.PI || c.th > 0.92 * Math.PI) Object.assign(c, newComet(false));
+          const SEG = 22;
+          const dir = Math.sign(c.sp);
+          ctx.lineCap = 'butt';
+          for (let k = 0; k < SEG; k++) {
+            const f = k / SEG;                      // 0 head → 1 tail end
+            const a0 = c.th - dir * c.tail * f;
+            const a1 = c.th - dir * c.tail * (f + 1 / SEG);
+            ctx.strokeStyle = c.color;
+            ctx.globalAlpha = 0.5 * (1 - f) * (1 - f);
+            ctx.lineWidth = 2.2 * (1 - f) + 0.3;
+            ctx.beginPath();
+            ctx.arc(ac.x, ac.y, c.rr, Math.min(a0, a1), Math.max(a0, a1));
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+          // bright head
+          const hx = ac.x + Math.cos(c.th) * c.rr;
+          const hy = ac.y + Math.sin(c.th) * c.rr;
+          drawStar4(hx, hy, 4.2, 0.95, '#fffbe8');
+        }
+
+        // twinkling stars — mixed gold and ice
         for (const s of stars) {
           const a = s.a * (0.55 + 0.45 * Math.sin(t * 0.02 * s.tw + s.ph));
-          ctx.fillStyle = starColor;
+          ctx.fillStyle = s.gold ? GOLD : ICE;
           ctx.globalAlpha = a;
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r, 0, TAU);
@@ -961,35 +1035,16 @@
         }
         ctx.globalAlpha = 1;
 
-        // big four-point sparkles
-        for (const s of sparkles) {
-          const a = 0.25 + 0.4 * (0.5 + 0.5 * Math.sin(t * 0.015 * s.tw + s.ph));
-          drawStar4(s.x, s.y, s.r, a, glowColor);
+        // scattered gold five-point stars & tiny crescents (static, calm)
+        for (const d of deco) {
+          if (d.moon) drawCrescent(d.x, d.y, d.r, d.rot, d.a, PALE_GOLD);
+          else drawStar5(d.x, d.y, d.r, d.rot, d.a, GOLD);
         }
 
-        // meteors
-        if (!reduceMotion) {
-          if (--meteorTimer <= 0) {
-            spawnMeteor();
-            meteorTimer = 220 + Math.random() * 320; // every ~4-9s
-          }
-          for (let i = meteors.length - 1; i >= 0; i--) {
-            const m = meteors[i];
-            m.x += m.vx; m.y += m.vy; m.life -= 0.008;
-            if (m.life <= 0 || m.y > h + 40) { meteors.splice(i, 1); continue; }
-            const len = 26;
-            const grad = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * len, m.y - m.vy * len);
-            grad.addColorStop(0, 'rgba(240, 246, 255, ' + (0.85 * m.life) + ')');
-            grad.addColorStop(1, 'rgba(240, 246, 255, 0)');
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 1.6;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(m.x, m.y);
-            ctx.lineTo(m.x - m.vx * len, m.y - m.vy * len);
-            ctx.stroke();
-            drawStar4(m.x, m.y, 3.2, 0.9 * m.life, glowColor);
-          }
+        // golden four-point sparkles
+        for (const s of sparkles) {
+          const a = 0.3 + 0.45 * (0.5 + 0.5 * Math.sin(t * 0.015 * s.tw + s.ph));
+          drawStar4(s.x, s.y, s.r, a, PALE_GOLD);
         }
       }
 
