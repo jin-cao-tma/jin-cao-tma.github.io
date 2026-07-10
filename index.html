@@ -300,6 +300,31 @@
       transition: transform 0.6s ease;
     }
     .portrait-frame:hover img { transform: scale(1.045); }
+
+    /* by day the protagonist floats, suspended in the water */
+    html[data-theme="light"] .portrait-frame {
+      animation: float-suspend 9s ease-in-out infinite;
+    }
+    html[data-theme="light"] .portrait-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      border-radius: 18px;
+      background: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.32) 46%, rgba(210, 240, 255, 0.18) 52%, transparent 66%);
+      background-size: 260% 260%;
+      animation: light-sweep 7.5s ease-in-out infinite;
+    }
+    @keyframes float-suspend {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      35% { transform: translateY(-10px) rotate(-1.3deg); }
+      70% { transform: translateY(5px) rotate(0.9deg); }
+    }
+    @keyframes light-sweep {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+    }
     .credit {
       margin-top: 9px;
       font-family: var(--mono);
@@ -528,13 +553,6 @@
       animation: whisper-bob 6s ease-in-out infinite;
     }
     html[data-theme="dark"] .whisper.night { opacity: 1; transition: opacity 1.4s ease 3.4s; }
-    .whisper.day {
-      color: #16253f;
-      background: #ffffff;
-      border-color: #16253f;
-      box-shadow: 3px 4px 0 rgba(14, 109, 232, 0.4);
-    }
-    html[data-theme="light"] .whisper.day { opacity: 1; transition: opacity 1.4s ease 2.4s; }
     @keyframes whisper-bob {
       0%, 100% { transform: rotate(-3deg) translateY(0); }
       50% { transform: rotate(-1.5deg) translateY(-5px); }
@@ -548,6 +566,7 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .reveal { opacity: 1; transform: none; transition: none; }
+      .portrait-frame, .portrait-frame::before, .whisper { animation: none !important; }
     }
 
     /* ---------- Mobile ---------- */
@@ -794,7 +813,6 @@
   </footer>
 
   <div class="whisper night" aria-hidden="true">星、きれいだね！</div>
-  <div class="whisper day" aria-hidden="true">海、きれいだね！</div>
 
   <script>
     /* ---------- Theme ---------- */
@@ -826,9 +844,9 @@
       const TAU = Math.PI * 2;
 
       /* --- day: underwater ambience — surface ripples, light shafts, bubbles --- */
-      let bubbles = [], rays = [], caustics = [], glints = [], bubbleClusters = [], fishes = [];
+      let bubbles = [], rays = [], caustics = [], glints = [], bubbleClusters = [], fishes = [], portraitBubbles = [];
       function seedSea() {
-        bubbles = []; rays = []; caustics = []; glints = []; bubbleClusters = []; fishes = [];
+        bubbles = []; rays = []; caustics = []; glints = []; bubbleClusters = []; fishes = []; portraitBubbles = [];
         // bubble collage clusters — the day counterpart of the night's star bands
         const bBands = [
           { x0: 0.00, x1: 0.22, y0: 0.45, y1: 1.00, n: Math.round(h / 70) },
@@ -1294,6 +1312,36 @@
             ctx.arc(c.x, cy, c.r, 0, TAU);
             ctx.stroke();
           }
+        }
+
+        // --- breath bubbles slipping up from behind the floating portrait ---
+        if (!reduceMotion && t % 30 === 0) {
+          const img = document.getElementById('profile-image');
+          if (img) {
+            const rect = img.getBoundingClientRect();
+            if (rect.bottom > 0 && rect.top < h) {
+              portraitBubbles.push({
+                x: rect.left + rect.width * (0.15 + Math.random() * 0.7),
+                y: rect.top + rect.height * (0.2 + Math.random() * 0.5),
+                r: 1.2 + Math.random() * 2.6,
+                v: 0.5 + Math.random() * 0.7,
+                wob: 4 + Math.random() * 8,
+                wsp: 0.02 + Math.random() * 0.02,
+                ph: Math.random() * TAU,
+                life: 1,
+              });
+            }
+          }
+        }
+        for (let i = portraitBubbles.length - 1; i >= 0; i--) {
+          const b = portraitBubbles[i];
+          b.y -= b.v; b.life -= 0.005;
+          if (b.life <= 0) { portraitBubbles.splice(i, 1); continue; }
+          ctx.strokeStyle = 'rgba(255,255,255,' + 0.6 * b.life * fade + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(b.x + Math.sin(t * b.wsp + b.ph) * b.wob, b.y, b.r, 0, TAU);
+          ctx.stroke();
         }
 
         // --- little fish cruising through in loose schools ---
