@@ -17,14 +17,14 @@
   <meta property="og:description" content="Jin Cao, undergraduate at Xi'an Jiaotong University (XJTU), working on 3D Vision Research.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://jin-cao-tma.github.io/">
-  <meta property="og:image" content="https://jin-cao-tma.github.io/images/selfie_sun.png" id="og-image">
+  <meta property="og:image" content="https://jin-cao-tma.github.io/images/selfie2.jpg" id="og-image">
   <meta property="og:site_name" content="Jin Cao">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jin Cao - Personal Homepage">
   <meta name="twitter:description" content="Jin Cao, undergraduate at Xi'an Jiaotong University (XJTU), working on 3D Vision Research.">
-  <meta name="twitter:image" content="https://jin-cao-tma.github.io/images/selfie_sun.png" id="twitter-image">
+  <meta name="twitter:image" content="https://jin-cao-tma.github.io/images/selfie2.jpg" id="twitter-image">
   <meta name="twitter:url" content="https://jin-cao-tma.github.io/">
 
   <script type="application/ld+json">
@@ -33,7 +33,7 @@
       "@type": "Person",
       "name": "Jin Cao",
       "url": "https://jin-cao-tma.github.io/",
-      "image": "https://jin-cao-tma.github.io/images/selfie_sun.png",
+      "image": "https://jin-cao-tma.github.io/images/selfie2.jpg",
       "sameAs": [
         "https://scholar.google.com/citations?user=BmIwhEkAAAAJ&hl=en",
         "https://github.com/jin-cao-tma"
@@ -45,6 +45,19 @@
       },
       "description": "I'm Jin Cao, an undergraduate at Xi'an Jiaotong University (XJTU), working on 3D Vision Research."
     }
+  </script>
+
+  <!-- set the theme before first paint to avoid a light-mode flash -->
+  <script>
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        var s = localStorage.getItem('theme');
+        document.documentElement.setAttribute('data-theme', q || s || 'dark');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
   </script>
 
   <link rel="shortcut icon" href="images/favicon/jin.png" type="image/x-icon">
@@ -598,7 +611,7 @@
       </div>
       <div class="portrait">
         <div class="portrait-frame">
-          <img src="images/selfie_sun.png" alt="Portrait of Jin Cao" id="profile-image">
+          <img src="images/selfie2.jpg" alt="Portrait of Jin Cao" id="profile-image">
         </div>
         <p class="credit" id="image-credit">relighted by <a href="https://github.com/lllyasviel/IC-Light" target="_blank" rel="noopener">IC-Light</a></p>
       </div>
@@ -781,8 +794,7 @@
       const root = document.documentElement;
       const fromUrl = new URLSearchParams(location.search).get('theme');
       const saved = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const initial = fromUrl || saved || (prefersDark ? 'dark' : 'light');
+      const initial = fromUrl || saved || 'dark';   // night first — the starry entrance greets visitors
       apply(initial);
 
       document.getElementById('theme-toggle').addEventListener('click', () => {
