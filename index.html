@@ -58,9 +58,9 @@
       --bg: #f3f8fe;
       --bg-soft: #e7f1fc;
       --card: #ffffff;
-      /* P3R ocean: saturated blue field — the white reading panel is painted
-         on the canvas with a foam edge, like the menu's white zone */
-      --bg-image: linear-gradient(118deg, #6dbdf8 0%, #38a0f2 40%, #1583e6 72%, #0e6cd0 100%);
+      /* P3R ocean: pale airy aqua, like sunlight through shallow water —
+         the white reading panel is painted on canvas with a foam edge */
+      --bg-image: linear-gradient(115deg, #ffffff 0%, #f0fbff 26%, #c9eefc 52%, #8fd8f6 76%, #55b9ec 100%);
       --ink: #16253f;
       --muted: #566885;
       --faint: #92a3bc;
@@ -532,7 +532,7 @@
 
     /* ---------- Mobile ---------- */
     @media (max-width: 760px) {
-      :root { --bg-image: linear-gradient(180deg, #a6d7ff 0%, #e3f2ff 22%, #ffffff 55%); }
+      :root { --bg-image: linear-gradient(180deg, #bfeafc 0%, #eafaff 28%, #ffffff 58%); }
       .hero { padding: 116px 20px 56px; }
       .hero-inner { flex-direction: column-reverse; gap: 34px; }
       .portrait { width: 180px; }
@@ -825,22 +825,9 @@
       const TAU = Math.PI * 2;
 
       /* --- day: underwater ambience — surface ripples, light shafts, bubbles --- */
-      let bubbles = [], rays = [], caustics = [], glints = [], seaBands = [], edgeFoam = [];
+      let bubbles = [], rays = [], caustics = [], glints = [], edgeFoam = [];
       function seedSea() {
-        bubbles = []; rays = []; caustics = []; glints = []; seaBands = []; edgeFoam = [];
-        // diagonal light shards — P3R's signature background texture
-        const nBands = Math.max(6, Math.round(w / 210));
-        for (let i = 0; i < nBands; i++) {
-          seaBands.push({
-            off: (i + Math.random()) / nBands,      // anchor across the width
-            wdt: 50 + Math.random() * 170,
-            drift: 14 + Math.random() * 30,
-            sp: 0.0018 + Math.random() * 0.0022,
-            ph: Math.random() * TAU,
-            a: 0.06 + Math.random() * 0.09,
-            deep: Math.random() < 0.4,              // some darker-blue shards
-          });
-        }
+        bubbles = []; rays = []; caustics = []; glints = []; edgeFoam = [];
         // foam bubbles along the white panel's torn edge
         for (let i = 0; i < Math.round(h / 34); i++) {
           edgeFoam.push({
@@ -1105,24 +1092,8 @@
         const lift = (1 - easeOut(clamp01(p / 0.5))) * h * 0.9; // surface rushes past early
         const fade = clamp01(p * 1.7 - 0.25);     // deep-water light settles in after the plunge
 
-        // --- deep-blue diagonal shards, under the white panel ---
+        // --- the white reading panel with a foamy torn edge (P3R menu zone) ---
         if (w >= 760) {
-          for (const bnd of seaBands) {
-            if (!bnd.deep) continue;
-            const x0 = bnd.off * (w + h * 0.42) + Math.sin(t * bnd.sp + bnd.ph) * bnd.drift;
-            ctx.fillStyle = '#0d63c4';
-            ctx.globalAlpha = bnd.a * 1.4;
-            ctx.beginPath();
-            ctx.moveTo(x0, -20);
-            ctx.lineTo(x0 + bnd.wdt, -20);
-            ctx.lineTo(x0 + bnd.wdt - h * 0.42, h + 20);
-            ctx.lineTo(x0 - h * 0.42, h + 20);
-            ctx.closePath();
-            ctx.fill();
-          }
-          ctx.globalAlpha = 1;
-
-          // --- the white reading panel with a foamy torn edge (P3R menu zone) ---
           const edgeX = w * 0.74;
           const pg = ctx.createLinearGradient(0, 0, edgeX + 120, 0);
           pg.addColorStop(0, 'rgba(255,255,255,0.93)');
@@ -1168,19 +1139,24 @@
         }
         ctx.stroke();
 
-        // --- white light shards sliding through the blue ---
-        for (const bnd of seaBands) {
-          if (bnd.deep) continue;
-          const x0 = bnd.off * (w + h * 0.42) + Math.sin(t * bnd.sp + bnd.ph) * bnd.drift;
-          ctx.fillStyle = '#ffffff';
-          ctx.globalAlpha = bnd.a * fade;
-          ctx.beginPath();
-          ctx.moveTo(x0, -20);
-          ctx.lineTo(x0 + bnd.wdt, -20);
-          ctx.lineTo(x0 + bnd.wdt - h * 0.42, h + 20);
-          ctx.lineTo(x0 - h * 0.42, h + 20);
-          ctx.closePath();
-          ctx.fill();
+        // --- caustic web: the sunlit ripple mesh of the surface, seen from below ---
+        ctx.strokeStyle = '#ffffff';
+        for (let layer = 0; layer < 2; layer++) {
+          const rows = 7;
+          for (let r = 0; r < rows; r++) {
+            const yBase = lift + 46 + r * 60 + layer * 21;
+            ctx.lineWidth = 1.4 + layer * 0.9;
+            ctx.globalAlpha = fade * (0.07 + 0.15 * (1 - r / rows));  // fades with depth
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += 12) {
+              const y = yBase
+                + Math.sin(x * 0.014 + t * 0.014 + r * 1.7 + layer * 2.4) * 13
+                + Math.sin(x * 0.006 - t * 0.010 + r * 0.9) * 26
+                + Math.sin(x * 0.027 + t * 0.02 + layer) * 5;
+              x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          }
         }
         ctx.globalAlpha = fade;
 
