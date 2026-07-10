@@ -790,14 +790,33 @@
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const TAU = Math.PI * 2;
 
-      /* --- day: fibonacci-sphere globe --- */
-      const N = 380;
-      const pts = [];
-      for (let i = 0; i < N; i++) {
-        const y = 1 - (i / (N - 1)) * 2;
-        const r = Math.sqrt(1 - y * y);
-        const theta = i * 2.399963229728653; // golden angle
-        pts.push({ x: Math.cos(theta) * r, y: y, z: Math.sin(theta) * r });
+      /* --- day: underwater ambience — surface ripples, light shafts, bubbles --- */
+      let bubbles = [], rays = [];
+      function seedSea() {
+        bubbles = []; rays = [];
+        const nB = Math.round(w / 52);
+        for (let i = 0; i < nB; i++) bubbles.push(newBubble(true));
+        const nR = Math.max(4, Math.round(w / 250));
+        for (let i = 0; i < nR; i++) {
+          rays.push({
+            fx: (i + 0.15 + Math.random() * 0.7) / nR, // anchor across the top
+            slant: 0.10 + Math.random() * 0.14,        // lean, fraction of h
+            wdt: 40 + Math.random() * 110,
+            ph: Math.random() * TAU,
+            sp: 0.0025 + Math.random() * 0.0025,
+          });
+        }
+      }
+      function newBubble(anywhere) {
+        return {
+          x: Math.random() * w,
+          y: anywhere ? Math.random() * h : h + 12 + Math.random() * 60,
+          r: 1.2 + Math.random() * 3.4,
+          sp: 0.22 + Math.random() * 0.5,
+          wob: 6 + Math.random() * 18,
+          wsp: 0.008 + Math.random() * 0.015,
+          ph: Math.random() * TAU,
+        };
       }
 
       /* --- night: golden stars, ring comets, moons --- */
@@ -926,52 +945,80 @@
         canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         seedSky();
+        seedSea();
       }
 
-      let angle = 0, t = 0;
+      let t = 0;
 
       function drawDay() {
-        // globe anchored to the hero (document coords), clipped to it, fades on scroll
-        const fade = Math.max(0, 1 - window.scrollY / 520);
-        if (fade <= 0) return;
-        const hero = document.querySelector('.hero');
-        const heroH = hero ? hero.offsetHeight : h * 0.7;
-        const styles = getComputedStyle(document.documentElement);
-        const ink = styles.getPropertyValue('--ink').trim();
-        const accent = styles.getPropertyValue('--accent').trim();
-        const baseAlpha = (parseFloat(styles.getPropertyValue('--dot-alpha')) || 0.5) * fade;
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(0, 0, w, Math.max(0, heroH - window.scrollY));
-        ctx.clip();
-
-        const mobile = w < 760;
-        const cx = mobile ? w * 0.85 : w * 0.80;
-        const cy = (mobile ? heroH * 0.16 : heroH * 0.38) - window.scrollY;
-        const R = mobile ? Math.min(w, heroH) * 0.42 : Math.min(w, heroH) * 0.52;
-
-        const ca = Math.cos(angle), sa = Math.sin(angle);
-        const ct = Math.cos(0.42), st = Math.sin(0.42);
-        for (let i = 0; i < N; i++) {
-          const p = pts[i];
-          let x = p.x * ca + p.z * sa;
-          let z = -p.x * sa + p.z * ca;
-          let y = p.y * ct - z * st;
-          z = p.y * st + z * ct;
-          const persp = 1 / (1.6 - z * 0.5);
-          const sx = cx + x * R * persp;
-          const sy = cy + y * R * persp;
-          const depth = (z + 1) / 2;
-          ctx.fillStyle = (i % 47 === 0) ? accent : ink;
-          ctx.globalAlpha = baseAlpha * (0.15 + depth * 0.85);
+        // --- water surface seen from below: drifting sine ribbons up top ---
+        for (let L = 0; L < 3; L++) {
+          const baseY = 74 + L * 22;
+          const amp = 7 + L * 4;
+          const speed = 0.012 - L * 0.003;
+          ctx.fillStyle = L === 0 ? '#ffffff' : (L === 1 ? '#a8d4ff' : '#7db9f2');
+          ctx.globalAlpha = 0.22 - L * 0.05;
           ctx.beginPath();
-          ctx.arc(sx, sy, 0.7 + depth * 1.6, 0, TAU);
+          ctx.moveTo(0, 0);
+          for (let x = 0; x <= w; x += 14) {
+            ctx.lineTo(x, baseY + Math.sin(x * 0.012 + t * speed + L * 2.1) * amp
+                          + Math.sin(x * 0.0045 - t * speed * 0.7 + L) * amp * 0.8);
+          }
+          ctx.lineTo(w, 0);
+          ctx.closePath();
           ctx.fill();
         }
+        // glinting crest line along the lowest ribbon
+        ctx.strokeStyle = '#ffffff';
+        ctx.globalAlpha = 0.5;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 14) {
+          const y = 122 + Math.sin(x * 0.012 + t * 0.009) * 11
+                        + Math.sin(x * 0.0045 - t * 0.006) * 9;
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
         ctx.globalAlpha = 1;
-        ctx.restore();
-        angle += 0.0016;
+
+        // --- god rays leaning through the water, slowly breathing ---
+        for (const r of rays) {
+          const sway = Math.sin(t * r.sp + r.ph);
+          const topX = r.fx * w + sway * 30;
+          const botX = topX + r.slant * h + sway * 60;
+          const len = h * 0.72;
+          const a = 0.065 + 0.055 * (0.5 + 0.5 * Math.sin(t * r.sp * 1.7 + r.ph * 2));
+          const grad = ctx.createLinearGradient(topX, 0, botX, len);
+          grad.addColorStop(0, 'rgba(140, 195, 250, ' + a + ')');
+          grad.addColorStop(1, 'rgba(140, 195, 250, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(topX - r.wdt / 2, -20);
+          ctx.lineTo(topX + r.wdt / 2, -20);
+          ctx.lineTo(botX + r.wdt * 0.9, len);
+          ctx.lineTo(botX - r.wdt * 0.9, len);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // --- bubbles drifting up ---
+        for (const b of bubbles) {
+          if (!reduceMotion) {
+            b.y -= b.sp;
+            if (b.y < -12) Object.assign(b, newBubble(false));
+          }
+          const bx = b.x + Math.sin(t * b.wsp + b.ph) * b.wob;
+          ctx.strokeStyle = 'rgba(70, 140, 220, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(bx, b.y, b.r, 0, TAU);
+          ctx.stroke();
+          // tiny highlight
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.beginPath();
+          ctx.arc(bx - b.r * 0.35, b.y - b.r * 0.35, Math.max(0.6, b.r * 0.22), 0, TAU);
+          ctx.fill();
+        }
       }
 
       function drawNight() {
