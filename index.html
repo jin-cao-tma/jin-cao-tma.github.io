@@ -63,7 +63,6 @@
       --faint: #9c968a;
       --accent: #c9231a;
       --accent-soft: rgba(201, 35, 26, 0.08);
-      --seal: #bf3b26;
       --chip-ink: #1b1916;
       --chip-text: #f7f5f0;
       --border: rgba(33, 31, 26, 0.12);
@@ -87,7 +86,6 @@
       --faint: #5d688a;
       --accent: #5fa8ff;
       --accent-soft: rgba(95, 168, 255, 0.11);
-      --seal: #c94b33;
       --chip-ink: #e2e8f6;
       --chip-text: #0d1120;
       --border: rgba(226, 232, 246, 0.18);
@@ -145,7 +143,7 @@
       text-decoration: none;
       letter-spacing: 0.01em;
     }
-    .nav-brand .zh { color: var(--accent); font-family: var(--brush); font-weight: 400; margin-left: 7px; font-size: 18px; }
+    .nav-brand .zh { color: var(--muted); font-family: var(--brush); font-weight: 400; margin-left: 8px; font-size: 18px; }
     .nav-links { display: flex; align-items: center; gap: 4px; }
     .nav-links a {
       text-decoration: none;
@@ -208,24 +206,22 @@
       letter-spacing: -0.015em;
     }
 
-    /* 朱文印 seal — stays vermillion in both modes, like a real stamp */
-    .seal {
+    /* 落款 — quiet vertical ink mark, Japanese-style */
+    .name-mark {
       flex: none;
-      margin-top: 8px;
-      width: 46px;
-      padding: 10px 0 8px;
-      background: var(--seal);
-      color: #fdf8f2;
-      border-radius: 7px;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      margin-top: 6px;
+      padding-left: 18px;
+      border-left: 1px solid var(--border);
       writing-mode: vertical-rl;
       text-orientation: upright;
       font-family: var(--brush);
-      font-size: 23px;
+      font-size: 25px;
       font-weight: 400;
-      letter-spacing: 0.14em;
-      text-align: center;
-      transform: rotate(4deg);
-      box-shadow: inset 0 0 0 2px rgba(253, 248, 242, 0.55), inset 0 0 0 4px var(--seal);
+      letter-spacing: 0.22em;
+      color: var(--muted);
       user-select: none;
     }
 
@@ -506,7 +502,7 @@
       .hero-inner { flex-direction: column-reverse; gap: 34px; }
       .portrait { width: 180px; }
       .name-row { gap: 14px; }
-      .seal { width: 38px; font-size: 18px; }
+      .name-mark { font-size: 20px; padding-left: 14px; }
       .nav-inner { padding: 0 16px; }
       .nav-links a { padding: 6px 8px; font-size: 13.5px; }
       .nav-links .nav-sec { display: none; }
@@ -543,7 +539,7 @@
       <div class="hero-text">
         <div class="name-row">
           <h1 class="name">Jin&nbsp;Cao</h1>
-          <div class="seal" title="曹晋">曹晋</div>
+          <div class="name-mark" title="曹晋">曹晋</div>
         </div>
         <p class="tagline">I study how machines can <em>represent, reconstruct, and generate</em> the 3D world &mdash; one scene at a time.</p>
         <div class="hero-links">
@@ -803,11 +799,11 @@
 
       /* --- night: golden stars, ring comets, moons --- */
       const GOLD = '#ffd952', PALE_GOLD = '#ffe9a3', ICE = '#dbe6ff';
-      const TRAIL_COLORS = ['#7fe3d0', '#ffd952', '#9fc5ff', '#ffe9a3'];
-      let stars = [], sparkles = [], deco = [], comets = [];
+      const TRAIL_COLORS = ['#7fe3d0', '#ffd952', '#9fe0b8', '#cfe0ff', '#ffe9a3'];
+      let stars = [], sparkles = [], deco = [], rings = [];
 
-      // ring-comet geometry: all rings share one center high above the page
-      function arcCenter() { return { x: w * 0.5, y: -h * 0.55 }; }
+      // meteor-ring geometry: all rings share one center high above the page
+      function arcCenter() { return { x: w * 0.5, y: -h * 0.45 }; }
 
       function seedSky() {
         stars = []; sparkles = []; deco = []; comets = [];
@@ -845,20 +841,28 @@
             a: 0.16 + Math.random() * 0.22,
           });
         }
-        // comets riding the rings
-        const nComets = 5;
-        for (let i = 0; i < nComets; i++) comets.push(newComet(true));
-      }
-
-      function newComet(anywhere) {
-        return {
-          rr: h * (0.85 + Math.random() * 0.85),                 // ring radius
-          th: anywhere ? (0.15 + Math.random() * 0.7) * Math.PI  // angle on ring
-                       : (Math.random() < 0.5 ? 0.12 : 0.88) * Math.PI,
-          sp: (0.0009 + Math.random() * 0.0016) * (Math.random() < 0.5 ? 1 : -1),
-          tail: 0.10 + Math.random() * 0.10,                     // tail arc length (rad)
-          color: TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)],
-        };
+        // meteor rings: each ring is clearly visible — a faint full circle
+        // with one or two long gradient trails endlessly sweeping around it
+        const nRings = 5;
+        for (let i = 0; i < nRings; i++) {
+          const color = TRAIL_COLORS[i % TRAIL_COLORS.length];
+          const dir = i % 2 === 0 ? 1 : -1;
+          const trails = [];
+          const nTrails = i % 2 === 0 ? 2 : 1;
+          for (let k = 0; k < nTrails; k++) {
+            trails.push({
+              th: Math.random() * TAU,
+              sp: dir * (0.0012 + Math.random() * 0.0014),
+              tail: 0.55 + Math.random() * 0.65,   // long tail (radians)
+              color: k === 0 ? color : TRAIL_COLORS[(i + 2) % TRAIL_COLORS.length],
+            });
+          }
+          rings.push({
+            rr: h * (0.52 + i * 0.30) * (0.97 + Math.random() * 0.06),
+            color: color,
+            trails: trails,
+          });
+        }
       }
 
       function drawStar4(x, y, r, alpha, color) {
@@ -968,60 +972,48 @@
       }
 
       function drawNight() {
-        // glowing golden crescent moon, top right (drawn first: punch-out stays clean)
-        const mx = w * 0.86, my = h * 0.16, mr = Math.min(w, h) * 0.045 + 18;
+        // golden crescent moon, top right — a real crescent path, softly glowing
+        const mr = Math.min(w, h) * 0.05 + 20;
         ctx.save();
-        ctx.shadowColor = 'rgba(255, 219, 100, 0.5)';
-        ctx.shadowBlur = 46;
-        ctx.fillStyle = '#ffe9a3';
-        ctx.globalAlpha = 0.92;
-        ctx.beginPath();
-        ctx.arc(mx, my, mr, 0, TAU);
-        ctx.fill();
-        ctx.restore();
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.beginPath();
-        ctx.arc(mx + mr * 0.42, my - mr * 0.28, mr * 0.86, 0, TAU);
-        ctx.fill();
+        ctx.shadowColor = 'rgba(255, 219, 100, 0.55)';
+        ctx.shadowBlur = 38;
+        drawCrescent(w * 0.87, h * 0.15, mr, -Math.PI / 3, 0.95, '#ffe9a3');
         ctx.restore();
 
-        // faint concentric ring guides
+        // meteor rings — visible circles with long trails sweeping around them
         const ac = arcCenter();
-        ctx.save();
-        ctx.strokeStyle = ICE;
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 4; i++) {
-          ctx.globalAlpha = 0.04;
+        ctx.lineCap = 'butt';
+        for (const ring of rings) {
+          // the ring itself, faint but clearly there
+          ctx.strokeStyle = ring.color;
+          ctx.globalAlpha = 0.10;
+          ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.arc(ac.x, ac.y, h * (0.9 + i * 0.22), 0.12 * Math.PI, 0.88 * Math.PI);
+          ctx.arc(ac.x, ac.y, ring.rr, 0, TAU);
           ctx.stroke();
-        }
-        ctx.restore();
 
-        // ring comets — 一圈一圈的流星, gradient tails sweeping along the rings
-        for (const c of comets) {
-          if (!reduceMotion) c.th += c.sp;
-          if (c.th < 0.08 * Math.PI || c.th > 0.92 * Math.PI) Object.assign(c, newComet(false));
-          const SEG = 22;
-          const dir = Math.sign(c.sp);
-          ctx.lineCap = 'butt';
-          for (let k = 0; k < SEG; k++) {
-            const f = k / SEG;                      // 0 head → 1 tail end
-            const a0 = c.th - dir * c.tail * f;
-            const a1 = c.th - dir * c.tail * (f + 1 / SEG);
-            ctx.strokeStyle = c.color;
-            ctx.globalAlpha = 0.5 * (1 - f) * (1 - f);
-            ctx.lineWidth = 2.2 * (1 - f) + 0.3;
-            ctx.beginPath();
-            ctx.arc(ac.x, ac.y, c.rr, Math.min(a0, a1), Math.max(a0, a1));
-            ctx.stroke();
+          // sweeping meteor trails
+          for (const c of ring.trails) {
+            if (!reduceMotion) c.th = (c.th + c.sp + TAU) % TAU;
+            const SEG = 48;
+            const dir = Math.sign(c.sp);
+            for (let k = 0; k < SEG; k++) {
+              const f = k / SEG;                    // 0 head → 1 tail end
+              const a0 = c.th - dir * c.tail * f;
+              const a1 = c.th - dir * c.tail * (f + 1 / SEG);
+              ctx.strokeStyle = c.color;
+              ctx.globalAlpha = 0.38 * (1 - f);
+              ctx.lineWidth = 1.9 * (1 - f) + 0.3;
+              ctx.beginPath();
+              ctx.arc(ac.x, ac.y, ring.rr, Math.min(a0, a1), Math.max(a0, a1));
+              ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+            // bright head sparkle
+            const hx = ac.x + Math.cos(c.th) * ring.rr;
+            const hy = ac.y + Math.sin(c.th) * ring.rr;
+            drawStar4(hx, hy, 4, 0.9, '#fffbe8');
           }
-          ctx.globalAlpha = 1;
-          // bright head
-          const hx = ac.x + Math.cos(c.th) * c.rr;
-          const hy = ac.y + Math.sin(c.th) * c.rr;
-          drawStar4(hx, hy, 4.2, 0.95, '#fffbe8');
         }
 
         // twinkling stars — mixed gold and ice
