@@ -455,31 +455,37 @@
       height: 100%;
       object-fit: cover;
     }
-    /* quiet corner play chip on paused video thumbs; fades away while playing */
-    .pub-thumb .play-hint {
+    /* video tab on the right edge of the whole card — blue/white by day,
+       gold/black by night, slides away while playing */
+    .pub { position: relative; }
+    .pub.has-video { padding-right: 48px; }
+    .pub .play-hint {
       position: absolute;
-      right: 8px;
-      bottom: 8px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: rgba(12, 16, 28, 0.42);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      opacity: 0.8;
-      transition: opacity 0.35s ease;
-      pointer-events: none;
-    }
-    .pub-thumb .play-hint span {
-      width: 100%;
-      height: 100%;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 28px;
+      border-radius: 0 16px 16px 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
     }
-    .pub-thumb .play-hint svg { width: 9px; height: 9px; margin-left: 1.5px; fill: rgba(255, 255, 255, 0.92); }
-    .pub-thumb.playing .play-hint { opacity: 0; }
+    html[data-theme="dark"] .pub .play-hint { color: #14110a; }
+    .pub .play-hint svg { width: 10px; height: 10px; fill: currentColor; flex: none; }
+    .pub .play-hint span {
+      writing-mode: vertical-rl;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+    }
+    .pub.playing .play-hint { opacity: 0; transform: translateX(10px); }
     .pub-body { min-width: 0; }
     .pub-venue {
       display: inline-block;
@@ -597,7 +603,7 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .reveal { opacity: 1; transform: none; transition: none; }
-      .portrait-frame, .portrait-frame::before, .whisper { animation: none !important; }
+      .portrait-frame, .portrait-frame::before, .whisper, .play-hint { animation: none !important; }
     }
 
     /* ---------- Mobile ---------- */
@@ -647,7 +653,7 @@
           <h1 class="name">Jin&nbsp;Cao</h1>
           <div class="name-mark" title="曹晋">曹晋</div>
         </div>
-        <p class="tagline">I study how machines can <em>represent, reconstruct, and generate</em> the 3D world &mdash; one scene at a time.</p>
+        <p class="tagline">My goal is to <em>digitalize the physical world</em> &mdash; building virtual worlds that power entertainment and robotics.</p>
         <div class="hero-links">
           <a class="pill" href="mailto:xjincaox@gmail.com">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg>
@@ -1581,17 +1587,26 @@
       const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       document.querySelectorAll('.pub-thumb video').forEach((video) => {
         const thumb = video.parentElement;
+        const card = thumb.closest('.pub') || thumb;
+        card.classList.add('has-video');
         const hint = document.createElement('div');
         hint.className = 'play-hint';
-        hint.innerHTML = '<span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>';
-        thumb.appendChild(hint);
+        hint.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>video</span>';
+        card.appendChild(hint);
+        // show the clip length once metadata is in
+        const label = hint.querySelector('span');
+        const setDuration = () => {
+          if (!isFinite(video.duration) || !video.duration) return;
+          const s = Math.round(video.duration);
+          label.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+        };
+        video.readyState >= 1 ? setDuration() : video.addEventListener('loadedmetadata', setDuration, { once: true });
 
         const play = () => video.play().catch(() => {});
-        video.addEventListener('play', () => thumb.classList.add('playing'));
-        video.addEventListener('pause', () => thumb.classList.remove('playing'));
+        video.addEventListener('play', () => card.classList.add('playing'));
+        video.addEventListener('pause', () => card.classList.remove('playing'));
 
         if (canHover) {
-          const card = thumb.closest('.pub') || thumb;
           card.addEventListener('mouseenter', play);
           card.addEventListener('mouseleave', () => video.pause());
         } else {
