@@ -1112,7 +1112,7 @@
       let t = 0;
 
       /* --- theme-entry transitions: dive into the water / draw the starry sky --- */
-      const DIVE_DUR = 95, STARS_DUR = 220;
+      const DIVE_DUR = 210, STARS_DUR = 220;   // a long, legible plunge
       let trans = null;          // { kind: 'dive' | 'stars', start: t }
       let diveStreaks = [], diveFoam = [];
       function easeOut(p) { return 1 - Math.pow(1 - p, 3); }
@@ -1126,16 +1126,16 @@
             diveStreaks.push({
               x: Math.random() * w,
               y: Math.random() * h * 1.5,
-              v: 9 + Math.random() * 14,
+              v: 3 + Math.random() * 4.5,        // slow enough to watch
               len: 26 + Math.random() * 64,
               a: 0.2 + Math.random() * 0.4,
             });
           }
-          // splash foam exploding outward from the entry point
+          // splash foam drifting outward from the entry point
           diveFoam = [];
           for (let i = 0; i < 54; i++) {
             const ang = Math.random() * TAU;
-            const spd = 3 + Math.random() * 13;
+            const spd = 1.8 + Math.random() * 7;
             diveFoam.push({
               x: w * (0.35 + Math.random() * 0.3),
               y: h * (0.16 + Math.random() * 0.3),
@@ -1363,11 +1363,11 @@
         // --- the plunge: white splash foam bursts outward, bubbles race past ---
         if (p < 1) {
           // foam burst — chunky white bubbles thrown out by the impact
-          const foamFade = 1 - clamp01(p / 0.6);
+          const foamFade = 1 - clamp01(p / 0.75);
           if (foamFade > 0) {
             for (const f of diveFoam) {
               f.x += f.vx; f.y += f.vy;
-              f.vx *= 0.945; f.vy = f.vy * 0.945 - 0.16;   // drag + buoyancy
+              f.vx *= 0.968; f.vy = f.vy * 0.968 - 0.07;   // gentle drag + buoyancy
               ctx.fillStyle = 'rgba(255,255,255,' + f.a * foamFade + ')';
               ctx.beginPath();
               ctx.arc(f.x, f.y, f.r, 0, TAU);
@@ -1390,8 +1390,8 @@
             ctx.stroke();
           }
           // splash veil — blinding at the entry point, swallowed by the water
-          if (p < 0.3) {
-            const va = 1 - p / 0.3;
+          if (p < 0.2) {
+            const va = 1 - p / 0.2;
             const vg = ctx.createRadialGradient(w * 0.5, h * 0.28, 0, w * 0.5, h * 0.28, Math.max(w, h) * 0.8);
             vg.addColorStop(0, 'rgba(255,255,255,' + Math.min(1, va * 1.5) + ')');
             vg.addColorStop(0.5, 'rgba(255,255,255,' + va * 0.9 + ')');
