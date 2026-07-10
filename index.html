@@ -58,8 +58,9 @@
       --bg: #f3f8fe;
       --bg-soft: #e7f1fc;
       --card: #ffffff;
-      /* P3R ocean: white on the reading side flowing into vivid cyan-blue */
-      --bg-image: linear-gradient(105deg, #ffffff 0%, #f0f8ff 28%, #c3e4ff 52%, #7cc2f7 74%, #2f9bf0 100%);
+      /* P3R ocean: saturated blue field — the white reading panel is painted
+         on the canvas with a foam edge, like the menu's white zone */
+      --bg-image: linear-gradient(118deg, #6dbdf8 0%, #38a0f2 40%, #1583e6 72%, #0e6cd0 100%);
       --ink: #16253f;
       --muted: #566885;
       --faint: #92a3bc;
@@ -772,7 +773,7 @@
     © 2026 Jin Cao · Thank you for watching my page :)
   </footer>
 
-  <div class="whisper" aria-hidden="true">星星，真漂亮呢！</div>
+  <div class="whisper" aria-hidden="true">星、きれいだね！</div>
 
   <script>
     /* ---------- Theme ---------- */
@@ -824,9 +825,33 @@
       const TAU = Math.PI * 2;
 
       /* --- day: underwater ambience — surface ripples, light shafts, bubbles --- */
-      let bubbles = [], rays = [], caustics = [], glints = [];
+      let bubbles = [], rays = [], caustics = [], glints = [], seaBands = [], edgeFoam = [];
       function seedSea() {
-        bubbles = []; rays = []; caustics = []; glints = [];
+        bubbles = []; rays = []; caustics = []; glints = []; seaBands = []; edgeFoam = [];
+        // diagonal light shards — P3R's signature background texture
+        const nBands = Math.max(6, Math.round(w / 210));
+        for (let i = 0; i < nBands; i++) {
+          seaBands.push({
+            off: (i + Math.random()) / nBands,      // anchor across the width
+            wdt: 50 + Math.random() * 170,
+            drift: 14 + Math.random() * 30,
+            sp: 0.0018 + Math.random() * 0.0022,
+            ph: Math.random() * TAU,
+            a: 0.06 + Math.random() * 0.09,
+            deep: Math.random() < 0.4,              // some darker-blue shards
+          });
+        }
+        // foam bubbles along the white panel's torn edge
+        for (let i = 0; i < Math.round(h / 34); i++) {
+          edgeFoam.push({
+            y: Math.random() * h,
+            dx: Math.random() * 100,
+            r: 5 + Math.random() * Math.random() * 34,
+            sp: 0.004 + Math.random() * 0.008,
+            ph: Math.random() * TAU,
+            a: 0.3 + Math.random() * 0.55,
+          });
+        }
         const nB = Math.round(w / 52);
         for (let i = 0; i < nB; i++) bubbles.push(newBubble(true));
         const nR = Math.max(4, Math.round(w / 250));
@@ -1035,7 +1060,7 @@
       /* --- theme-entry transitions: dive into the water / draw the starry sky --- */
       const DIVE_DUR = 95, STARS_DUR = 220;
       let trans = null;          // { kind: 'dive' | 'stars', start: t }
-      let diveStreaks = [];
+      let diveStreaks = [], diveFoam = [];
       function easeOut(p) { return 1 - Math.pow(1 - p, 3); }
       function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
       function startTransition(kind) {
@@ -1052,6 +1077,20 @@
               a: 0.2 + Math.random() * 0.4,
             });
           }
+          // splash foam exploding outward from the entry point
+          diveFoam = [];
+          for (let i = 0; i < 54; i++) {
+            const ang = Math.random() * TAU;
+            const spd = 3 + Math.random() * 13;
+            diveFoam.push({
+              x: w * (0.35 + Math.random() * 0.3),
+              y: h * (0.16 + Math.random() * 0.3),
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd * 0.8,
+              r: 3 + Math.random() * Math.random() * 24,
+              a: 0.5 + Math.random() * 0.5,
+            });
+          }
         }
       }
       function transProgress(kind, dur) {
@@ -1063,8 +1102,42 @@
 
       function drawDay() {
         const p = transProgress('dive', DIVE_DUR);
-        const lift = (1 - easeOut(p)) * h * 0.85; // the surface rushes up past you
+        const lift = (1 - easeOut(clamp01(p / 0.5))) * h * 0.9; // surface rushes past early
         const fade = clamp01(p * 1.7 - 0.25);     // deep-water light settles in after the plunge
+
+        // --- deep-blue diagonal shards, under the white panel ---
+        if (w >= 760) {
+          for (const bnd of seaBands) {
+            if (!bnd.deep) continue;
+            const x0 = bnd.off * (w + h * 0.42) + Math.sin(t * bnd.sp + bnd.ph) * bnd.drift;
+            ctx.fillStyle = '#0d63c4';
+            ctx.globalAlpha = bnd.a * 1.4;
+            ctx.beginPath();
+            ctx.moveTo(x0, -20);
+            ctx.lineTo(x0 + bnd.wdt, -20);
+            ctx.lineTo(x0 + bnd.wdt - h * 0.42, h + 20);
+            ctx.lineTo(x0 - h * 0.42, h + 20);
+            ctx.closePath();
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+
+          // --- the white reading panel with a foamy torn edge (P3R menu zone) ---
+          const edgeX = w * 0.74;
+          const pg = ctx.createLinearGradient(0, 0, edgeX + 120, 0);
+          pg.addColorStop(0, 'rgba(255,255,255,0.93)');
+          pg.addColorStop((edgeX - 50) / (edgeX + 120), 'rgba(255,255,255,0.93)');
+          pg.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = pg;
+          ctx.fillRect(0, 0, edgeX + 120, h);
+          for (const f of edgeFoam) {
+            const fx = edgeX - 26 + f.dx + Math.sin(t * f.sp + f.ph) * 22;
+            ctx.fillStyle = 'rgba(255,255,255,' + f.a + ')';
+            ctx.beginPath();
+            ctx.arc(fx, f.y, f.r, 0, TAU);
+            ctx.fill();
+          }
+        }
 
         // --- water surface seen from below: drifting sine ribbons up top ---
         for (let L = 0; L < 3; L++) {
@@ -1094,6 +1167,21 @@
           x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
         ctx.stroke();
+
+        // --- white light shards sliding through the blue ---
+        for (const bnd of seaBands) {
+          if (bnd.deep) continue;
+          const x0 = bnd.off * (w + h * 0.42) + Math.sin(t * bnd.sp + bnd.ph) * bnd.drift;
+          ctx.fillStyle = '#ffffff';
+          ctx.globalAlpha = bnd.a * fade;
+          ctx.beginPath();
+          ctx.moveTo(x0, -20);
+          ctx.lineTo(x0 + bnd.wdt, -20);
+          ctx.lineTo(x0 + bnd.wdt - h * 0.42, h + 20);
+          ctx.lineTo(x0 - h * 0.42, h + 20);
+          ctx.closePath();
+          ctx.fill();
+        }
         ctx.globalAlpha = fade;
 
         // --- caustic light patches drifting slowly (visible over the blue side) ---
@@ -1171,8 +1259,21 @@
         }
         ctx.globalAlpha = 1;
 
-        // --- the plunge: bubbles streak past, then a splash flash fades out ---
+        // --- the plunge: white splash foam bursts outward, bubbles race past ---
         if (p < 1) {
+          // foam burst — chunky white bubbles thrown out by the impact
+          const foamFade = 1 - clamp01(p / 0.6);
+          if (foamFade > 0) {
+            for (const f of diveFoam) {
+              f.x += f.vx; f.y += f.vy;
+              f.vx *= 0.945; f.vy = f.vy * 0.945 - 0.16;   // drag + buoyancy
+              ctx.fillStyle = 'rgba(255,255,255,' + f.a * foamFade + ')';
+              ctx.beginPath();
+              ctx.arc(f.x, f.y, f.r, 0, TAU);
+              ctx.fill();
+            }
+          }
+          // bubbles streaking past as you sink
           ctx.lineCap = 'round';
           for (const s of diveStreaks) {
             s.y -= s.v;
@@ -1187,8 +1288,14 @@
             ctx.lineTo(s.x, s.y + s.len);
             ctx.stroke();
           }
-          if (p < 0.22) {
-            ctx.fillStyle = 'rgba(255, 255, 255, ' + 0.75 * (1 - p / 0.22) + ')';
+          // splash veil — blinding at the entry point, swallowed by the water
+          if (p < 0.3) {
+            const va = 1 - p / 0.3;
+            const vg = ctx.createRadialGradient(w * 0.5, h * 0.28, 0, w * 0.5, h * 0.28, Math.max(w, h) * 0.8);
+            vg.addColorStop(0, 'rgba(255,255,255,' + Math.min(1, va * 1.5) + ')');
+            vg.addColorStop(0.5, 'rgba(255,255,255,' + va * 0.9 + ')');
+            vg.addColorStop(1, 'rgba(255,255,255,' + va * 0.5 + ')');
+            ctx.fillStyle = vg;
             ctx.fillRect(0, 0, w, h);
           }
         }
