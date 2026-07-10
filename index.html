@@ -50,9 +50,10 @@
   <link rel="shortcut icon" href="images/favicon/jin.png" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Archivo:ital,wght@1,700;1,800;1,900&display=swap" rel="stylesheet">
 
   <style>
+    /* Day: Persona-5-red on warm paper. Night: P3R moonlight blue on deep navy. */
     :root {
       --bg: #f7f5f0;
       --bg-soft: #efece4;
@@ -60,8 +61,11 @@
       --ink: #211f1a;
       --muted: #6f6a5e;
       --faint: #9c968a;
-      --accent: #bf3b26;
-      --accent-soft: rgba(191, 59, 38, 0.08);
+      --accent: #c9231a;
+      --accent-soft: rgba(201, 35, 26, 0.08);
+      --seal: #bf3b26;
+      --chip-ink: #1b1916;
+      --chip-text: #f7f5f0;
       --border: rgba(33, 31, 26, 0.12);
       --border-soft: rgba(33, 31, 26, 0.07);
       --shadow: 0 1px 2px rgba(33, 31, 26, 0.04), 0 8px 28px rgba(33, 31, 26, 0.06);
@@ -70,21 +74,25 @@
       --serif: "Newsreader", "Songti SC", "SimSun", Georgia, serif;
       --sans: "Inter", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
       --mono: "IBM Plex Mono", "SF Mono", Menlo, monospace;
+      --display: "Archivo", "Inter", sans-serif;
     }
 
     html[data-theme="dark"] {
-      --bg: #131313;
-      --bg-soft: #1a1a19;
-      --card: #1c1c1b;
-      --ink: #eae6dc;
-      --muted: #a49e90;
-      --faint: #736e63;
-      --accent: #e06349;
-      --accent-soft: rgba(224, 99, 73, 0.12);
-      --border: rgba(234, 230, 220, 0.16);
-      --border-soft: rgba(234, 230, 220, 0.08);
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px rgba(0, 0, 0, 0.35);
-      --shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.35), 0 14px 40px rgba(0, 0, 0, 0.5);
+      --bg: #0d1120;
+      --bg-soft: #131830;
+      --card: #151b33;
+      --ink: #e2e8f6;
+      --muted: #94a0be;
+      --faint: #5d688a;
+      --accent: #5fa8ff;
+      --accent-soft: rgba(95, 168, 255, 0.11);
+      --seal: #c94b33;
+      --chip-ink: #e2e8f6;
+      --chip-text: #0d1120;
+      --border: rgba(226, 232, 246, 0.18);
+      --border-soft: rgba(226, 232, 246, 0.09);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 28px rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 14px 40px rgba(0, 0, 0, 0.55);
       --dot-alpha: 0.55;
     }
 
@@ -187,15 +195,6 @@
     }
     .hero-text { flex: 1 1 auto; min-width: 0; }
 
-    .hello {
-      font-family: var(--mono);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin: 0 0 18px;
-    }
-
     .name-row { display: flex; align-items: flex-start; gap: 20px; }
     h1.name {
       font-family: var(--serif);
@@ -206,13 +205,13 @@
       letter-spacing: -0.015em;
     }
 
-    /* 朱文印 seal */
+    /* 朱文印 seal — stays vermillion in both modes, like a real stamp */
     .seal {
       flex: none;
       margin-top: 8px;
       width: 44px;
       padding: 9px 0 7px;
-      background: var(--accent);
+      background: var(--seal);
       color: #fdf8f2;
       border-radius: 7px;
       writing-mode: vertical-rl;
@@ -223,7 +222,7 @@
       letter-spacing: 0.18em;
       text-align: center;
       transform: rotate(4deg);
-      box-shadow: inset 0 0 0 2px rgba(253, 248, 242, 0.55), inset 0 0 0 4px var(--accent);
+      box-shadow: inset 0 0 0 2px rgba(253, 248, 242, 0.55), inset 0 0 0 4px var(--seal);
       user-select: none;
     }
 
@@ -297,27 +296,29 @@
 
     section { margin-top: 74px; }
 
+    /* Persona-style section chips: skewed ink plate with a hard accent offset */
     .sec-head {
       display: flex;
-      align-items: baseline;
-      gap: 16px;
-      margin-bottom: 26px;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
     }
     .sec-head h2 {
-      font-family: var(--serif);
-      font-size: 29px;
-      font-weight: 500;
       margin: 0;
-      letter-spacing: -0.01em;
       white-space: nowrap;
+      font-family: var(--display);
+      font-style: italic;
+      font-weight: 800;
+      font-size: 21px;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+      color: var(--chip-text);
+      background: var(--chip-ink);
+      padding: 7px 22px 8px 18px;
+      transform: skew(-12deg);
+      box-shadow: 7px 7px 0 var(--accent);
     }
-    .sec-head .zh {
-      font-family: "Kaiti SC", "STKaiti", "KaiTi", var(--serif);
-      font-size: 15px;
-      color: var(--accent);
-      letter-spacing: 0.3em;
-      white-space: nowrap;
-    }
+    .sec-head h2 > span { display: inline-block; transform: skew(4deg); }
     .sec-head .rule { width: 100%; height: 1px; background: var(--border-soft); }
 
     /* About */
@@ -395,17 +396,20 @@
     .pub-body { min-width: 0; }
     .pub-venue {
       display: inline-block;
-      font-family: var(--mono);
-      font-size: 11.5px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      color: var(--accent);
-      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-      background: var(--accent-soft);
-      border-radius: 6px;
-      padding: 2px 9px;
-      margin-bottom: 9px;
+      font-family: var(--display);
+      font-style: italic;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--accent);
+      padding: 3px 12px 4px 10px;
+      transform: skew(-12deg);
+      margin-bottom: 10px;
     }
+    html[data-theme="dark"] .pub-venue { color: #0d1120; }
+    .pub-venue > span { display: inline-block; transform: skew(4deg); }
     .pub-title {
       font-family: var(--serif);
       font-size: 19.5px;
@@ -472,15 +476,6 @@
       font-size: 13px;
       color: var(--faint);
     }
-    footer .zh {
-      font-family: "Kaiti SC", "STKaiti", "KaiTi", var(--serif);
-      color: var(--accent);
-      letter-spacing: 0.35em;
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
     /* Reveal on scroll */
     .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s ease; }
     .reveal.in { opacity: 1; transform: none; }
@@ -530,7 +525,6 @@
     <canvas id="world" aria-hidden="true"></canvas>
     <div class="hero-inner">
       <div class="hero-text">
-        <p class="hello">Hello, world builder here</p>
         <div class="name-row">
           <h1 class="name">Jin&nbsp;Cao</h1>
           <div class="seal" title="曹晋">曹晋</div>
@@ -559,7 +553,7 @@
         <div class="portrait-frame">
           <img src="images/selfie_sun.png" alt="Portrait of Jin Cao" id="profile-image">
         </div>
-        <p class="credit">relighted by <a href="https://github.com/lllyasviel/IC-Light" target="_blank" rel="noopener">IC-Light</a></p>
+        <p class="credit" id="image-credit">relighted by <a href="https://github.com/lllyasviel/IC-Light" target="_blank" rel="noopener">IC-Light</a></p>
       </div>
     </div>
   </header>
@@ -568,9 +562,8 @@
 
     <section id="about" class="reveal">
       <div class="sec-head">
-        <h2>About</h2>
+        <h2><span>About</span></h2>
         <div class="rule"></div>
-        <span class="zh">关于</span>
       </div>
       <div class="about">
         <p>
@@ -592,9 +585,8 @@
 
     <section id="news" class="reveal">
       <div class="sec-head">
-        <h2>News</h2>
+        <h2><span>News</span></h2>
         <div class="rule"></div>
-        <span class="zh">近况</span>
       </div>
       <ul class="news">
         <li><time>2026.02</time><span>WonderZoom is accepted by CVPR 2026! 🎉 Hope my visa goes well so I can see you in Denver! 🥺</span></li>
@@ -606,16 +598,15 @@
 
     <section id="publications" class="reveal">
       <div class="sec-head">
-        <h2>Publications</h2>
+        <h2><span>Publications</span></h2>
         <div class="rule"></div>
-        <span class="zh">著作</span>
       </div>
       <div class="pub-list">
 
         <article class="pub">
           <div class="pub-thumb"><img src="images/teaser_wonderzoom.png" alt="WonderZoom teaser"></div>
           <div class="pub-body">
-            <span class="pub-venue">CVPR 2026</span>
+            <span class="pub-venue"><span>CVPR 2026</span></span>
             <h3 class="pub-title">WonderZoom: Multi-Scale 3D World Generation</h3>
             <p class="pub-authors">
               <b>Jin Cao*</b>,
@@ -636,7 +627,7 @@
         <article class="pub">
           <div class="pub-thumb"><img src="images/universe.png" alt="UniVerse teaser"></div>
           <div class="pub-body">
-            <span class="pub-venue">ICCV 2025</span>
+            <span class="pub-venue"><span>ICCV 2025</span></span>
             <h3 class="pub-title">UniVerse: Unleashing the Scene Prior of Video Diffusion Models for Robust Radiance Field Reconstruction</h3>
             <p class="pub-authors">
               <b>Jin Cao*</b>,
@@ -660,7 +651,7 @@
         <article class="pub">
           <div class="pub-thumb"><img src="images/hair.png" alt="HAIR teaser"></div>
           <div class="pub-body">
-            <span class="pub-venue">arXiv 2024</span>
+            <span class="pub-venue"><span>arXiv 2024</span></span>
             <h3 class="pub-title">HAIR: Hypernetworks-based All-in-One Image Restoration</h3>
             <p class="pub-authors">
               <b>Jin Cao</b>,
@@ -685,9 +676,8 @@
 
     <section id="experience" class="reveal">
       <div class="sec-head">
-        <h2>Experience</h2>
+        <h2><span>Experience</span></h2>
         <div class="rule"></div>
-        <span class="zh">经历</span>
       </div>
       <div class="exp-list">
 
@@ -733,7 +723,6 @@
   </main>
 
   <footer>
-    <span class="zh">感谢来访</span>
     © 2026 Jin Cao · Thank you for watching my page :)
   </footer>
 
@@ -757,7 +746,26 @@
         root.setAttribute('data-theme', mode);
         document.getElementById('icon-moon').style.display = mode === 'dark' ? 'none' : 'block';
         document.getElementById('icon-sun').style.display = mode === 'dark' ? 'block' : 'none';
+
+        // Day/night portrait swap: sunlit photo by day, plain selfie by night
+        const photo = mode === 'dark' ? 'images/selfie2.jpg' : 'images/selfie_sun.png';
+        const photoUrl = 'https://jin-cao-tma.github.io/' + photo;
+        const profileImage = document.getElementById('profile-image');
+        if (profileImage) profileImage.src = photo;
+        // IC-Light credit only applies to the daytime (relighted) photo
+        const credit = document.getElementById('image-credit');
+        if (credit) credit.style.visibility = mode === 'dark' ? 'hidden' : 'visible';
+        const ogImage = document.getElementById('og-image');
+        const twitterImage = document.getElementById('twitter-image');
+        if (ogImage) ogImage.setAttribute('content', photoUrl);
+        if (twitterImage) twitterImage.setAttribute('content', photoUrl);
       }
+
+      // Preload the other portrait so the toggle swaps instantly
+      window.addEventListener('load', () => {
+        const other = new Image();
+        other.src = root.getAttribute('data-theme') === 'dark' ? 'images/selfie_sun.png' : 'images/selfie2.jpg';
+      });
     })();
 
     /* ---------- Point-cloud world (hero canvas) ---------- */
