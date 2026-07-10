@@ -58,7 +58,8 @@
       --bg: #f3f8fe;
       --bg-soft: #e7f1fc;
       --card: #ffffff;
-      --bg-image: linear-gradient(180deg, #dfeefe 0%, #f0f7ff 38%, #ffffff 100%);
+      /* P3R ocean: white on the reading side flowing into vivid cyan-blue */
+      --bg-image: linear-gradient(105deg, #ffffff 0%, #f0f8ff 28%, #c3e4ff 52%, #7cc2f7 74%, #2f9bf0 100%);
       --ink: #16253f;
       --muted: #566885;
       --faint: #92a3bc;
@@ -501,6 +502,7 @@
 
     /* ---------- Mobile ---------- */
     @media (max-width: 760px) {
+      :root { --bg-image: linear-gradient(180deg, #a6d7ff 0%, #e3f2ff 22%, #ffffff 55%); }
       .hero { padding: 116px 20px 56px; }
       .hero-inner { flex-direction: column-reverse; gap: 34px; }
       .portrait { width: 180px; }
@@ -791,9 +793,9 @@
       const TAU = Math.PI * 2;
 
       /* --- day: underwater ambience — surface ripples, light shafts, bubbles --- */
-      let bubbles = [], rays = [];
+      let bubbles = [], rays = [], caustics = [], glints = [];
       function seedSea() {
-        bubbles = []; rays = [];
+        bubbles = []; rays = []; caustics = []; glints = [];
         const nB = Math.round(w / 52);
         for (let i = 0; i < nB; i++) bubbles.push(newBubble(true));
         const nR = Math.max(4, Math.round(w / 250));
@@ -806,6 +808,31 @@
             sp: 0.0025 + Math.random() * 0.0025,
           });
         }
+        // caustic light patches — soft blobs of sunlight drifting through the water
+        const nC = Math.max(7, Math.round((w * h) / 160000));
+        for (let i = 0; i < nC; i++) {
+          caustics.push({
+            bx: Math.random() * w,
+            by: Math.random() * h * 0.7,
+            r: 70 + Math.random() * 190,
+            amp: 24 + Math.random() * 44,
+            sx: 0.0016 + Math.random() * 0.0022,
+            sy: 0.0011 + Math.random() * 0.0016,
+            ph: Math.random() * TAU,
+          });
+        }
+        // glass glints — thin streaks that sparkle in and out
+        for (let i = 0; i < 6; i++) glints.push(newGlint());
+      }
+      function newGlint() {
+        return {
+          x: Math.random() * w,
+          y: Math.random() * h * 0.75,
+          len: 50 + Math.random() * 130,
+          ang: -Math.PI / 4 + (Math.random() - 0.5) * 0.5,
+          ph: Math.random() * TAU,
+          sp: 0.006 + Math.random() * 0.008,
+        };
       }
       function newBubble(anywhere) {
         return {
@@ -981,16 +1008,31 @@
         ctx.stroke();
         ctx.globalAlpha = 1;
 
+        // --- caustic light patches drifting slowly (visible over the blue side) ---
+        for (const c of caustics) {
+          const cx = c.bx + Math.sin(t * c.sx + c.ph) * c.amp * 2;
+          const cy = c.by + Math.sin(t * c.sy + c.ph * 1.7) * c.amp;
+          const rr = c.r * (0.9 + 0.12 * Math.sin(t * c.sx * 1.4 + c.ph));
+          const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, rr);
+          grad.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+          grad.addColorStop(0.55, 'rgba(255, 255, 255, 0.07)');
+          grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, rr, 0, TAU);
+          ctx.fill();
+        }
+
         // --- god rays leaning through the water, slowly breathing ---
         for (const r of rays) {
           const sway = Math.sin(t * r.sp + r.ph);
           const topX = r.fx * w + sway * 30;
           const botX = topX + r.slant * h + sway * 60;
-          const len = h * 0.72;
-          const a = 0.065 + 0.055 * (0.5 + 0.5 * Math.sin(t * r.sp * 1.7 + r.ph * 2));
+          const len = h * 0.78;
+          const a = 0.07 + 0.06 * (0.5 + 0.5 * Math.sin(t * r.sp * 1.7 + r.ph * 2));
           const grad = ctx.createLinearGradient(topX, 0, botX, len);
-          grad.addColorStop(0, 'rgba(140, 195, 250, ' + a + ')');
-          grad.addColorStop(1, 'rgba(140, 195, 250, 0)');
+          grad.addColorStop(0, 'rgba(255, 255, 255, ' + a + ')');
+          grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
           ctx.fillStyle = grad;
           ctx.beginPath();
           ctx.moveTo(topX - r.wdt / 2, -20);
@@ -1001,6 +1043,26 @@
           ctx.fill();
         }
 
+        // --- glass glints: thin streaks sparkling in and out ---
+        for (const g of glints) {
+          const pulse = Math.max(0, Math.sin(t * g.sp + g.ph));
+          if (!reduceMotion && pulse < 0.02 && Math.random() < 0.02) Object.assign(g, newGlint());
+          const a = pulse * pulse * 0.55;
+          if (a < 0.01) continue;
+          const dx = Math.cos(g.ang) * g.len / 2, dy = Math.sin(g.ang) * g.len / 2;
+          const grad = ctx.createLinearGradient(g.x - dx, g.y - dy, g.x + dx, g.y + dy);
+          grad.addColorStop(0, 'rgba(255,255,255,0)');
+          grad.addColorStop(0.5, 'rgba(255,255,255,' + a + ')');
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(g.x - dx, g.y - dy);
+          ctx.lineTo(g.x + dx, g.y + dy);
+          ctx.stroke();
+          drawStar4(g.x, g.y, 5 * pulse, a, '#ffffff');
+        }
+
         // --- bubbles drifting up ---
         for (const b of bubbles) {
           if (!reduceMotion) {
@@ -1008,8 +1070,8 @@
             if (b.y < -12) Object.assign(b, newBubble(false));
           }
           const bx = b.x + Math.sin(t * b.wsp + b.ph) * b.wob;
-          ctx.strokeStyle = 'rgba(70, 140, 220, 0.35)';
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+          ctx.lineWidth = 1.1;
           ctx.beginPath();
           ctx.arc(bx, b.y, b.r, 0, TAU);
           ctx.stroke();
