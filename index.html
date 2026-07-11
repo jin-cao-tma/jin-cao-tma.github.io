@@ -946,8 +946,52 @@
 
       /* --- day: underwater ambience — surface ripples, light shafts, bubbles --- */
       let bubbles = [], rays = [], caustics = [], glints = [], bubbleClusters = [], fishes = [], portraitBubbles = [];
+      let swimmers = [], crawlers = [], floorLife = [];
       function seedSea() {
         bubbles = []; rays = []; caustics = []; glints = []; bubbleClusters = []; fishes = []; portraitBubbles = [];
+        swimmers = []; crawlers = []; floorLife = [];
+        // big slow cruisers: a whale + a couple sharks drifting across
+        const cruisers = [
+          { type: 'whale', s: 26 + Math.random() * 8, band: [0.30, 0.60], sp: 0.16 },
+          { type: 'shark', s: 15 + Math.random() * 4, band: [0.18, 0.5], sp: 0.32 },
+          { type: 'shark', s: 13 + Math.random() * 4, band: [0.45, 0.72], sp: 0.28 },
+        ];
+        for (const c of cruisers) {
+          const dir = Math.random() < 0.5 ? 1 : -1;
+          swimmers.push({
+            type: c.type, s: c.s, dir,
+            x: Math.random() * w,
+            y: h * (c.band[0] + Math.random() * (c.band[1] - c.band[0])),
+            vx: c.sp * dir * (0.8 + Math.random() * 0.4),
+            ph: Math.random() * TAU,
+            bobA: 6 + Math.random() * 8, bobS: 0.006 + Math.random() * 0.006,
+            y0: 0,
+          });
+        }
+        swimmers.forEach(s => s.y0 = s.y);
+        // crabs scuttling along the very bottom
+        for (let i = 0; i < 2 + Math.round(w / 900); i++) {
+          const dir = Math.random() < 0.5 ? 1 : -1;
+          crawlers.push({
+            s: 9 + Math.random() * 5, dir,
+            x: Math.random() * w,
+            y: h - 14 - Math.random() * 20,
+            vx: (0.18 + Math.random() * 0.22) * dir,
+            ph: Math.random() * TAU,
+            turn: 2400 + Math.random() * 2600,
+          });
+        }
+        // starfish resting on the floor (static, slow spin)
+        for (let i = 0; i < 3 + Math.round(w / 520); i++) {
+          floorLife.push({
+            x: Math.random() * w,
+            y: h - 8 - Math.random() * 34,
+            s: 7 + Math.random() * 7,
+            rot: Math.random() * TAU,
+            spin: (Math.random() - 0.5) * 0.0006,
+            a: 0.14 + Math.random() * 0.12,
+          });
+        }
         // bubble collage clusters — the day counterpart of the night's star bands
         const bBands = [
           { x0: 0.00, x1: 0.22, y0: 0.45, y1: 1.00, n: Math.round(h / 70) },
@@ -968,7 +1012,7 @@
           }
         }
         // little fish, cruising through in loose schools
-        for (let s = 0; s < 3; s++) {
+        for (let s = 0; s < 2; s++) {
           const dir = Math.random() < 0.5 ? 1 : -1;
           const school = {
             x: Math.random() * w,
@@ -1079,8 +1123,13 @@
             y: Math.random() * h,
             r: 3.5 + Math.random() * 5.5,
             rot: Math.random() * TAU,
+            spin: (Math.random() - 0.5) * 0.004,
             moon: Math.random() < 0.4,
             a: 0.16 + Math.random() * 0.22,
+            tw: 0.4 + Math.random() * 0.9,
+            ph: Math.random() * TAU,
+            driftA: 3 + Math.random() * 5,
+            driftS: 0.004 + Math.random() * 0.005,
           });
         }
         // collage clusters — chunky layered gold stars & moons sweeping in bands,
@@ -1102,6 +1151,10 @@
               a: 0.4 + Math.random() * 0.5,
               ph: Math.random() * TAU,
               ord: Math.random() * 0.72,   // stagger for the pop-in choreography
+              spin: (Math.random() - 0.5) * 0.0022,
+              driftA: 3 + Math.random() * 6,
+              driftS: 0.003 + Math.random() * 0.004,
+              tw: 0.3 + Math.random() * 0.5,
             });
           }
         }
@@ -1178,6 +1231,117 @@
         ctx.moveTo(-s * 0.75, 0);
         ctx.lineTo(-s * 1.45, -s * 0.5);
         ctx.lineTo(-s * 1.45, s * 0.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      }
+
+      const SEA_INK = '#1560ae';
+      function drawShark(x, y, s, dir, alpha, ph) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(dir, 1);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = SEA_INK;
+        ctx.beginPath();                          // body (pointed snout, tapered tail)
+        ctx.moveTo(s * 1.6, 0);
+        ctx.quadraticCurveTo(s * 0.3, -s * 0.5, -s * 1.05, -s * 0.28);
+        ctx.quadraticCurveTo(-s * 1.35, 0, -s * 1.05, s * 0.28);
+        ctx.quadraticCurveTo(s * 0.3, s * 0.5, s * 1.6, 0);
+        ctx.fill();
+        ctx.beginPath();                          // dorsal fin
+        ctx.moveTo(s * 0.1, -s * 0.42);
+        ctx.lineTo(s * 0.5, -s * 1.0);
+        ctx.lineTo(s * 0.6, -s * 0.4);
+        ctx.closePath();
+        ctx.fill();
+        const sw = Math.sin(t * 0.05 + (ph || 0)) * s * 0.35;  // swishing tail
+        ctx.beginPath();
+        ctx.moveTo(-s * 1.0, 0);
+        ctx.lineTo(-s * 1.7, -s * 0.6 + sw);
+        ctx.lineTo(-s * 1.5, 0);
+        ctx.lineTo(-s * 1.7, s * 0.6 + sw);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      }
+
+      function drawWhale(x, y, s, dir, alpha, ph) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(dir, 1);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = SEA_INK;
+        ctx.beginPath();                          // rounded body
+        ctx.ellipse(0, 0, s * 1.5, s * 0.72, 0, 0, TAU);
+        ctx.fill();
+        const fl = Math.sin(t * 0.03 + (ph || 0)) * s * 0.3;   // tail fluke
+        ctx.beginPath();
+        ctx.moveTo(-s * 1.35, 0);
+        ctx.lineTo(-s * 2.1, -s * 0.7 + fl);
+        ctx.quadraticCurveTo(-s * 1.7, 0, -s * 2.1, s * 0.7 + fl);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();                          // pectoral fin
+        ctx.moveTo(s * 0.2, s * 0.4);
+        ctx.lineTo(-s * 0.2, s * 1.0);
+        ctx.lineTo(-s * 0.5, s * 0.45);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      }
+
+      function drawCrab(x, y, s, alpha, ph) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = SEA_INK;
+        ctx.fillStyle = SEA_INK;
+        ctx.lineWidth = s * 0.14;
+        ctx.lineCap = 'round';
+        const leg = Math.sin(t * 0.06 + (ph || 0)) * s * 0.12;
+        for (let i = -1; i <= 1; i++) {           // legs on each side
+          for (const side of [-1, 1]) {
+            ctx.beginPath();
+            ctx.moveTo(side * s * 0.7, s * 0.1);
+            ctx.lineTo(side * (s * 1.35 + i * s * 0.1), s * (0.45 + i * 0.18) + leg * side);
+            ctx.stroke();
+          }
+        }
+        ctx.beginPath();                          // shell
+        ctx.ellipse(0, 0, s, s * 0.66, 0, 0, TAU);
+        ctx.fill();
+        for (const side of [-1, 1]) {             // claws
+          ctx.beginPath();
+          ctx.moveTo(side * s * 0.85, -s * 0.1);
+          ctx.lineTo(side * s * 1.4, -s * 0.5);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.ellipse(side * s * 1.45, -s * 0.55, s * 0.28, s * 0.2, 0, 0, TAU);
+          ctx.fill();
+        }
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      }
+
+      function drawStarfish(x, y, s, rot, alpha) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = SEA_INK;
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          const a0 = (i / 5) * TAU - Math.PI / 2;
+          const a1 = a0 + TAU / 10;
+          if (i === 0) ctx.moveTo(Math.cos(a0) * s, Math.sin(a0) * s);
+          else ctx.lineTo(Math.cos(a0) * s, Math.sin(a0) * s);
+          ctx.quadraticCurveTo(Math.cos(a1) * s * 0.68, Math.sin(a1) * s * 0.68,
+            Math.cos(a0 + TAU / 5) * s, Math.sin(a0 + TAU / 5) * s);
+        }
         ctx.closePath();
         ctx.fill();
         ctx.restore();
@@ -1445,6 +1609,38 @@
           ctx.stroke();
         }
 
+        // --- resting starfish on the seafloor (static, barely spinning) ---
+        for (const sf of floorLife) {
+          if (!reduceMotion) sf.rot += sf.spin;
+          drawStarfish(sf.x, sf.y, sf.s, sf.rot, sf.a * fade);
+        }
+
+        // --- crabs scuttling along the bottom ---
+        for (const cr of crawlers) {
+          if (!reduceMotion) {
+            cr.x += cr.vx;
+            if (t % Math.round(cr.turn) === 0) { cr.vx = -cr.vx; cr.dir = -cr.dir; }
+            const m = 40;
+            if (cr.x > w + m) cr.x = -m;
+            if (cr.x < -m) cr.x = w + m;
+          }
+          drawCrab(cr.x, cr.y, cr.s, 0.2 * fade, cr.ph);
+        }
+
+        // --- big slow cruisers: whale + sharks drifting across ---
+        for (const sw of swimmers) {
+          if (!reduceMotion) {
+            sw.x += sw.vx;
+            const m = sw.s * 3;
+            if (sw.vx > 0 && sw.x > w + m) { sw.x = -m; sw.y0 = h * (0.2 + Math.random() * 0.55); }
+            if (sw.vx < 0 && sw.x < -m) { sw.x = w + m; sw.y0 = h * (0.2 + Math.random() * 0.55); }
+          }
+          const y = sw.y0 + Math.sin(t * sw.bobS + sw.ph) * sw.bobA;
+          const a = (sw.type === 'whale' ? 0.13 : 0.17) * fade;
+          if (sw.type === 'whale') drawWhale(sw.x, y, sw.s, sw.dir, a, sw.ph);
+          else drawShark(sw.x, y, sw.s, sw.dir, a, sw.ph);
+        }
+
         // --- little fish cruising through in loose schools ---
         for (const school of fishes) {
           if (!reduceMotion) {
@@ -1520,10 +1716,12 @@
         const mp = easeOut(clamp01((p - 0.04) / 0.3));
         if (mp > 0) {
           const mr = (Math.min(w, h) * 0.05 + 20) * (0.55 + 0.45 * mp);
+          const mBob = Math.sin(t * 0.006) * 5;          // gentle float
+          const mTilt = -Math.PI / 3 + Math.sin(t * 0.004) * 0.05;
           ctx.save();
-          ctx.shadowColor = 'rgba(255, 219, 100, ' + 0.55 * mp + ')';
+          ctx.shadowColor = 'rgba(255, 219, 100, ' + (0.4 + 0.15 * (0.5 + 0.5 * Math.sin(t * 0.02))) * mp + ')';
           ctx.shadowBlur = 38;
-          drawCrescent(w * 0.87, h * 0.15, mr, -Math.PI / 3, 0.95 * mp, '#ffe9a3');
+          drawCrescent(w * 0.87, h * 0.15 + mBob, mr, mTilt, 0.95 * mp, '#ffe9a3');
           ctx.restore();
         }
 
@@ -1591,24 +1789,30 @@
         }
         ctx.globalAlpha = 1;
 
-        // scattered gold five-point stars & tiny crescents (static, calm)
+        // scattered gold five-point stars & tiny crescents — twinkle, drift, slow spin
         const decoIn = clamp01((p - 0.2) / 0.3);
         for (const d of deco) {
-          if (d.moon) drawCrescent(d.x, d.y, d.r, d.rot, d.a * decoIn, PALE_GOLD);
-          else drawStar5(d.x, d.y, d.r, d.rot, d.a * decoIn, GOLD);
+          const a = d.a * decoIn * (0.7 + 0.3 * Math.sin(t * 0.02 * d.tw + d.ph));
+          const dy = d.y + Math.sin(t * d.driftS + d.ph) * d.driftA;
+          const rot = d.rot + t * d.spin;
+          if (d.moon) drawCrescent(d.x, dy, d.r, rot, a, PALE_GOLD);
+          else drawStar5(d.x, dy, d.r, rot, a, GOLD);
         }
 
-        // collage clusters — popping in one by one, then gently breathing
+        // collage clusters — pop in one by one, then drift, spin, and breathe
         const clusterScale = w < 760 ? 0.5 : 1;
         for (const s of clusters) {
           const sp = clamp01((p - s.ord) / 0.16);
           if (sp <= 0) continue;
           const grow = sp + 0.3 * Math.sin(Math.PI * sp);   // slight overshoot
-          const a = s.a * sp * clusterScale * (0.88 + 0.12 * Math.sin(t * 0.008 + s.ph));
-          if (s.moon) drawCrescent(s.x, s.y, s.r * grow, s.rot, a, s.color);
-          else drawStar5(s.x, s.y, s.r * grow, s.rot, a, s.color);
+          const a = s.a * sp * clusterScale * (0.85 + 0.15 * Math.sin(t * 0.012 + s.ph));
+          const sx = s.x + Math.sin(t * s.driftS + s.ph) * s.driftA;
+          const sy = s.y + Math.cos(t * s.driftS * 0.8 + s.ph) * s.driftA * 0.7;
+          const rot = s.rot + t * s.spin;
+          if (s.moon) drawCrescent(sx, sy, s.r * grow, rot, a, s.color);
+          else drawStar5(sx, sy, s.r * grow, rot, a, s.color);
           // a white glint as each star lands
-          if (sp > 0 && sp < 0.6) drawStar4(s.x, s.y, s.r * (1 - sp) + 3, (1 - sp / 0.6) * 0.7, '#fffbe8');
+          if (sp > 0 && sp < 0.6) drawStar4(sx, sy, s.r * (1 - sp) + 3, (1 - sp / 0.6) * 0.7, '#fffbe8');
         }
 
         // golden four-point sparkles
