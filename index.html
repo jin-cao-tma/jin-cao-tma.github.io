@@ -175,6 +175,7 @@
     }
     .nav-links a:hover { color: var(--ink); background: var(--accent-soft); }
     .theme-btn {
+      position: relative;
       cursor: pointer;
       border: 1px solid var(--border);
       background: transparent;
@@ -189,6 +190,70 @@
     }
     .theme-btn:hover { color: var(--accent); border-color: var(--accent); transform: rotate(-18deg); }
     .theme-btn svg { width: 15px; height: 15px; }
+
+    /* attention nudge until the visitor discovers the day/night switch */
+    .theme-btn.nudge {
+      color: var(--accent);
+      border-color: var(--accent);
+      animation: theme-wiggle 2.6s ease-in-out infinite;
+    }
+    .theme-btn.nudge::before,
+    .theme-btn.nudge::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      animation: theme-ring 2.6s ease-out infinite;
+      pointer-events: none;
+    }
+    .theme-btn.nudge::after { animation-delay: 1.3s; }
+    @keyframes theme-ring {
+      0%   { transform: scale(1);   opacity: 0.55; }
+      70%  { opacity: 0; }
+      100% { transform: scale(2.1); opacity: 0; }
+    }
+    @keyframes theme-wiggle {
+      0%, 82%, 100% { transform: rotate(0); }
+      88% { transform: rotate(-16deg); }
+      94% { transform: rotate(16deg); }
+    }
+
+    /* first-visit hint bubble pointing at the toggle */
+    .theme-hint {
+      position: fixed;
+      top: 64px;
+      right: 16px;
+      z-index: 60;
+      max-width: 200px;
+      padding: 9px 13px;
+      border-radius: 12px 12px 4px 12px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 500;
+      line-height: 1.4;
+      box-shadow: var(--shadow-hover);
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+    }
+    html[data-theme="dark"] .theme-hint { color: #14110a; }
+    .theme-hint.show { opacity: 1; transform: none; }
+    .theme-hint::after {
+      content: "";
+      position: absolute;
+      top: -6px; right: 16px;
+      width: 11px; height: 11px;
+      background: var(--accent);
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .theme-btn.nudge, .theme-btn.nudge::before, .theme-btn.nudge::after { animation: none; }
+    }
+    @media (max-width: 760px) { .theme-hint { max-width: 168px; font-size: 12px; } }
 
     /* ---------- Sky canvas (fixed behind everything) ---------- */
     #world {
@@ -704,6 +769,8 @@
     </div>
   </nav>
 
+  <div class="theme-hint" id="theme-hint" aria-hidden="true">☀ / 🌙 &nbsp;Tap to switch day &amp; night — there's a little surprise</div>
+
   <canvas id="world" aria-hidden="true"></canvas>
 
   <header class="hero" id="top">
@@ -994,11 +1061,35 @@
       const initial = fromUrl || saved || 'dark';   // night first — the starry entrance greets visitors
       apply(initial);
 
-      document.getElementById('theme-toggle').addEventListener('click', () => {
+      const toggle = document.getElementById('theme-toggle');
+      const hint = document.getElementById('theme-hint');
+      const discovered = localStorage.getItem('themeDiscovered') === '1';
+
+      function endNudge() {
+        toggle.classList.remove('nudge');
+        if (hint) hint.classList.remove('show');
+        localStorage.setItem('themeDiscovered', '1');
+      }
+
+      toggle.addEventListener('click', () => {
         const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         apply(next);
         localStorage.setItem('theme', next);
+        endNudge();
       });
+
+      // first-time visitors: draw the eye to the switch, then let it go
+      if (!discovered) {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            if (localStorage.getItem('themeDiscovered') === '1') return;
+            toggle.classList.add('nudge');
+            if (hint) hint.classList.add('show');
+          }, 2600);
+          // stop nagging after a while even if they never click
+          setTimeout(() => { if (hint) hint.classList.remove('show'); }, 12000);
+        });
+      }
 
       function apply(mode) {
         root.setAttribute('data-theme', mode);
