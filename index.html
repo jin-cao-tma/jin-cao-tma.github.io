@@ -575,7 +575,8 @@
     .pub-thumb {
       flex: none;
       width: 232px;
-      align-self: stretch;   /* run the full height of the text block */
+      align-self: center;          /* centered; a fixed 16:9 box so wide media isn't side-cropped */
+      aspect-ratio: 16 / 9;
       border-radius: 10px;
       overflow: hidden;
       border: 1px solid var(--border-soft);
@@ -753,7 +754,6 @@
       .page { padding: 0 20px 72px; }
       .pub { flex-direction: column; gap: 16px; }
       .pub-thumb { width: 100%; align-self: auto; }
-      .pub-thumb img, .pub-thumb video { height: auto; }
       .news li { flex-direction: column; gap: 2px; }
       .news time { width: auto; }
     }
@@ -870,12 +870,12 @@
                    loop muted playsinline preload="metadata" aria-label="ShadowDancer teaser video"></video>
           </div>
           <div class="pub-body">
-            <span class="pub-venue"><span>arXiv 2026</span></span>
+            <span class="pub-venue"><span>Under Preparation</span></span>
             <h3 class="pub-title">ShadowDancer: Teaching Video World Models Any Action by Learning Unified Dynamics Representations from a Video and Its Shadow</h3>
             <p class="pub-authors">
               <b>Jin Cao</b>,
               <a>Zian Meng</a>,
-              <a href="https://kpzhang93.github.io/" target="_blank" rel="noopener">Kaipeng Zhang</a>&dagger;
+              <a href="https://kpzhang93.github.io/" target="_blank" rel="noopener">Kaipeng Zhang</a>
             </p>
             <div class="pub-links">
               <a class="tag" href="https://shadowdancer-1.github.io/" target="_blank" rel="noopener">Project Page</a>
