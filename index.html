@@ -147,7 +147,7 @@
       transition: background 0.4s ease;
     }
     .nav-inner {
-      max-width: 860px;
+      max-width: 940px;
       margin: 0 auto;
       padding: 0 24px;
       height: 60px;
@@ -272,7 +272,7 @@
     .hero-inner {
       position: relative;
       z-index: 1;
-      max-width: 860px;
+      max-width: 940px;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -459,7 +459,7 @@
     .credit a:hover { color: var(--accent); }
 
     /* ---------- Sections ---------- */
-    .page { max-width: 860px; margin: 0 auto; padding: 0 24px 96px; }
+    .page { max-width: 940px; margin: 0 auto; padding: 0 24px 96px; }
 
     section { margin-top: 74px; }
 
@@ -575,7 +575,7 @@
     .pub-thumb {
       flex: none;
       width: 232px;
-      align-self: center;          /* centered; a fixed 16:9 box so wide media isn't side-cropped */
+      align-self: flex-start;      /* top-aligned fixed 16:9 box: wide media isn't cropped, no gap above the video */
       aspect-ratio: 16 / 9;
       border-radius: 10px;
       overflow: hidden;
@@ -638,9 +638,9 @@
     html[data-theme="dark"] .pub-venue { color: #14110a; }
     .pub-title {
       font-family: var(--serif);
-      font-size: 19.5px;
+      font-size: 17.5px;
       font-weight: 600;
-      line-height: 1.35;
+      line-height: 1.32;
       margin: 0 0 7px;
     }
     .pub-authors { font-size: 14px; color: var(--muted); margin: 0 0 11px; }
