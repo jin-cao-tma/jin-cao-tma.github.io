@@ -349,64 +349,6 @@
     .pill svg { width: 15px; height: 15px; flex: none; }
     button.pill { cursor: pointer; font-family: inherit; line-height: 1; }
 
-    /* WeChat QR popup */
-    .wechat-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(8, 10, 18, 0.55);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .wechat-modal.open { opacity: 1; visibility: visible; }
-    .wechat-card {
-      position: relative;
-      background: var(--card);
-      color: var(--ink);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 22px;
-      width: 300px;
-      max-width: 100%;
-      box-shadow: var(--shadow-hover);
-      text-align: center;
-      transform: translateY(10px) scale(0.97);
-      transition: transform 0.3s ease;
-    }
-    .wechat-modal.open .wechat-card { transform: none; }
-    .wechat-card .wx-name {
-      font-family: var(--serif);
-      font-size: 17px;
-      font-weight: 600;
-      margin: 0 0 14px;
-    }
-    .wechat-card img { display: block; width: 100%; border-radius: 12px; }
-    .wechat-card p { margin: 14px 4px 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
-    .wechat-close {
-      position: absolute;
-      top: 12px; right: 12px;
-      width: 28px; height: 28px;
-      border: none;
-      border-radius: 50%;
-      background: var(--bg-soft);
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s, background 0.2s;
-    }
-    .wechat-close:hover { color: var(--accent); }
-
     .portrait { flex: none; width: 218px; text-align: center; }
     .portrait-frame {
       position: relative;
@@ -809,10 +751,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"></path><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"></path></svg>
             Scholar
           </a>
-          <button type="button" class="pill" id="wechat-btn" aria-haspopup="dialog">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.69 4.06C4.2 4.06.5 7.13.5 10.92c0 2.07 1.1 3.93 2.81 5.19a.55.55 0 0 1 .2.62l-.37 1.38c-.03.12.07.23.19.19l1.79-1.05a.8.8 0 0 1 .67-.09c.86.25 1.78.39 2.73.39l.5-.02a5.3 5.3 0 0 1-.22-1.5c0-2.99 2.9-5.36 6.4-5.36l.5.02c-.4-3.3-3.74-5.64-8-5.64zm-2.72 3.5a.98.98 0 1 1 0 1.96.98.98 0 0 1 0-1.96zm5.44 0a.98.98 0 1 1 0 1.96.98.98 0 0 1 0-1.96zm4.24 3.55c-3.02 0-5.47 2.02-5.47 4.52 0 2.49 2.45 4.51 5.47 4.51.7 0 1.37-.11 1.99-.31a.66.66 0 0 1 .55.07l1.34.78c.1.05.21-.04.18-.15l-.3-1.13a.47.47 0 0 1 .17-.5c1.2-.9 1.97-2.19 1.97-3.28 0-2.5-2.45-4.52-5.47-4.52l-.2.01zm-1.8 2.4a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm3.63 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6z"/></svg>
-            WeChat
-          </button>
         </div>
       </div>
       <div class="portrait">
@@ -1082,15 +1020,6 @@
   </footer>
 
   <div class="whisper night" aria-hidden="true">星、きれいだね！</div>
-
-  <div class="wechat-modal" id="wechat-modal" role="dialog" aria-modal="true" aria-label="WeChat QR code">
-    <div class="wechat-card">
-      <button type="button" class="wechat-close" id="wechat-close" aria-label="Close">&times;</button>
-      <p class="wx-name">Let's connect on WeChat</p>
-      <img src="images/wechat_qr.jpg" alt="Jin Cao's WeChat QR code">
-      <p>Scan the code to add me — always happy to chat about research, games, or anything else.</p>
-    </div>
-  </div>
 
   <script>
     /* ---------- Theme ---------- */
@@ -2087,19 +2016,6 @@
       els.forEach(el => io.observe(el));
       // safety net: never leave content hidden (deep links, odd embedders)
       setTimeout(() => els.forEach(el => el.classList.add('in')), 1600);
-    })();
-
-    /* ---------- WeChat QR popup ---------- */
-    (function () {
-      const btn = document.getElementById('wechat-btn');
-      const modal = document.getElementById('wechat-modal');
-      if (!btn || !modal) return;
-      const open = () => modal.classList.add('open');
-      const close = () => modal.classList.remove('open');
-      btn.addEventListener('click', open);
-      document.getElementById('wechat-close').addEventListener('click', close);
-      modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
     })();
   </script>
 </body>
