@@ -14,7 +14,7 @@
 
   <meta name="author" content="Jin Cao">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Jin Cao (曹晋) — incoming Computer Science PhD student at UT Austin, working on 3D vision. My goal is to digitalize the physical world.">
+  <meta name="description" content="Jin Cao (曹晋) — a Computer Science PhD student at UT Austin, working on 3D vision. My goal is to digitalize the physical world.">
   <meta name="keywords" content="Jin Cao, 曹晋, Jin Cao UT Austin, University of Texas at Austin, Xi'an Jiaotong University, XJTU, 3D vision, computer vision, computer graphics, graphics, digitalize the world, virtual worlds">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -27,7 +27,7 @@
 
   <!-- Open Graph for social media -->
   <meta property="og:title" content="Jin Cao (曹晋) — Personal Homepage">
-  <meta property="og:description" content="Incoming CS PhD at UT Austin, working on 3D vision. My goal is to digitalize the physical world.">
+  <meta property="og:description" content="CS PhD at UT Austin, working on 3D vision. My goal is to digitalize the physical world.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://jin-cao-tma.github.io/">
   <meta property="og:image" content="https://jin-cao-tma.github.io/images/selfie_sun.png" id="og-image">
@@ -36,7 +36,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jin Cao (曹晋) — Personal Homepage">
-  <meta name="twitter:description" content="Incoming CS PhD at UT Austin, working on 3D vision. My goal is to digitalize the physical world.">
+  <meta name="twitter:description" content="CS PhD at UT Austin, working on 3D vision. My goal is to digitalize the physical world.">
   <meta name="twitter:image" content="https://jin-cao-tma.github.io/images/selfie_sun.png" id="twitter-image">
   <meta name="twitter:url" content="https://jin-cao-tma.github.io/">
 
@@ -52,12 +52,11 @@
         "https://scholar.google.com/citations?user=xOMzt_UAAAAJ&hl=en",
         "https://github.com/jin-cao-tma"
       ],
-      "jobTitle": "Incoming Computer Science PhD Student",
-      "worksFor": { "@type": "Organization", "name": "Alaya Lab, Shanda AI" },
+      "jobTitle": "Computer Science PhD Student",
       "affiliation": { "@type": "CollegeOrUniversity", "name": "The University of Texas at Austin" },
       "alumniOf": { "@type": "CollegeOrUniversity", "name": "Xi'an Jiaotong University" },
       "knowsAbout": ["3D Vision", "Computer Vision", "Computer Graphics"],
-      "description": "Jin Cao (曹晋), incoming Computer Science PhD student at UT Austin, working on 3D vision, with the goal of digitalizing the physical world."
+      "description": "Jin Cao (曹晋), a Computer Science PhD student at UT Austin, working on 3D vision, with the goal of digitalizing the physical world."
     }
   </script>
 
@@ -484,6 +483,35 @@
     .statement b { font-weight: 600; }
     .statement .lead { color: var(--accent); font-weight: 600; }
 
+    .availability {
+      margin-top: 16px;
+      padding: 13px 18px;
+      border: 1px dashed var(--accent);
+      border-radius: 12px;
+      background: var(--accent-soft);
+      font-size: 14.5px;
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+    }
+    .availability .dot {
+      flex: none;
+      width: 9px; height: 9px;
+      margin-top: 5px;
+      border-radius: 50%;
+      background: #2ecc71;
+      box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.6);
+      animation: pulse-dot 2.4s ease-out infinite;
+    }
+    .availability a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+    @keyframes pulse-dot {
+      0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.55); }
+      70% { box-shadow: 0 0 0 7px rgba(46, 204, 113, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+    }
+    @media (prefers-reduced-motion: reduce) { .availability .dot { animation: none; } }
+
     /* News */
     .news { list-style: none; margin: 0; padding: 0; }
     .news li {
@@ -781,9 +809,9 @@
       </div>
       <div class="about">
         <p>
-          I'm Jin Cao, an incoming Computer Science PhD student at <a href="https://www.utexas.edu/" target="_blank" rel="noopener">UT Austin</a>,
+          I'm Jin Cao, a Computer Science PhD student at <a href="https://www.utexas.edu/" target="_blank" rel="noopener">UT Austin</a>,
           advised by <a href="https://www.cs.utexas.edu/~huangqx/" target="_blank" rel="noopener">Prof. Qixing Huang</a> and <a href="https://geopavlakos.github.io/" target="_blank" rel="noopener">Prof. Georgios Pavlakos</a>.
-          I am currently working with <a href="https://kpzhang93.github.io/" target="_blank" rel="noopener">Dr. Kaipeng Zhang</a> from <a href="https://alayalab.ai/" target="_blank" rel="noopener">Alaya Lab</a>.
+          Previously, I worked with <a href="https://kpzhang93.github.io/" target="_blank" rel="noopener">Dr. Kaipeng Zhang</a> at <a href="https://alayalab.ai/" target="_blank" rel="noopener">Alaya Lab</a>, Shanda AI.
           During my undergraduate, I was fortunate to collaborate with
           <a href="https://jiajunwu.com/" target="_blank" rel="noopener">Prof. Jiajun Wu</a> and <a href="https://kovenyu.com/" target="_blank" rel="noopener">Koven Yu</a> from <a href="https://svl.stanford.edu/" target="_blank" rel="noopener">Stanford</a>,
           <a href="https://pengsida.net/" target="_blank" rel="noopener">Prof. Sida Peng</a> and <a href="https://xzhou.me/" target="_blank" rel="noopener">Prof. Xiaowei Zhou</a> from <a href="https://xzhou.me/group" target="_blank" rel="noopener">ZJU3DV</a>, <a href="https://www.zju.edu.cn/english/" target="_blank" rel="noopener">Zhejiang University</a>,
@@ -794,6 +822,10 @@
           Toward this goal, I focus on learning <b>world representations</b> from multi-modal data and building <b>generative models</b> on top of them.
           Recently, I have been interested in <b>long-context generative world modeling</b>, <b>physically-grounded generation</b>, and <b>controllable generation</b> in support of this goal.
         </div>
+        <p class="availability">
+          <span class="dot" aria-hidden="true"></span>
+          <span>I'm actively looking for <b>long-term industry collaborations and internships</b>. If you have relevant opportunities or resources, I'd love to connect &mdash; <a href="mailto:xjincaox@gmail.com">xjincaox@gmail.com</a>.</span>
+        </p>
       </div>
     </section>
 
@@ -933,9 +965,9 @@
           <div class="exp-logo"><img src="images/ut_austin.png" alt="The University of Texas at Austin"></div>
           <div class="exp-body">
             <p class="exp-title">The University of Texas at Austin</p>
-            <p class="exp-meta">Incoming · Austin, USA</p>
+            <p class="exp-meta">2026.08 – Present · Austin, USA</p>
             <p class="exp-desc">
-              Incoming Ph.D. in Computer Science, advised by
+              Ph.D. in Computer Science, advised by
               <a href="https://www.cs.utexas.edu/~huangqx/" target="_blank" rel="noopener">Prof. Qixing Huang</a> and
               <a href="https://geopavlakos.github.io/" target="_blank" rel="noopener">Prof. Georgios Pavlakos</a>
             </p>
@@ -976,7 +1008,7 @@
           <div class="exp-logo"><img src="images/alaya.png" alt="Alaya Lab"></div>
           <div class="exp-body">
             <p class="exp-title">Alaya Lab, Shanda AI</p>
-            <p class="exp-meta">2026.04 – Present · Shanghai, China</p>
+            <p class="exp-meta">2026.04 – 2026.08 · Shanghai, China</p>
             <p class="exp-desc">
               Research Intern at <a href="https://alaya-lab.github.io/AlayaLab/" target="_blank" rel="noopener">Alaya Lab</a> with <a href="https://kpzhang93.github.io/" target="_blank" rel="noopener">Dr. Kaipeng Zhang</a> ·
               <span class="focus">Dynamics Representation Learning &amp; Fully-Controllable Video Generation</span>
