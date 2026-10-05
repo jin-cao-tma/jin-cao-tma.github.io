@@ -2017,9 +2017,10 @@
       /* --- night, second scene: a summer fireworks festival (花火大会) ---
          Each night picks one of the two scenes at random. This one runs a programme, the way
          Nagaoka and Katakai do, opening big so nobody has to wait: the 四尺玉 first, every star
-         of it bursting again into a flower of its own; then dedicated single shells (奉納煙火,
-         now and then a 白菊 among them), a wide golden starmine in waves, and a Niagara curtain
-         pouring into the river with shells going up over it — then round again, 四尺玉 first. Each burst is a perfect sphere with concentric
+         of it bursting again into a flower of its own, and straight after it a wide golden
+         starmine in waves; then dedicated single shells (奉納煙火, now and then a 白菊 among
+         them), and a Niagara curtain pouring into the river with shells going up over it —
+         then round again, 四尺玉 first. Each burst is a perfect sphere with concentric
          cores (芯), its stars changing colour as they burn (変化星). Below, the river and the
          festival on its far bank: stalls (屋台), a string of lanterns, people strolling.
          (A firework's burning pellets are called 星 — stars — too.) ?night=hanabi or
@@ -2112,7 +2113,23 @@
         const placeX = (lo, hi) => { let x, n = 0; do { x = R(lo, hi); } while (Math.abs(x - lastX) < 0.2 && ++n < 20); lastX = x; return x; };
         // 四尺玉 opens every round: a short climb, a breath of stillness, then the sky fills
         P.push({ at, shell: { type: 'kamuro', big: true, x: placeX(0.36, 0.64), y: R(0.32, 0.42), R: R(0.42, 0.48), c0: 'gold', core: 'silver', rise: 165, hold: 24 } });
-        at += 165 + 24 + 360;                                    // the next thread climbs while its curtain is still falling
+        at += 165 + 24 + 360;                                    // the starmine starts while its curtain is still falling
+        // スターマイン: a wide golden starmine in waves, quickening and filling, then one great wave
+        const beat = 24, waves = 22;
+        for (let k = 0; k < waves; k++) {
+          const strength = k / (waves - 1), n = 2 + Math.round(strength * 5), side = Math.floor(Math.random() * 3);
+          for (let j = 0; j < n; j++) {
+            const span = side === 0 ? [0.08, 0.92] : side === 1 ? [0.06, 0.55] : [0.45, 0.94];
+            const x = span[0] + (n === 1 ? 0.5 : j / (n - 1)) * (span[1] - span[0]) + R(-0.035, 0.035);
+            const accent = k > waves * 0.6 && Math.random() < 0.3 ? pick(['crimson', 'silver', 'celadon']) : 'gold';
+            P.push({ at: at + k * beat * (1 - strength * 0.35) + j * R(1, 5), shell: { type: 'mine', x, y: R(0.16, 0.42), R: 0.07 + strength * 0.05 + R(0, 0.025), c0: accent, rise: R(80, 110), hold: 4 } });
+          }
+        }
+        at += waves * beat * 0.82;
+        for (let j = 0; j < 9; j++) {                            // the great last wave
+          P.push({ at: at + j * R(1, 4), shell: { type: 'kamuro', x: 0.1 + j * 0.1 + R(-0.03, 0.03), y: R(0.13, 0.28), R: R(0.11, 0.15), c0: 'gold', rise: R(90, 104), hold: 4 } });
+        }
+        at += 100 + 300;                                         // the sky clears a little before the single shells
         // 奉納煙火: dedicated single shells, each given its moment — four drawn from the pool each round,
         // now and then with a second close behind
         const pool = [
@@ -2130,22 +2147,6 @@
           at += R(240, 300);
         });
         at += 120;
-        // スターマイン: a wide golden starmine in waves, quickening and filling, then one great wave
-        const beat = 24, waves = 22;
-        for (let k = 0; k < waves; k++) {
-          const strength = k / (waves - 1), n = 2 + Math.round(strength * 5), side = Math.floor(Math.random() * 3);
-          for (let j = 0; j < n; j++) {
-            const span = side === 0 ? [0.08, 0.92] : side === 1 ? [0.06, 0.55] : [0.45, 0.94];
-            const x = span[0] + (n === 1 ? 0.5 : j / (n - 1)) * (span[1] - span[0]) + R(-0.035, 0.035);
-            const accent = k > waves * 0.6 && Math.random() < 0.3 ? pick(['crimson', 'silver', 'celadon']) : 'gold';
-            P.push({ at: at + k * beat * (1 - strength * 0.35) + j * R(1, 5), shell: { type: 'mine', x, y: R(0.16, 0.42), R: 0.07 + strength * 0.05 + R(0, 0.025), c0: accent, rise: R(80, 110), hold: 4 } });
-          }
-        }
-        at += waves * beat * 0.82;
-        for (let j = 0; j < 9; j++) {                            // the great last wave
-          P.push({ at: at + j * R(1, 4), shell: { type: 'kamuro', x: 0.1 + j * 0.1 + R(-0.03, 0.03), y: R(0.13, 0.28), R: R(0.11, 0.15), c0: 'gold', rise: R(90, 104), hold: 4 } });
-        }
-        at += 100 + 360;
         // ナイアガラ: fire runs along a line and pours gold into the river — and shells keep going up over it,
         // gold curtains in the sky answering the one on the water
         P.push({ at, niagara: { dur: 720 } });
