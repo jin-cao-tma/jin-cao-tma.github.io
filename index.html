@@ -1554,6 +1554,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         seedSky();
         seedSea();
+        if (trail) { fitTrail(); seedBank(); if (niagara) niagara.sheet = null; }
       }
 
       let t = 0;
@@ -1566,6 +1567,7 @@
       function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
       function startTransition(kind) {
         if (reduceMotion) return;
+        if (kind === 'stars') pickNight();
         trans = { kind: kind, start: t };
         if (kind === 'dive') {
           diveStreaks = [];
@@ -2005,9 +2007,787 @@
         }
       }
 
+      /* --- night, second scene: a summer fireworks festival (花火大会) ---
+         Each night picks one of the two scenes at random. This one runs a programme, the way
+         Nagaoka and Katakai do, opening big so nobody has to wait: the 四尺玉 first, every star
+         of it bursting again into a flower of its own; then dedicated single shells (奉納煙火,
+         now and then a 白菊 among them), a wide golden starmine in waves, and a Niagara curtain
+         pouring into the river with shells going up over it — then round again, 四尺玉 first. Each burst is a perfect sphere with concentric
+         cores (芯), its stars changing colour as they burn (変化星). Below, the river and the
+         festival on its far bank: stalls (屋台), a string of lanterns, people strolling.
+         (A firework's burning pellets are called 星 — stars — too.) ?night=hanabi or
+         ?night=stars pins the scene. */
+      const forcedNight = { hanabi: 'hanabi', stars: 'stars' }[new URLSearchParams(location.search).get('night')] || null;
+      let nightScene = 'stars';
+      let trail = null, tctx = null;           // persistence buffer: old light fades, new light adds
+      let shells = [], sparks = [], embers = [], smoke = [], lights = [];
+      let flash = 0, flashX = 0, flashY = 0, flashR = 0;
+      let glowSprite = null, smokeSprite = null, bloom = null, bctx = null, fadeTile = null, fadePattern = null;
+      let cues = [], cueAt = 0, showStart = 0, niagara = null, reading = 0;
+      let ht = 0, hAcc = 0, hLast = 0;          // the show's own clock: 60 steps a second on any display
+      let bank = null, stalls = [], strollers = [], steam = [], ropes = [];
+      const rand = (a, b) => a + Math.random() * (b - a);
+
+      // 和火 gold and silver, with a few quiet accents; [white-hot, burning, dying]
+      const HANABI = {
+        gold: ['#fff4d6', '#ffd27a', '#ffa43f'],
+        silver: ['#ffffff', '#f4f1ea', '#cfc8b8'],
+        white: ['#ffffff', '#fbfaf6', '#e6e2d8'],
+        crimson: ['#fff0e6', '#ff8170', '#e8506a'],
+        wisteria: ['#f6f0ff', '#c9b8ff', '#9d86f0'],
+        celadon: ['#f0fff6', '#aef0cd', '#6fcf9f'],
+      };
+      // how each kind of shell burns: drag, gravity, life in frames, line width, embers shed while falling
+      const KIND = {
+        kiku:   { drag: 0.97,  g: 0.012, L: [200, 240], lw: 1.5, embers: 0 },     // chrysanthemum: long petals
+        shiragiku: { drag: 0.972, g: 0.01, L: [260, 300], lw: 1.4, embers: 0 },   // white chrysanthemum, slow to fade
+        botan:  { drag: 0.967, g: 0.011, L: [140, 170], lw: 2.2, embers: 0 },     // peony: round, no tails
+        yanagi: { drag: 0.976, g: 0.02,  L: [330, 390], lw: 1.3, embers: 0.05 },  // willow: gold, drooping
+        kamuro: { drag: 0.975, g: 0.018, L: [380, 460], lw: 1.6, embers: 0.05 },  // crown: a golden curtain
+        senrin: { drag: 0.965, g: 0.012, L: [70, 85],   lw: 1.4, embers: 0 },     // a thousand rings
+        mine:   { drag: 0.958, g: 0.014, L: [90, 120],  lw: 1.3, embers: 0 },     // starmine stars: quick and bright
+      };
+
+      function pickNight() {
+        nightScene = forcedNight || (Math.random() < 0.5 ? 'hanabi' : 'stars');
+        const whisper = document.querySelector('.whisper');
+        if (whisper) whisper.style.display = nightScene === 'hanabi' ? 'none' : '';   // its line is for the starry sky
+        if (nightScene === 'hanabi') startHanabi();
+      }
+
+      function hanabiSprites() {
+        const mk = (stops) => {
+          const c = document.createElement('canvas');
+          c.width = c.height = 128;
+          const g = c.getContext('2d');
+          const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+          stops.forEach(([o, col]) => rg.addColorStop(o, col));
+          g.fillStyle = rg;
+          g.fillRect(0, 0, 128, 128);
+          return c;
+        };
+        glowSprite = mk([[0, 'rgba(255, 236, 190, 1)'], [0.25, 'rgba(255, 210, 140, 0.45)'], [1, 'rgba(255, 190, 110, 0)']]);
+        smokeSprite = mk([[0, 'rgba(210, 196, 170, 0.55)'], [0.6, 'rgba(190, 176, 150, 0.2)'], [1, 'rgba(190, 176, 150, 0)']]);
+      }
+
+      function fitTrail() {
+        if (!trail) { trail = document.createElement('canvas'); tctx = trail.getContext('2d'); }
+        trail.width = Math.round(w * dpr); trail.height = Math.round(h * dpr);
+        tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (!fadeTile) {
+          fadeTile = document.createElement('canvas');
+          fadeTile.width = fadeTile.height = 128;
+          const g = fadeTile.getContext('2d'), img = g.createImageData(128, 128);
+          for (let i = 3; i < img.data.length; i += 4) img.data[i] = Math.random() < 0.1 ? 77 : 5;
+          g.putImageData(img, 0, 0);
+        }
+        fadePattern = tctx.createPattern(fadeTile, 'repeat');
+      }
+
+      function startHanabi() {
+        if (!glowSprite) hanabiSprites();
+        fitTrail();
+        shells = []; sparks = []; embers = []; smoke = []; lights = []; niagara = null;
+        hAcc = 0; hLast = 0;
+        seedBank();
+        buildProgramme(true);
+      }
+
+      /* ---- the programme (番付) ---- */
+      // times are frames from the start of the programme; x, y are fractions of the viewport,
+      // R a fraction of its shorter side
+      function buildProgramme(first) {
+        const P = [];
+        const R = (a, b) => a + Math.random() * (b - a);
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+        const shuffle = arr => { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+        let at = first ? 30 : 60, lastX = 0.5;
+        const placeX = (lo, hi) => { let x, n = 0; do { x = R(lo, hi); } while (Math.abs(x - lastX) < 0.2 && ++n < 20); lastX = x; return x; };
+        // 四尺玉 opens every round: a short climb, a breath of stillness, then the sky fills
+        P.push({ at, shell: { type: 'kamuro', big: true, x: placeX(0.36, 0.64), y: R(0.32, 0.42), R: R(0.42, 0.48), c0: 'gold', core: 'silver', rise: 165, hold: 24 } });
+        at += 165 + 24 + 360;                                    // the next thread climbs while its curtain is still falling
+        // 奉納煙火: dedicated single shells, each given its moment — four drawn from the pool each round,
+        // now and then with a second close behind
+        const pool = [
+          () => ({ type: 'kiku', R: R(0.19, 0.23), c0: 'gold', c1: pick(['crimson', 'celadon', 'wisteria']), core: 'silver' }),   // 八重芯変化菊
+          () => ({ type: 'kiku', R: R(0.18, 0.22), c0: 'silver', c1: 'gold', core: pick(['crimson', 'celadon']) }),
+          () => ({ type: 'botan', R: R(0.15, 0.19), c0: pick(['wisteria', 'crimson', 'celadon', 'silver']) }),
+          () => ({ type: 'senrin', R: R(0.13, 0.17), c0: pick(['silver', 'gold']) }),
+          () => ({ type: 'yanagi', R: R(0.18, 0.22), c0: 'gold' }),
+          () => ({ type: 'kamuro', R: R(0.17, 0.2), c0: 'gold' }),
+          () => ({ type: 'shiragiku', R: R(0.17, 0.21), c0: 'white', core: 'white' }),                                          // 白菊
+        ];
+        shuffle(pool).slice(0, 4).forEach(g => {
+          P.push({ at, shell: Object.assign({ x: placeX(0.16, 0.84), y: R(0.14, 0.3), rise: R(200, 240), hold: R(12, 18) }, g()) });
+          if (Math.random() < 0.25) P.push({ at: at + R(30, 50), shell: Object.assign({ x: placeX(0.16, 0.84), y: R(0.14, 0.3), rise: R(200, 240), hold: R(12, 18) }, pick(pool)()) });
+          at += R(240, 300);
+        });
+        at += 120;
+        // スターマイン: a wide golden starmine in waves, quickening and filling, then one great wave
+        const beat = 24, waves = 22;
+        for (let k = 0; k < waves; k++) {
+          const strength = k / (waves - 1), n = 2 + Math.round(strength * 5), side = Math.floor(Math.random() * 3);
+          for (let j = 0; j < n; j++) {
+            const span = side === 0 ? [0.08, 0.92] : side === 1 ? [0.06, 0.55] : [0.45, 0.94];
+            const x = span[0] + (n === 1 ? 0.5 : j / (n - 1)) * (span[1] - span[0]) + R(-0.035, 0.035);
+            const accent = k > waves * 0.6 && Math.random() < 0.3 ? pick(['crimson', 'silver', 'celadon']) : 'gold';
+            P.push({ at: at + k * beat * (1 - strength * 0.35) + j * R(1, 5), shell: { type: 'mine', x, y: R(0.16, 0.42), R: 0.07 + strength * 0.05 + R(0, 0.025), c0: accent, rise: R(80, 110), hold: 4 } });
+          }
+        }
+        at += waves * beat * 0.82;
+        for (let j = 0; j < 9; j++) {                            // the great last wave
+          P.push({ at: at + j * R(1, 4), shell: { type: 'kamuro', x: 0.1 + j * 0.1 + R(-0.03, 0.03), y: R(0.13, 0.28), R: R(0.11, 0.15), c0: 'gold', rise: R(90, 104), hold: 4 } });
+        }
+        at += 100 + 360;
+        // ナイアガラ: fire runs along a line and pours gold into the river — and shells keep going up over it,
+        // gold curtains in the sky answering the one on the water
+        P.push({ at, niagara: { dur: 720 } });
+        [[50, 'kamuro'], [70, 'kamuro'], [220, 'yanagi'], [240, 'kiku'], [380, 'kamuro'], [395, 'kamuro'], [410, 'kamuro']].forEach(([dt, type]) => {
+          P.push({ at: at + dt + R(0, 20), shell: { type, x: placeX(0.12, 0.88), y: R(0.12, 0.3), R: R(0.13, 0.18),
+                    c0: type === 'kiku' ? pick(['gold', 'silver']) : 'gold', core: type === 'kiku' ? 'silver' : null, rise: R(200, 240), hold: R(12, 18) } });
+        });
+        at += 720 + 240;                                         // the smoke drifts off, and round again
+        P.push({ at, again: true });
+        cues = P.sort((a, b) => a.at - b.at);
+        cueAt = 0;
+        showStart = ht;
+      }
+
+      function runProgramme() {
+        while (cueAt < cues.length && ht - showStart >= cues[cueAt].at) {
+          const c = cues[cueAt++];
+          if (c.shell) launch(c.shell);
+          if (c.niagara) niagara = { start: ht, dur: c.niagara.dur };
+          if (c.again) { buildProgramme(false); return; }
+        }
+      }
+
+      function launch(o) {
+        const S = Math.min(w, h);
+        const bx = w * o.x * (0.98 + Math.random() * 0.04), by = h * o.y * (0.97 + Math.random() * 0.06);
+        shells.push({
+          type: o.type, big: !!o.big, bx, by,
+          x0: bx + (Math.random() - 0.5) * w * 0.04, y0: h * 0.9,
+          at: ht, rise: o.rise, hold: o.hold,
+          R: o.R * S * (0.94 + Math.random() * 0.12) * (w < 760 ? 1.15 : 1),
+          c0: o.c0, c1: o.c1 || null, core: o.core || null,
+          wob: Math.random() * TAU,
+        });
+      }
+
+      function addSpark(s) { if (sparks.length < 7000) sparks.push(s); }
+
+      function explode(sh) {
+        const K = KIND[sh.type];
+        const scale = Math.max(0.55, Math.min(w, h) / 900);
+        const n = Math.round((sh.big ? 720 : sh.type === 'mine' ? 70 : 150 + sh.R * 0.45) * scale);
+        const layers = [[1, sh.c0, sh.c1, n, sh.big ? 0.8 : 0.95]];
+        if (sh.core) layers.push([0.56, sh.core, null, Math.round(n * 0.26), 0.55], [0.28, sh.c0, null, Math.round(n * 0.1), 0.5]);
+        for (const [frac, c0, c1, m, bright] of layers) {
+          const v0 = sh.R * frac * (1 - K.drag);
+          for (let i = 0; i < m; i++) {
+            // a direction on a sphere, seen side-on: a shell bursts as a perfect ball, brightest at its rim
+            const u = Math.random() * 2 - 1, th = Math.random() * TAU, rr = Math.sqrt(1 - u * u);
+            const sp = v0 * (0.96 + Math.random() * 0.08);
+            addSpark({
+              x: sh.bx, y: sh.by, vx: rr * Math.cos(th) * sp, vy: rr * Math.sin(th) * sp,
+              age: 0, L: K.L[0] + Math.random() * (K.L[1] - K.L[0]), drag: K.drag, g: K.g,
+              lw: K.lw * (sh.big ? 1.25 : 1), c0: HANABI[c0], c1: c1 ? HANABI[c1] : null,
+              embers: K.embers, ph: Math.random() * TAU, bright,
+              seed: sh.type === 'senrin' && frac === 1 && Math.random() < 0.1,
+              child: sh.big && frac === 1 && Math.random() < (w < 760 ? 70 : 120) / m ? {
+                at: 88 + Math.random() * 34, R: Math.min(w, h) * (0.05 + Math.random() * 0.03),
+                c: Math.random() < 0.72 ? 'gold' : Math.random() < 0.55 ? 'silver' : ['crimson', 'celadon', 'wisteria'][Math.floor(Math.random() * 3)],
+              } : null,
+            });
+          }
+        }
+        if (sh.type !== 'mine' || Math.random() < 0.3) { flash = Math.max(flash, sh.type === 'mine' ? 0.4 : 1); flashX = sh.bx; flashY = sh.by; flashR = sh.R; }
+        lights.push({ x: sh.bx, R: sh.R, c: HANABI[sh.c0][1], age: 0, L: K.L[1] });
+        const puffs = sh.big ? 7 : sh.type === 'mine' ? (Math.random() < 0.4 ? 1 : 0) : 3;
+        for (let i = 0; i < puffs; i++) {
+          smoke.push({
+            x: sh.bx + (Math.random() - 0.5) * sh.R * 0.8, y: sh.by + (Math.random() - 0.4) * sh.R * 0.7,
+            r: sh.R * (0.45 + Math.random() * 0.4), age: 0, L: 900 + Math.random() * 500, vx: 0.08 + Math.random() * 0.1,
+          });
+        }
+      }
+
+      // 子玉: a star of the 四尺玉 bursting again into its own small chrysanthemum
+      function childBurst(s) {
+        const c = HANABI[s.child.c], r = s.child.R, n = 26 + Math.floor(Math.random() * 10);
+        for (let i = 0; i < n; i++) {
+          const u = Math.random() * 2 - 1, th = Math.random() * TAU, rr = Math.sqrt(1 - u * u), sp = r * (1 - 0.96) * (0.94 + Math.random() * 0.12);
+          addSpark({ x: s.x, y: s.y, vx: rr * Math.cos(th) * sp + s.vx * 0.3, vy: rr * Math.sin(th) * sp + s.vy * 0.3, age: 0, L: 230 + Math.random() * 70,
+                     drag: 0.96, g: 0.016, lw: 1.25, c0: c, c1: null, embers: 0.035, ph: Math.random() * TAU, seed: false, bright: 0.85 });
+        }
+        if (!s.child.flashed) { flash = Math.max(flash, 0.55); }
+      }
+
+      // 千輪: some stars of the shell burst again into little rings
+      function miniBurst(s) {
+        const r = Math.min(w, h) * 0.045, c = Math.random() < 0.5 ? HANABI.silver : HANABI.gold;
+        for (let i = 0; i < 14; i++) {
+          const th = (i / 14) * TAU, sp = r * (1 - 0.95);
+          addSpark({ x: s.x, y: s.y, vx: Math.cos(th) * sp, vy: Math.sin(th) * sp, age: 0, L: 75 + Math.random() * 25,
+                     drag: 0.95, g: 0.01, lw: 1.2, c0: c, c1: null, embers: 0, ph: Math.random() * TAU, seed: false });
+        }
+      }
+
+      function sparkColor(s, f) {
+        if (f < 0.06) return s.c0[0];                               // white-hot at the burst
+        if (s.c1 && f > 0.5) return f < 0.82 ? s.c1[1] : s.c1[2];   // then it turns
+        return f < 0.7 ? s.c0[1] : s.c0[2];                         // and dies down to an ember
+      }
+
+      /* ---- the far bank: stalls, a string of lanterns, people strolling ---- */
+      const STALLS = [
+        { sign: 'たこ焼', roof: ['#9c4034', '#cfc2aa'], steam: true },
+        { sign: '焼そば', roof: ['#34507e', '#cfc2aa'], steam: true },
+        { sign: '金魚すくい', roof: ['#9c4034', '#cfc2aa'], fish: true },
+        { sign: 'かき氷', roof: ['#34507e', '#cfc2aa'], flag: true },
+        { sign: 'わたあめ', roof: ['#a86278', '#cfc2aa'], cotton: true },
+        { sign: 'りんご飴', roof: ['#9c4034', '#cfc2aa'], apples: true },
+        { sign: 'ヨーヨー', roof: ['#3c7058', '#cfc2aa'], yoyo: true },
+      ];
+
+      function bankLine() { return h * (w < 760 ? 0.955 : 0.95); }    // the waterline at the foot of the bank
+
+      function seedBank() {
+        const hy = bankLine(), small = w < 760;
+        const sh = Math.round(h * (small ? 0.03 : 0.034));             // stall height
+        stalls = [];
+        let x = rand(0, sh * 2), last = -1, run = 0, inRun = 2 + Math.floor(Math.random() * 3);
+        while (x < w - 30) {
+          let k;
+          do { k = Math.floor(Math.random() * STALLS.length); } while (k === last);
+          last = k;
+          const wd = Math.round(sh * rand(1.2, 1.9));
+          stalls.push(Object.assign({ x: x + wd / 2, wd, ht: sh * rand(0.92, 1.08), ph: Math.random() * TAU }, STALLS[k]));
+          x += wd + rand(sh * 0.25, sh * 0.6);
+          if (++run >= inRun) { x += rand(sh * 2, sh * (small ? 4 : 6)); run = 0; inRun = 2 + Math.floor(Math.random() * 3); }
+        }
+        // the stalls are drawn once into a strip; only their light and life move
+        const top = hy - sh * 2.6;
+        bank = { top, hy, canvas: document.createElement('canvas') };
+        bank.canvas.width = Math.round(w * dpr); bank.canvas.height = Math.round((hy - top + 2) * dpr);
+        const g = bank.canvas.getContext('2d');
+        g.setTransform(dpr, 0, 0, dpr, 0, -top * dpr);
+        g.fillStyle = '#0b0906';                                     // the embankment
+        g.fillRect(0, hy - sh * 0.18, w, sh * 0.18 + 2);
+        for (const s of stalls) drawStall(g, s, hy - sh * 0.18);
+        // lantern ropes between poles above the stalls, sagging a little
+        ropes = [];
+        const poles = Math.max(3, Math.round(w / (small ? 160 : 260)));
+        for (let i = 0; i < poles; i++) {
+          const x0 = (i / poles) * w - 20, x1 = ((i + 1) / poles) * w + 20, y = hy - sh * 2.15;
+          const n = Math.round((x1 - x0) / (small ? 22 : 26));
+          const lan = [];
+          for (let j = 1; j < n; j++) lan.push({ f: j / n, red: (i + j) % 3 !== 0, ph: Math.random() * TAU });
+          ropes.push({ x0, x1, y, sag: sh * 0.35, lan });
+        }
+        // people strolling along the bank
+        strollers = [];
+        const nP = small ? 5 : Math.round(w / 140);
+        for (let i = 0; i < nP; i++) {
+          const kid = Math.random() < 0.2;
+          strollers.push({
+            x: Math.random() * w, v: (Math.random() < 0.5 ? -1 : 1) * rand(0.12, 0.3), ht: sh * (kid ? 0.42 : 0.6) * rand(0.92, 1.08),
+            ph: Math.random() * TAU, fan: Math.random() < 0.35, bag: !kid && Math.random() < 0.25, kidBag: kid && Math.random() < 0.5,
+          });
+        }
+        steam = [];
+      }
+
+      function drawStall(g, s, ground) {
+        const x0 = s.x - s.wd / 2, x1 = s.x + s.wd / 2, top = ground - s.ht, rh = s.ht * 0.26;
+        // light inside, spilling out under the awning
+        const inside = g.createLinearGradient(0, top + rh, 0, ground);
+        inside.addColorStop(0, '#e8b878'); inside.addColorStop(1, '#c97a3c');
+        g.fillStyle = inside;
+        g.fillRect(x0 + 2, top + rh, s.wd - 4, s.ht - rh);
+        // the stallholder, in a headband, at work
+        g.fillStyle = '#1a120b';
+        const vx = s.x + s.wd * 0.12, vy = top + rh + s.ht * 0.2;
+        g.beginPath(); g.arc(vx, vy, s.ht * 0.09, 0, TAU); g.fill();
+        g.fillRect(vx - s.ht * 0.12, vy + s.ht * 0.08, s.ht * 0.24, s.ht * 0.3);
+        g.fillStyle = '#f3ece0';
+        g.fillRect(vx - s.ht * 0.09, vy - s.ht * 0.04, s.ht * 0.18, s.ht * 0.025);
+        // the counter, dark wood with a lit edge
+        g.fillStyle = '#20160e';
+        g.fillRect(x0, ground - s.ht * 0.36, s.wd, s.ht * 0.36);
+        g.fillStyle = 'rgba(255, 200, 130, 0.55)';
+        g.fillRect(x0, ground - s.ht * 0.36, s.wd, 1);
+        if (s.apples) {
+          g.fillStyle = '#d63a3a';
+          for (let i = 0; i < 6; i++) { g.beginPath(); g.arc(x0 + s.wd * (0.2 + i * 0.12), ground - s.ht * 0.42, s.ht * 0.05, 0, TAU); g.fill(); }
+        }
+        if (s.cotton) {
+          ['#f6c7d8', '#c9dcf6', '#f6e7b8'].forEach((c, i) => { g.fillStyle = c; g.beginPath(); g.ellipse(x0 + s.wd * (0.55 + i * 0.13), top + rh + s.ht * 0.2, s.ht * 0.06, s.ht * 0.09, 0, 0, TAU); g.fill(); });
+        }
+        // the striped awning
+        const aw0 = x0 - 3, aw1 = x1 + 3, stripes = Math.max(4, Math.round(s.wd / 7));
+        for (let i = 0; i < stripes; i++) {
+          g.fillStyle = s.roof[i % 2];
+          const a = aw0 + (aw1 - aw0) * i / stripes, b = aw0 + (aw1 - aw0) * (i + 1) / stripes;
+          g.beginPath();
+          g.moveTo(a + 2, top); g.lineTo(b + 2, top); g.lineTo(b, top + rh); g.lineTo(a, top + rh);
+          g.closePath(); g.fill();
+        }
+        g.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        g.fillRect(aw0, top + rh - 1.5, aw1 - aw0, 1.5);
+        // the sign above the awning
+        const fs = Math.max(7, Math.round(s.ht * 0.2));
+        g.font = '600 ' + fs + 'px "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif';
+        const tw = g.measureText(s.sign).width;
+        g.fillStyle = '#c9bca3';
+        g.fillRect(s.x - tw / 2 - 3, top - fs - 4, tw + 6, fs + 4);
+        g.fillStyle = '#2a1a10';
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillText(s.sign, s.x, top - fs / 2 - 2);
+        // poles
+        g.fillStyle = '#140e08';
+        g.fillRect(x0 - 2, top, 2, s.ht);
+        g.fillRect(x1, top, 2, s.ht);
+        if (s.flag) {                                                // the 氷 flag
+          const fx = x1 + 6, fy = top - s.ht * 0.35, fw = s.ht * 0.5, fh = s.ht * 0.62;
+          g.fillStyle = '#140e08'; g.fillRect(fx - 1.5, fy, 1.5, ground - fy);
+          g.fillStyle = '#f7f4ee'; g.fillRect(fx, fy, fw, fh);
+          g.strokeStyle = '#2f6fc0'; g.lineWidth = 1;
+          for (let j = 0; j < 2; j++) {
+            g.beginPath();
+            for (let xx = 0; xx <= fw; xx += 2) g.lineTo(fx + xx, fy + fh - 3 - j * 3 + Math.sin(xx * 0.9) * 1.2);
+            g.stroke();
+          }
+          g.fillStyle = '#d33a3a';
+          g.font = '700 ' + Math.round(fh * 0.5) + 'px "Hiragino Mincho ProN", "Yu Mincho", serif';
+          g.fillText('氷', fx + fw / 2, fy + fh * 0.4);
+        }
+        if (s.fish || s.yoyo) {                                      // the tub in front
+          g.fillStyle = s.fish ? '#7ec8e8' : '#9fd6c8';
+          g.fillRect(x0 + s.wd * 0.12, ground - s.ht * 0.3, s.wd * 0.76, s.ht * 0.14);
+        }
+      }
+
+      function drawBank(glow) {
+        const hy = bankLine(), sh = stalls.length ? stalls[0].ht : 0, ground = hy - sh * 0.18;
+        // warm light pooling on the ground in front of each stall
+        ctx.globalCompositeOperation = 'lighter';
+        for (const s of stalls) {
+          ctx.globalAlpha = 0.16 * (0.9 + 0.1 * Math.sin(ht * 0.05 + s.ph));
+          ctx.drawImage(glowSprite, s.x - s.wd, ground - s.ht * 0.9, s.wd * 2, s.ht * 1.6);
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 0.72 * (0.7 + 0.3 * glow);
+        ctx.drawImage(bank.canvas, 0, bank.top, w, bank.canvas.height / dpr);
+        ctx.globalAlpha = 1;
+        // goldfish and water balloons bobbing in their tubs, steam off the griddles
+        for (const s of stalls) {
+          if (s.fish) {
+            ctx.fillStyle = '#ff7a2f';
+            for (let i = 0; i < 5; i++) {
+              const a = ht * 0.02 * (1 + i * 0.2) + i * 1.3 + s.ph;
+              ctx.beginPath();
+              ctx.ellipse(s.x + Math.cos(a) * s.wd * 0.28, ground - s.ht * 0.23 + Math.sin(a * 1.3) * s.ht * 0.03, s.ht * 0.035, s.ht * 0.02, a, 0, TAU);
+              ctx.fill();
+            }
+          }
+          if (s.yoyo) {
+            ['#ff8fb0', '#ffd25c', '#7fc9ff', '#b4f0a0'].forEach((c, i) => {
+              ctx.fillStyle = c;
+              ctx.beginPath();
+              ctx.arc(s.x - s.wd * 0.25 + i * s.wd * 0.17, ground - s.ht * 0.24 + Math.sin(ht * 0.04 + i) * 1, s.ht * 0.05, 0, TAU);
+              ctx.fill();
+            });
+          }
+        }
+        for (const p of steam) {
+          ctx.globalAlpha = 0.16 * Math.sin(Math.PI * p.age / p.L);
+          ctx.drawImage(smokeSprite, p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+        }
+        ctx.globalAlpha = 1;
+        // the lantern strings, swaying
+        for (const r of ropes) {
+          ctx.strokeStyle = 'rgba(20, 14, 8, 0.9)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for (let i = 0; i <= 20; i++) {
+            const f = i / 20;
+            const x = r.x0 + (r.x1 - r.x0) * f, y = r.y + Math.sin(Math.PI * f) * r.sag;
+            i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+          }
+          ctx.stroke();
+          for (const l of r.lan) {
+            const x = r.x0 + (r.x1 - r.x0) * l.f, y = r.y + Math.sin(Math.PI * l.f) * r.sag;
+            const sway = Math.sin(ht * 0.03 + l.ph) * 0.12, lw = sh * 0.16, lh = sh * 0.22;
+            const cx = x + Math.sin(sway) * lh * 0.6, cy = y + lh * 0.7;
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = 0.35;
+            ctx.drawImage(glowSprite, cx - lw * 2.5, cy - lw * 2.5, lw * 5, lw * 5);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = l.red ? '#e0503c' : '#f6ead6';
+            ctx.beginPath(); ctx.ellipse(cx, cy, lw * 0.5, lh * 0.5, sway, 0, TAU); ctx.fill();
+            ctx.fillStyle = 'rgba(255, 230, 170, 0.55)';
+            ctx.beginPath(); ctx.ellipse(cx, cy, lw * 0.28, lh * 0.36, sway, 0, TAU); ctx.fill();
+          }
+        }
+        // people strolling past the stalls, fans and goldfish bags in hand
+        for (const p of strollers) {
+          const bob = Math.abs(Math.sin(ht * 0.09 + p.ph)) * p.ht * 0.04, base = ground - bob, hd = p.ht * 0.13;
+          ctx.fillStyle = '#0d0a06';
+          ctx.beginPath(); ctx.arc(p.x, base - p.ht + hd, hd, 0, TAU); ctx.fill();
+          ctx.beginPath();                                           // a yukata, narrowing to the hem
+          ctx.moveTo(p.x - p.ht * 0.13, base - p.ht + hd * 2.1);
+          ctx.lineTo(p.x + p.ht * 0.13, base - p.ht + hd * 2.1);
+          ctx.lineTo(p.x + p.ht * 0.1, base);
+          ctx.lineTo(p.x - p.ht * 0.1, base);
+          ctx.closePath(); ctx.fill();
+          if (p.fan) {
+            const fx = p.x + Math.sign(p.v) * p.ht * 0.2, fy = base - p.ht * 0.62 + Math.sin(ht * 0.12 + p.ph) * 1.2;
+            ctx.beginPath(); ctx.arc(fx, fy, p.ht * 0.09, 0, TAU); ctx.fill();
+          }
+          if (p.bag || p.kidBag) {
+            const bx = p.x - Math.sign(p.v) * p.ht * 0.18, by = base - p.ht * 0.38;
+            ctx.fillStyle = 'rgba(170, 220, 255, 0.45)';
+            ctx.beginPath(); ctx.arc(bx, by, p.ht * 0.08, 0, TAU); ctx.fill();
+            ctx.fillStyle = '#ff7a2f';
+            ctx.beginPath(); ctx.arc(bx, by + 0.5, p.ht * 0.03, 0, TAU); ctx.fill();
+          }
+        }
+      }
+
+      function stepBank() {
+        const ground = bankLine() - (stalls.length ? stalls[0].ht : 0) * 0.18;
+        for (const s of stalls) {
+          if (s.steam && Math.random() < 0.05) steam.push({ x: s.x + rand(-s.wd * 0.2, s.wd * 0.2), y: ground - s.ht * 0.7, r: s.ht * 0.12, age: 0, L: 140 + Math.random() * 60 });
+        }
+        for (let i = steam.length - 1; i >= 0; i--) {
+          const p = steam[i];
+          p.age++; p.y -= 0.22; p.x += 0.06; p.r += 0.05;
+          if (p.age > p.L) { steam[i] = steam[steam.length - 1]; steam.pop(); }
+        }
+        for (const p of strollers) {
+          p.x += p.v;
+          if (p.x < -20) p.x = w + 20;
+          if (p.x > w + 20) p.x = -20;
+        }
+      }
+
+      /* ---- drawing the night of fireworks ---- */
+      function drawHanabi() {
+        const now = performance.now(), STEP = 1000 / 60;
+        hAcc = Math.min(hAcc + (hLast ? now - hLast : STEP), STEP * 4);   // after a stall, don't race to catch up
+        hLast = now;
+        while (hAcc >= STEP) { hAcc -= STEP; stepHanabi(); }
+        renderHanabi();
+      }
+
+      function renderHanabi() {
+        const glow = 0.88 - 0.3 * reading;
+        // the night sky: the same twinkling stars, a little dimmer under the smoke
+        for (const s of stars) {
+          ctx.fillStyle = s.gold ? GOLD : WARM_WHITE;
+          ctx.globalAlpha = s.a * 0.5 * (0.55 + 0.45 * Math.sin(ht * 0.02 * s.tw + s.ph));
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, TAU);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        drawSkyLight(glow);
+      }
+
+      // one 60 Hz step of the show: the programme, every star and ember moved and drawn into the trail buffer
+      function stepHanabi() {
+        runProgramme();
+        // dim the whole show by a third once the reader scrolls past the top of the page
+        reading += (Math.min(1, Math.max(0, (window.scrollY - h * 0.3) / (h * 0.7))) - reading) * 0.05;
+
+        // the trail buffer: let the old light fade a little, then add this step's on top
+        tctx.globalCompositeOperation = 'destination-out';
+        if (fadePattern.setTransform) fadePattern.setTransform(new DOMMatrix([1, 0, 0, 1, Math.random() * 128, Math.random() * 128]));
+        tctx.fillStyle = fadePattern;
+        tctx.fillRect(0, 0, w, h);
+        tctx.globalCompositeOperation = 'lighter';
+        tctx.lineCap = 'butt';
+
+        // rising shells (昇り曲導): a wavering thread of light that slows toward the top, a beat of
+        // stillness at the peak, then the burst
+        for (let i = shells.length - 1; i >= 0; i--) {
+          const sh = shells[i];
+          const q = (ht - sh.at) / sh.rise;
+          if (q <= 1) {
+            const e = 1 - Math.pow(1 - q, 2.2);
+            const x = sh.x0 + (sh.bx - sh.x0) * e + Math.sin(q * 9 + sh.wob) * 2.5 * (1 - q);
+            const y = sh.y0 + (sh.by - sh.y0) * e;
+            tctx.fillStyle = '#ffe9b8';
+            tctx.globalAlpha = (sh.type === 'mine' ? 0.6 : 0.9) * (1 - q * 0.5);
+            tctx.beginPath();
+            tctx.arc(x, y, sh.big ? 2.4 : sh.type === 'mine' ? 1.2 : 1.6, 0, TAU);
+            tctx.fill();
+            if (sh.type !== 'mine' && embers.length < (w < 760 ? 3500 : 7000) && Math.random() < 0.22) embers.push({ x: x + (Math.random() - 0.5) * 2, y, vy: 0.15 + Math.random() * 0.2, age: 0, L: 14 + Math.random() * 14 });
+            if (sh.big && q < 0.85 && Math.random() < 0.16) {      // 昇り小花: little flowers on the way up
+              for (let j = 0; j < 6; j++) {
+                const th = Math.random() * TAU, sp = 1 + Math.random() * 1.2;
+                addSpark({ x, y, vx: Math.cos(th) * sp, vy: Math.sin(th) * sp, age: 0, L: 26 + Math.random() * 12,
+                           drag: 0.92, g: 0.02, lw: 1, c0: HANABI.gold, c1: null, embers: 0, ph: 0, seed: false });
+              }
+            }
+          } else if (ht - sh.at >= sh.rise + sh.hold) {
+            explode(sh);
+            shells[i] = shells[shells.length - 1]; shells.pop();
+          }
+        }
+
+        // ナイアガラ: fire runs out along a line under a bridge from the middle; gold pours off it into the
+        // river as a fine falling mist of sparks, and smoke rolls up off the burning line
+        if (niagara) {
+          const q = (ht - niagara.start) / niagara.dur;
+          if (q >= 1) niagara = null;
+          else {
+            const hy = bankLine(), H = h * (w < 760 ? 0.06 : 0.075), y0 = hy - H;
+            const open = Math.min(1, q * 4), fade = q > 0.88 ? (1 - q) / 0.12 : Math.min(1, q * 10);
+            const half = w * 0.43 * open;
+            Object.assign(niagara, { half, fade, y0, hy, H, open });
+            if (!niagara.sheet) seedNiagara(niagara);
+            if (Math.random() < 0.3 * fade) {                            // smoke rolling up off the burning line, lit from below
+              smoke.push({ x: w / 2 + (Math.random() * 2 - 1) * half, y: y0 - 4, r: h * (0.03 + Math.random() * 0.025), age: 0, L: 300 + Math.random() * 220, vx: 0.07, rise: 0.2, lit: true });
+            }
+          }
+        }
+        // the stars of every burst: they fly out, slow, droop, turn colour and flicker out
+        const batch = new Map();
+        const into = (color, a, lw) => {
+          const q = Math.round(a * 8);
+          if (q <= 0) return null;
+          const key = color + q + lw;
+          let b = batch.get(key);
+          if (!b) { b = { color, a: q / 8, lw, path: new Path2D() }; batch.set(key, b); }
+          return b.path;
+        };
+        for (let i = sparks.length - 1; i >= 0; i--) {
+          const s = sparks[i];
+          const px = s.x, py = s.y;
+          s.vx *= s.drag;
+          s.vy = s.vy * s.drag + s.g;
+          s.x += s.vx; s.y += s.vy; s.age++;
+          const f = s.age / s.L;
+          if (f >= 1) { sparks[i] = sparks[sparks.length - 1]; sparks.pop(); continue; }
+          let a = (s.bright || 1) * (f < 0.7 ? 1 : 1 - (f - 0.7) / 0.3);
+          if (f > 0.45) a *= 0.6 + 0.4 * Math.sin(ht * 0.8 + s.ph);    // the last of it flickers
+          const path = into(sparkColor(s, f), a, f < 0.1 ? s.lw * 1.4 : s.lw);
+          if (path) { path.moveTo(px, py); path.lineTo(s.x, s.y); }
+          if (s.embers && f > 0.2 && embers.length < (w < 760 ? 3500 : 7000) && Math.random() < s.embers) {
+            embers.push({ x: s.x, y: s.y, vy: 0.18 + Math.random() * 0.32, age: 0, L: 60 + Math.random() * 40, c: s.c0 === HANABI.silver || s.c0 === HANABI.white ? '#e9e3d6' : '#ffb85c' });
+          }
+          if (s.seed && s.age === 60) miniBurst(s);
+          if (s.child && s.age >= s.child.at) { childBurst(s); s.child = null; s.age = s.L; }
+        }
+        for (const b of batch.values()) {
+          tctx.strokeStyle = b.color; tctx.globalAlpha = b.a; tctx.lineWidth = b.lw;
+          tctx.stroke(b.path);
+        }
+        // the golden curtain: embers shed by willow and crown stars, hanging and slowly falling
+        batch.clear();
+        for (let i = embers.length - 1; i >= 0; i--) {
+          const e = embers[i];
+          e.y += e.vy; e.age++;
+          if (e.age >= e.L) { embers[i] = embers[embers.length - 1]; embers.pop(); continue; }
+          const path = into(e.c || '#ffb85c', 0.7 * (1 - e.age / e.L), 0);
+          if (path) path.rect(e.x - 0.6, e.y - 0.6, 1.2, 1.2);
+        }
+        for (const b of batch.values()) {
+          tctx.fillStyle = b.color; tctx.globalAlpha = b.a;
+          tctx.fill(b.path);
+        }
+        tctx.globalAlpha = 1;
+        tctx.globalCompositeOperation = 'source-over';
+
+        for (let i = smoke.length - 1; i >= 0; i--) {
+          const sm = smoke[i];
+          sm.age++; sm.x += sm.vx; sm.y -= sm.rise || 0.03; sm.r += 0.05;
+          if (sm.age > sm.L) { smoke[i] = smoke[smoke.length - 1]; smoke.pop(); }
+        }
+        flash *= 0.88;
+        for (let i = lights.length - 1; i >= 0; i--) {
+          if (++lights[i].age > lights[i].L) { lights[i] = lights[lights.length - 1]; lights.pop(); }
+        }
+        stepBank();
+        ht++;
+      }
+
+      function drawSkyLight(glow) {
+        // smoke left hanging after each burst, drifting off on the breeze, lit up by the next one
+        for (const sm of smoke) {
+          ctx.globalAlpha = (sm.lit ? 0.14 : 0.09) * glow * Math.min(1, sm.age / 40) * (1 - sm.age / sm.L) * (1 + flash * 2.5);
+          ctx.drawImage(smokeSprite, sm.x - sm.r, sm.y - sm.r, sm.r * 2, sm.r * 2);
+        }
+        // a burst lights up the sky for a moment
+        if (flash > 0.01) {
+          ctx.globalAlpha = 0.38 * flash * glow;
+          ctx.drawImage(glowSprite, flashX - flashR * 1.5, flashY - flashR * 1.5, flashR * 3, flashR * 3);
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = 'rgba(255, 210, 150, ' + 0.035 * flash * glow + ')';
+          ctx.fillRect(0, 0, w, h);
+        }
+        ctx.globalAlpha = 1;
+
+        if (niagara && niagara.sheet) drawNiagara(glow);
+        drawBank(glow);
+        ctx.globalCompositeOperation = 'lighter';
+        if (!bloom) { bloom = document.createElement('canvas'); bctx = bloom.getContext('2d'); }
+        const bw = Math.max(1, Math.round(w / 8)), bh = Math.max(1, Math.round(h / 8));
+        if (bloom.width !== bw || bloom.height !== bh) { bloom.width = bw; bloom.height = bh; }
+        bctx.clearRect(0, 0, bw, bh);
+        bctx.drawImage(trail, 0, 0, bw, bh);                         // a small copy, blown back up: a cheap glow
+        ctx.globalAlpha = 0.5 * glow;
+        ctx.drawImage(bloom, 0, 0, w, h);
+        ctx.globalAlpha = glow;
+        ctx.drawImage(trail, 0, 0, w, h);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+        drawRiver(glow);
+      }
+
+      // the Niagara's parts, made once when it is lit: a soft sheet of light, streams of sparks in a few dash
+      // rhythms (each stream starting at its own phase so the dashes never line up), and the colour ramp
+      function seedNiagara(N) {
+        const SW = Math.max(2, Math.round(w * 0.86)), SH = Math.max(2, Math.round(N.H));
+        N.sheet = document.createElement('canvas');
+        N.sheet.width = SW; N.sheet.height = SH;
+        const g = N.sheet.getContext('2d');
+        const vg = g.createLinearGradient(0, 0, 0, SH);
+        vg.addColorStop(0, 'rgba(255, 246, 220, 0.95)');
+        vg.addColorStop(0.3, 'rgba(255, 214, 140, 0.55)');
+        vg.addColorStop(1, 'rgba(255, 160, 70, 0)');
+        g.fillStyle = vg; g.fillRect(0, 0, SW, SH);
+        g.globalCompositeOperation = 'destination-in';             // soft ends
+        const hg = g.createLinearGradient(0, 0, SW, 0);
+        hg.addColorStop(0, 'rgba(0, 0, 0, 0)'); hg.addColorStop(0.03, 'rgba(0, 0, 0, 1)');
+        hg.addColorStop(0.97, 'rgba(0, 0, 0, 1)'); hg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        g.fillStyle = hg; g.fillRect(0, 0, SW, SH);
+        N.grad = ctx.createLinearGradient(0, N.y0, 0, N.hy);
+        N.grad.addColorStop(0, 'rgba(255, 250, 234, 1)');
+        N.grad.addColorStop(0.3, 'rgba(255, 224, 160, 0.95)');
+        N.grad.addColorStop(0.75, 'rgba(255, 180, 92, 0.6)');
+        N.grad.addColorStop(1, 'rgba(255, 150, 60, 0)');
+        N.rhythms = [[2, 5, 0.8], [3, 7, 1], [2, 9, 1.2], [4, 6, 0.9], [3, 4, 1.1], [5, 10, 1.3]].map(([d, g2, v]) => ({ dash: [d, g2], v, path: new Path2D(), ph: Math.random() * TAU }));
+        N.bright = { dash: [1.5, 22], v: 1.6, path: new Path2D() };
+        for (let x = w * 0.07; x <= w * 0.93; x += 2.2) {
+          const r = N.rhythms[Math.floor(Math.random() * N.rhythms.length)];
+          const shift = Math.random() * (r.dash[0] + r.dash[1]), x0 = x + rand(-0.6, 0.6), y1 = N.y0 + N.H * rand(0.8, 1);
+          r.path.moveTo(x0, N.y0 - shift); r.path.lineTo(x0, y1);
+          if (Math.random() < 0.35) { N.bright.path.moveTo(x0, N.y0 - Math.random() * 23); N.bright.path.lineTo(x0, y1 - N.H * 0.2); }
+        }
+        N.devices = [];
+        for (let x = w * 0.07; x <= w * 0.93; x += 11) N.devices.push({ x, ph: Math.random() * TAU });
+      }
+
+      // ナイアガラ, drawn: from each device a faint glowing strand with brighter sparks flowing down it,
+      // the whole cascade wrapped in its own glow, mist where it meets the river, the burning line on top
+      function drawNiagara(glow) {
+        const N = niagara, a = N.fade * glow, y0 = N.y0, H = N.H, half = N.half, cx = w / 2;
+        ctx.globalAlpha = 0.5 * a;                                   // the bridge deck, lit from beneath
+        ctx.fillStyle = '#0b0906';
+        ctx.fillRect(0, y0 - 5, w, 3);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.2 * a;                                   // the veil of light the cascade gives off
+        ctx.drawImage(glowSprite, cx - half - 60, y0 - H * 1.3, half * 2 + 120, H * 3.4);
+        ctx.save();
+        ctx.beginPath(); ctx.rect(cx - half, y0 - 2, half * 2, H + 4); ctx.clip();   // the fire has burnt this far out
+        ctx.globalAlpha = 0.42 * a;                                  // the sheet of light
+        ctx.drawImage(N.sheet, cx - N.sheet.width / 2, y0, N.sheet.width, H);
+        ctx.strokeStyle = N.grad;                                    // dense streams of sparks, flowing down
+        ctx.lineWidth = 0.9;
+        for (const r of N.rhythms) {
+          ctx.setLineDash(r.dash);
+          ctx.lineDashOffset = -ht * r.v;
+          ctx.globalAlpha = a * (0.42 + 0.18 * Math.sin(ht * 0.07 + r.ph));
+          ctx.stroke(r.path);
+        }
+        ctx.setLineDash(N.bright.dash);                               // and brighter sparks among them
+        ctx.lineDashOffset = -ht * N.bright.v;
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#fff6dc';
+        ctx.globalAlpha = 0.7 * a;
+        ctx.stroke(N.bright.path);
+        ctx.setLineDash([]);
+        ctx.restore();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.26 * a;                                  // mist where it meets the river
+        ctx.drawImage(glowSprite, cx - half, N.hy - H * 0.45, half * 2, H * 0.8);
+        ctx.fillStyle = '#fff3d2';                                   // the burning line, a row of white-hot points
+        ctx.globalAlpha = (0.75 + 0.25 * Math.sin(ht * 0.6)) * a;
+        ctx.fillRect(cx - half, y0 - 0.7, half * 2, 1.4);
+        for (const d of N.devices) {
+          if (Math.abs(d.x - cx) > half) continue;
+          ctx.globalAlpha = a * (0.5 + 0.5 * Math.sin(ht * 0.3 + d.ph * 3));
+          ctx.fillRect(d.x - 1, y0 - 1, 2, 2);
+        }
+        if (N.open < 1) {                                            // the two fronts, running outward
+          ctx.globalAlpha = a;
+          for (const fx of [cx - half, cx + half]) ctx.drawImage(glowSprite, fx - 18, y0 - 18, 36, 36);
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
+      }
+
+      // the river: the far bank's lights and the fireworks shimmering on the water in broken streaks
+      function drawRiver(glow) {
+        const hy = bankLine(), rh = h - hy;
+        ctx.globalAlpha = 1;
+        const water = ctx.createLinearGradient(0, hy, 0, h);
+        water.addColorStop(0, 'rgba(6, 5, 2, 0.5)');
+        water.addColorStop(1, 'rgba(3, 2, 1, 0.75)');
+        ctx.fillStyle = water;
+        ctx.fillRect(0, hy, w, rh);
+        ctx.fillStyle = 'rgba(255, 222, 160, 0.08)';
+        ctx.fillRect(0, hy, w, 1);
+
+        ctx.globalCompositeOperation = 'lighter';
+        const rows = 9;
+        for (const L of lights) {
+          const I = Math.pow(1 - L.age / L.L, 1.5);
+          ctx.fillStyle = L.c;
+          const spread = Math.min(L.R * 0.35, 90);
+          for (let j = 0; j < rows; j++) {
+            const y = hy + (j + 0.6) * rh / rows;
+            ctx.globalAlpha = I * 0.32 * glow * (1 - j / (rows + 2));
+            for (let d = 0; d < 4; d++) {                            // a few short dashes, trembling
+              const ox = Math.sin(ht * 0.07 + j * 2.3 + d * 1.9 + L.x * 0.01) * spread * (0.4 + j * 0.06);
+              const wd = 4 + 10 * (0.5 + 0.5 * Math.sin(ht * 0.11 + j + d * 2.7));
+              ctx.fillRect(L.x + ox - wd / 2, y, wd, 1.3);
+            }
+          }
+        }
+        // the Niagara, flipped in the water and broken up by ripples
+        if (niagara && niagara.sheet) {
+          const N = niagara, SW = N.sheet.width, SH = N.sheet.height, rows = Math.max(6, Math.round(rh / 3));
+          ctx.save();
+          ctx.beginPath(); ctx.rect(w / 2 - N.half, hy, N.half * 2, rh); ctx.clip();
+          for (let j = 0; j < rows; j++) {
+            const f = j / rows, sy = Math.min(SH - 1, Math.floor(f * SH * 0.9));
+            ctx.globalAlpha = 0.32 * N.fade * glow * (1 - f) * (0.65 + 0.35 * Math.sin(ht * 0.11 + j * 1.3));
+            ctx.drawImage(N.sheet, 0, sy, SW, 1, w / 2 - SW / 2 + Math.sin(ht * 0.05 + j * 0.8) * 4, hy + 1 + j * 3, SW, 2);
+          }
+          ctx.restore();
+        }
+        // the stalls' own light, trembling on the water
+        for (const s of stalls) {
+          ctx.fillStyle = '#ffb35c';
+          for (let j = 0; j < 4; j++) {
+            ctx.globalAlpha = 0.12 * (1 - j / 4) * (0.85 + 0.15 * Math.sin(ht * 0.06 + s.ph + j));
+            const wd = s.wd * (0.35 + j * 0.06) * (0.7 + 0.3 * Math.sin(ht * 0.07 + j * 1.9 + s.ph));
+            ctx.fillRect(s.x - wd / 2 + Math.sin(ht * 0.05 + j + s.ph) * 2, hy + 2 + j * (rh / 5), wd, 1.2);
+          }
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
+      }
+
       function frame() {
         ctx.clearRect(0, 0, w, h);
-        if (document.documentElement.getAttribute('data-theme') === 'dark') drawNight();
+        if (document.documentElement.getAttribute('data-theme') === 'dark') nightScene === 'hanabi' ? drawHanabi() : drawNight();
         else drawDay();
         t++;
         if (!reduceMotion) requestAnimationFrame(frame);
