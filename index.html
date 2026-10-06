@@ -62,21 +62,21 @@
     }
   </script>
 
-  <!-- set the season before first paint, to avoid a flash. The switch goes round them in order, from summer:
-       summer (the fireworks, by night), autumn (maples, by day), winter (snow, by night), spring (cherry blossom, by day) -->
+  <!-- set the season before first paint, to avoid a flash. The switch goes round them in order, from spring:
+       spring (cherry blossom, by day), summer (the fireworks, by night), autumn (maples, by day), winter (snow, by night) -->
   <script>
     (function () {
-      var root = document.documentElement, ORDER = ['summer', 'autumn', 'winter', 'spring'];
+      var root = document.documentElement, ORDER = ['spring', 'summer', 'autumn', 'winter'];
       var SCENE = { summer: 'hanabi', autumn: 'momiji', winter: 'yuki', spring: 'sakura' };
       var SEASON = { hanabi: 'summer', momiji: 'autumn', yuki: 'winter', sakura: 'spring' };
-      var still = false, season = 'summer';
+      var still = false, season = 'spring';
       try {
         still = matchMedia('(prefers-reduced-motion: reduce)').matches;
         var p = new URLSearchParams(location.search), q = p.get('season'), t = p.get('theme');
         if (ORDER.indexOf(q) >= 0) season = q;                     // ?season=, or ?night= / ?day= / ?theme=, says where to start
         else if (SEASON[p.get('night')] && t !== 'light') season = SEASON[p.get('night')];
         else if (SEASON[p.get('day')] && t !== 'dark') season = SEASON[p.get('day')];
-        else if (t === 'light') season = 'autumn';
+        else if (t === 'dark') season = 'summer';
       } catch (e) {}
       // a season sets the theme and its own scene, and the scene the switch will bring next (which its icon shows)
       window.setSeason = function (s) {
@@ -1094,11 +1094,11 @@
   <script>
     /* ---------- Theme: the four seasons, in turn ---------- */
     (function () {
-      const root = document.documentElement, ORDER = ['summer', 'autumn', 'winter', 'spring'];
+      const root = document.documentElement, ORDER = ['spring', 'summer', 'autumn', 'winter'];
       const toggle = document.getElementById('theme-toggle');
       const discovered = localStorage.getItem('themeDiscovered') === '1';
 
-      // each click brings the next season (see setSeason in <head>): summer, autumn, winter, spring, and round again
+      // each click brings the next season (see setSeason in <head>): spring, summer, autumn, winter, and round again
       toggle.addEventListener('click', () => {
         window.setSeason(ORDER[(ORDER.indexOf(root.getAttribute('data-season')) + 1) % ORDER.length]);
         toggle.classList.remove('nudge');
@@ -1160,7 +1160,7 @@
       }
 
       /* --- night, summer: a fireworks festival (花火大会) ---
-         Summer, in the round of the seasons the switch goes through (summer, autumn, winter, spring). This one runs a programme, the way
+         Summer, in the round of the seasons the switch goes through (spring, summer, autumn, winter). This one runs a programme, the way
          Nagaoka and Katakai do: a moment of small shells, then the 四尺玉 straight away, every star
          of it bursting again into a flower of its own, and straight after it a wide golden
          starmine in waves; then dedicated single shells (奉納煙火, now and then a 白菊 among
