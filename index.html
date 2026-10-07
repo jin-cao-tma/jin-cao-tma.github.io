@@ -78,6 +78,13 @@
         else if (SEASON[p.get('day')] && t !== 'dark') season = SEASON[p.get('day')];
         else if (t === 'dark') season = 'summer';
       } catch (e) {}
+      // the tab's icon follows the season (🌸 🎆 🍁 ❄️); its <link>s come after this script, so the Theme script sets it
+      // again once they are there
+      window.seasonIcon = function (s) {
+        var a = document.querySelector('link[rel="icon"][type="image/svg+xml"]'), b = document.querySelector('link[rel="icon"][type="image/png"]');
+        if (a) a.href = '/favicon-' + s + '.svg';
+        if (b) b.href = '/favicon-' + s + '-32.png';
+      };
       // a season sets the theme and its own scene, and the scene the switch will bring next (which its icon shows)
       window.setSeason = function (s) {
         var next = ORDER[(ORDER.indexOf(s) + 1) % ORDER.length], night = s === 'summer' || s === 'winter';
@@ -86,6 +93,7 @@
         root.setAttribute(night ? 'data-night' : 'data-day', scene(s));
         root.setAttribute(night ? 'data-day' : 'data-night', scene(next));
         root.setAttribute('data-theme', night ? 'dark' : 'light');
+        window.seasonIcon(s);
       };
       window.setSeason(season);
     })();
@@ -1120,6 +1128,7 @@
       const root = document.documentElement, ORDER = ['spring', 'summer', 'autumn', 'winter'];
       const toggle = document.getElementById('theme-toggle');
       const discovered = localStorage.getItem('themeDiscovered') === '1';
+      if (window.seasonIcon) window.seasonIcon(root.getAttribute('data-season'));   // the tab's icon, now its <link>s are here
 
       // each click brings the next season (see setSeason in <head>): spring, summer, autumn, winter, and round again
       toggle.addEventListener('click', () => {
