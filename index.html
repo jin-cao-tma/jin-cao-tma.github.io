@@ -550,31 +550,6 @@
     .statement b { font-weight: 600; }
     .statement .lead { color: var(--accent); font-weight: 600; }
 
-    .about .availability {
-      margin-top: 18px;
-      font-size: 14.5px;
-      line-height: 1.6;
-      display: flex;
-      gap: 10px;
-      align-items: baseline;
-    }
-    .availability .dot {
-      flex: none;
-      width: 9px; height: 9px;
-      margin-top: 5px;
-      border-radius: 50%;
-      background: #2ecc71;
-      box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.6);
-      animation: pulse-dot 2.4s ease-out infinite;
-    }
-    .availability a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
-    @keyframes pulse-dot {
-      0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.55); }
-      70% { box-shadow: 0 0 0 7px rgba(46, 204, 113, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
-    }
-    @media (prefers-reduced-motion: reduce) { .availability .dot { animation: none; } }
-
     /* News */
     /* the news sits on a frosted card, like the About text: the sky shows through, but never cuts across it */
     .news {
@@ -883,10 +858,6 @@
           Toward this goal, I focus on learning <b>world representations</b> from multi-modal data and building <b>generative models</b> on top of them.
           Recently, I have been interested in <b>long-context generative world modeling</b>, <b>physically-grounded generation</b>, and <b>controllable generation</b> in support of this goal.
         </div>
-        <p class="availability">
-          <span class="dot" aria-hidden="true"></span>
-          <span>I'm actively looking for <b>long-term industry collaborations and internships</b>. If you have relevant opportunities or resources, I'd love to connect &mdash; <a href="mailto:xjincaox@gmail.com">xjincaox@gmail.com</a>.</span>
-        </p>
       </div>
     </section>
 
