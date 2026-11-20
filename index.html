@@ -1112,7 +1112,7 @@
       }
     })();
 
-    /* ---------- Sky canvas: Kyoto in spring or autumn by day; a fireworks festival or a snowy night in Hokkaido by night ---------- */
+    /* ---------- Sky canvas: cherry trees by a railway in spring and Arashiyama in autumn by day; a fireworks festival or a snowy night in Hokkaido by night ---------- */
     (function () {
       const canvas = document.getElementById('world');
       const ctx = canvas.getContext('2d');
@@ -1959,17 +1959,19 @@
         ctx.globalAlpha = 1;
       }
 
-      /* --- day: a country railway under the cherry trees in spring (桜と踏切), Kyoto's red hills in autumn (京都の紅葉) ---
+      /* --- day: a country railway under the cherry trees in spring (桜と踏切), Arashiyama and Togetsukyo in autumn (嵐山の紅葉) ---
          Spring and autumn are the bright half of the round the switch goes through (set up in <head>, which also
          sets the page's palette: html[data-day]; ?day=sakura or ?day=momiji starts the round there). With reduced
          motion the day is drawn as a single still frame. Both are built the same way: a blue sky with drifting
          cloud, the sun just beyond the top right, and below it a landscape painted once into a strip.
-         Spring: far hills still streaked with snow, a row of cherry trees in full bloom along a single-track
-         railway, and a field of rape blossom in front. Now and then the crossing's lamps start to blink, its arm
-         comes down, and a little train runs through, its wind pulling a flurry of petals after it (花吹雪).
-         Autumn: blue ridges fading into the distance, and a whole hillside turned (紅葉), crimson to gold with
-         dark cedars among it, the stage of Kiyomizu and its vermilion pagoda standing out of the trees. A pond
-         below mirrors it, pampas grass nods along the bank, red dragonflies hover, and wild geese cross the sky.
+         Spring, pink and hazy as in 5 Centimeters per Second: far hills still streaked with snow, cherry trees in
+         full bloom along a single-track railway, utility poles with their wires sagging across the sky, and a
+         field of rape blossom in front. Now and then the crossing's arm comes down and a little train runs
+         through, its wind pulling a flurry of petals after it (花吹雪). The light bleeds over every edge.
+         Autumn, after Arashiyama: the mountain across the river red with maples, dark pines among them, mist along
+         its foot, 渡月橋 long and low over the water with people crossing it and its name post on our bank, the
+         jade river mirroring it all, boats drifting by, red dragonflies, and now and then wild geese. Nothing in
+         either season twinkles or blinks on and off: the owner finds it distracting.
          Something falls all the while (散り際: petals, or leaves), a gust sweeps a flurry across every so often,
          and a bough reaches in from a top corner: a weeping cherry (枝垂れ桜), or a maple (伊呂波紅葉). */
       const DAY_SCENES = ['sakura', 'momiji'];
