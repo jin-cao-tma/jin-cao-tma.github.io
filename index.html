@@ -82,8 +82,8 @@
       // again once they are there
       window.seasonIcon = function (s) {
         var a = document.querySelector('link[rel="icon"][type="image/svg+xml"]'), b = document.querySelector('link[rel="icon"][type="image/png"]');
-        if (a) a.href = '/favicon-' + s + '.svg';
-        if (b) b.href = '/favicon-' + s + '-32.png';
+        if (a) a.href = 'favicon-' + s + '.svg';
+        if (b) b.href = 'favicon-' + s + '-32.png';
       };
       // a season sets the theme and its own scene, and the scene the switch will bring next (which its icon shows)
       window.setSeason = function (s) {
@@ -99,12 +99,14 @@
     })();
   </script>
 
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- a brush hand, for the three characters on the name post of Togetsukyo in the autumn scene (only those are fetched) -->
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Boku&text=%E6%B8%A1%E6%9C%88%E6%A9%8B&display=swap" rel="stylesheet">
 
   <style>
     /* Base palette, seen as-is only without JavaScript: by day it's overridden by spring or autumn in Kyoto, by night by the golden starry sky. */
@@ -142,8 +144,8 @@
       --ink: #3b2430;
       --muted: #7b5867;
       --faint: #b597a5;
-      --accent: #c92a62;
-      --accent-soft: rgba(201, 42, 98, 0.08);
+      --accent: #d6478a;
+      --accent-soft: rgba(214, 71, 138, 0.08);
       --chip-ink: #3b2430;
       --chip-text: #ffffff;
       --border: rgba(59, 36, 48, 0.15);
@@ -155,7 +157,7 @@
       --bg: #fcf5ed;
       --bg-soft: #f7e9da;
       --card: #ffffff;
-      --bg-image: linear-gradient(115deg, #fffaf3 0%, #fcefdf 28%, #f8ddc3 54%, #f2c39c 78%, #e8a573 100%);
+      --bg-image: linear-gradient(180deg, #5d9fe0 0%, #92c1ec 30%, #cde2f3 55%, #f7edd9 74%);
       --ink: #3a2619;
       --muted: #7a5b45;
       --faint: #b49a85;
@@ -753,7 +755,6 @@
     @media (max-width: 760px) {
       :root { --bg-image: linear-gradient(180deg, #bfeafc 0%, #eafaff 28%, #ffffff 58%); }
       html[data-theme="light"][data-day="sakura"] { --bg-image: linear-gradient(180deg, #fbdfe9 0%, #fff2f6 28%, #ffffff 58%); }
-      html[data-theme="light"][data-day="momiji"] { --bg-image: linear-gradient(180deg, #f8dcc0 0%, #fff4e8 28%, #ffffff 58%); }
       .hero { padding: 116px 20px 56px; }
       .hero-inner { flex-direction: column-reverse; gap: 34px; }
       .portrait { width: 180px; }
@@ -845,8 +846,7 @@
       </div>
       <div class="about">
         <p>
-          I'm Jin Cao, a Computer Science PhD student at <a href="https://www.utexas.edu/" target="_blank" rel="noopener">UT Austin</a>,
-          advised by <a href="https://www.cs.utexas.edu/~huangqx/" target="_blank" rel="noopener">Prof. Qixing Huang</a> and <a href="https://geopavlakos.github.io/" target="_blank" rel="noopener">Prof. Georgios Pavlakos</a>.
+          I'm Jin Cao, a Computer Science PhD student at <a href="https://www.utexas.edu/" target="_blank" rel="noopener">UT Austin</a>.
           During my undergraduate, I was fortunate to collaborate with
           <a href="https://jiajunwu.com/" target="_blank" rel="noopener">Prof. Jiajun Wu</a> and <a href="https://kovenyu.com/" target="_blank" rel="noopener">Koven Yu</a> from <a href="https://svl.stanford.edu/" target="_blank" rel="noopener">Stanford</a>,
           <a href="https://pengsida.net/" target="_blank" rel="noopener">Prof. Sida Peng</a> and <a href="https://xzhou.me/" target="_blank" rel="noopener">Prof. Xiaowei Zhou</a> from <a href="https://xzhou.me/group" target="_blank" rel="noopener">ZJU3DV</a>, <a href="https://www.zju.edu.cn/english/" target="_blank" rel="noopener">Zhejiang University</a>,
@@ -998,11 +998,7 @@
           <div class="exp-body">
             <p class="exp-title">The University of Texas at Austin</p>
             <p class="exp-meta">2026.08 – Present · Austin, USA</p>
-            <p class="exp-desc">
-              Ph.D. in Computer Science, advised by
-              <a href="https://www.cs.utexas.edu/~huangqx/" target="_blank" rel="noopener">Prof. Qixing Huang</a> and
-              <a href="https://geopavlakos.github.io/" target="_blank" rel="noopener">Prof. Georgios Pavlakos</a>
-            </p>
+            <p class="exp-desc">Ph.D. in Computer Science</p>
           </div>
         </div>
 
@@ -1963,44 +1959,50 @@
         ctx.globalAlpha = 1;
       }
 
-      /* --- day: spring or autumn in Kyoto (京都の春・秋) ---
-         Spring brings cherry blossom (桜) and autumn the maples (紅葉), in the round of the seasons
-         the switch goes through (set up in <head>, which also sets the page's palette:
-         html[data-day]; ?day=sakura or ?day=momiji starts the round there). With reduced motion the day is drawn as a single still frame. Both
-         scenes are built the same way. Something falls (散り際: petals, or leaves), and every so often a gust sweeps a
-         flurry of it across (花吹雪 / 秋風). A tree reaches in from a top corner: a weeping cherry
-         (枝垂れ桜), or a maple (伊呂波紅葉) lit from behind by the sun. Far below, the hills of
-         Higashiyama fade into the haze with a temple among them, and what falls into the canal
-         gathers and floats away (花筏 / 紅葉流し). */
+      /* --- day: a country railway under the cherry trees in spring (桜と踏切), Kyoto's red hills in autumn (京都の紅葉) ---
+         Spring and autumn are the bright half of the round the switch goes through (set up in <head>, which also
+         sets the page's palette: html[data-day]; ?day=sakura or ?day=momiji starts the round there). With reduced
+         motion the day is drawn as a single still frame. Both are built the same way: a blue sky with drifting
+         cloud, the sun just beyond the top right, and below it a landscape painted once into a strip.
+         Spring: far hills still streaked with snow, a row of cherry trees in full bloom along a single-track
+         railway, and a field of rape blossom in front. Now and then the crossing's lamps start to blink, its arm
+         comes down, and a little train runs through, its wind pulling a flurry of petals after it (花吹雪).
+         Autumn: blue ridges fading into the distance, and a whole hillside turned (紅葉), crimson to gold with
+         dark cedars among it, the stage of Kiyomizu and its vermilion pagoda standing out of the trees. A pond
+         below mirrors it, pampas grass nods along the bank, red dragonflies hover, and wild geese cross the sky.
+         Something falls all the while (散り際: petals, or leaves), a gust sweeps a flurry across every so often,
+         and a bough reaches in from a top corner: a weeping cherry (枝垂れ桜), or a maple (伊呂波紅葉). */
       const DAY_SCENES = ['sakura', 'momiji'];
+      const DAY_MUTE = { sakura: 0.1, momiji: 0.06 };                // how far each day's colours are drawn toward grey (autumn is
+                                                                       // quiet in its own palette instead, so that its reds can stay red)
       let dayScene = 'sakura', kSeason = 'sakura';
       let kt = 0, kAcc = 0, kLast = 0, kReading = 0, kGust = 0, kGustAt = null, kNextGust = 0, kStart = 0;   // the scene's own clock: 60 steps a second
-      let kFall = [], kRafts = [], kWaves = [], kLimbs = [], kTwigs = [], kLimbBlooms = [], kCanopy = [], kLeaves = [], kRays = [];
-      let kSkyline = null, kSkyTop = 0, kWaterY = 0, kHaze = null, kSprites = null;
+      let kFall = [], kRafts = [], kLimbs = [], kTwigs = [], kLimbBlooms = [], kCanopy = [], kLeaves = [], kRays = [];
+      let kSprites = null, kSky = null, kClouds = [], kLand = null, kLandTop = 0, kSkyTop = 0, kWaterY = 0, kTrackY = 0;
+      let kRefl = null, kFlutter = [], kShade = [], kReeds = [], kFliers = [], kHill = null, kFloatY = 0;
+      let kBridge = null, kDeckAt = null, kWalkers = [], kBoats = [], kNextBoat = 0, kStone = null;
+      let kSkein = null, kNextSkein = 0, kTrain = null, kNextTrain = 0, kXing = null, kPoles = [], kWires = [], kGlowA = null, kGlowB = null;
       const SAKURA_TIP = ['#fdf0f4', '#fbdfe8', '#f8cad9', '#f3afc5'];    // petals, near-white to deeper pink
       const SAKURA_BASE = ['#f5cfdc', '#f2bccd', '#eda2b9', '#e4849f'];   // each a little deeper where it joined the flower
       const SHIDARE = [['#f8d6e2', '#ec9db9'], ['#f5c3d5', '#e88cad'], ['#f1aec7', '#df789d']];   // weeping cherry: [petal, centre]
-      const MAPLE = [['#a3172b', '#dc4630'], ['#c42a1d', '#ec8231'], ['#d9561a', '#f3a83e'], ['#df951b', '#f6d15a'], ['#97872c', '#c4bf5c']];   // [tips, base]: crimson, scarlet, orange, gold, late green
-      const KYOTO = {
-        sakura: {
-          haze: ['rgba(255, 244, 248, 0.12)', 'rgba(255, 236, 244, 0.34)'], sun: '255, 249, 244',
-          far: ['rgba(226, 198, 216, 0.75)', 'rgba(246, 230, 238, 0.6)'], farDots: ['rgba(244, 188, 208, 0.45)', 'rgba(250, 214, 228, 0.4)'],
-          mid: ['rgba(208, 172, 197, 0.86)', 'rgba(238, 218, 230, 0.72)'], midDots: ['rgba(242, 178, 203, 0.6)', 'rgba(248, 208, 224, 0.55)'],
-          wash: '255, 244, 248', silhouette: 'rgba(156, 116, 142, 0.9)', silhouette2: 'rgba(170, 132, 158, 0.88)',
-          roofs: 'rgba(148, 114, 136, 0.9)', stone: ['rgba(178, 150, 168, 0.95)', 'rgba(150, 120, 140, 0.5)'],
-          crowns: ['rgba(245, 190, 210, 0.95)', 'rgba(249, 212, 226, 0.95)', 'rgba(238, 170, 196, 0.95)'], crownLight: 'rgba(255, 242, 247, 0.72)', trunks: 'rgba(128, 98, 116, 0.7)',
-          water: ['rgba(240, 230, 241, 0.95)', 'rgba(224, 210, 229, 0.95)'], reflect: 'rgba(240, 182, 205, 0.4)',
-        },
-        momiji: {
-          haze: ['rgba(255, 240, 222, 0.12)', 'rgba(255, 230, 204, 0.34)'], sun: '255, 238, 200',
-          far: ['rgba(214, 180, 160, 0.72)', 'rgba(242, 224, 208, 0.6)'], farDots: ['rgba(208, 96, 64, 0.42)', 'rgba(228, 150, 64, 0.42)', 'rgba(214, 178, 84, 0.38)', 'rgba(126, 134, 96, 0.32)'],
-          mid: ['rgba(186, 138, 114, 0.86)', 'rgba(234, 206, 186, 0.72)'], midDots: ['rgba(204, 70, 48, 0.62)', 'rgba(226, 128, 48, 0.6)', 'rgba(222, 176, 70, 0.55)', 'rgba(110, 120, 84, 0.5)'],
-          wash: '255, 238, 216', silhouette: 'rgba(126, 90, 74, 0.9)', silhouette2: 'rgba(196, 96, 66, 0.92)',
-          roofs: 'rgba(118, 92, 80, 0.9)', stone: ['rgba(152, 128, 112, 0.95)', 'rgba(120, 96, 82, 0.5)'],
-          crowns: ['rgba(196, 50, 40, 0.95)', 'rgba(222, 104, 38, 0.95)', 'rgba(232, 160, 48, 0.95)', 'rgba(150, 40, 46, 0.95)', 'rgba(118, 124, 80, 0.9)'], crownLight: 'rgba(255, 214, 150, 0.55)', trunks: 'rgba(94, 68, 58, 0.75)',
-          water: ['rgba(206, 222, 218, 0.95)', 'rgba(184, 204, 200, 0.95)'], reflect: 'rgba(210, 96, 60, 0.35)',
-        },
+      const MAPLE = [['#7c0c1e', '#b21e30'], ['#94101e', '#cc2a30'], ['#a8161c', '#dc4030'], ['#8e0e1c', '#d26a3a'], ['#a8301c', '#d98a4a']];   // [tips, heart]: 紅葉 is red: wine, crimson, scarlet, red round a warmer heart, and the odd one turning
+      const DAY = {
+        sakura: { sky: [[0, '#8dbbe6'], [0.38, '#b6d3ee'], [0.7, '#ecd9e6'], [1, '#fbe4ee']], sun: '255, 246, 248', cloudShade: 'rgba(196, 168, 206, 0.55)', haze: [248, 234, 242] },
+        momiji: { sky: [[0, '#86a9cb'], [0.4, '#aec3d8'], [0.74, '#d7dee6'], [1, '#efe9e2']], sun: '255, 246, 228', cloudShade: 'rgba(150, 160, 182, 0.45)', haze: [196, 192, 200] },
       };
+      // the hillside's colours, each [in shade, the leaf, in the sun, a glint]: crimson, scarlet, orange, amber, ginkgo yellow, still green
+      const TONES = [
+        ['#55101c', '#88162a', '#b0263c', '#d4505e'], ['#6a1018', '#a2182a', '#c92b38', '#e65b5e'], ['#7a1814', '#b8261f', '#da3f2c', '#ef6c52'],
+        ['#7e3418', '#b5522a', '#d07042', '#e8946a'], ['#7e6424', '#ad8c3c', '#c9a857', '#e0c682'], ['#3b4532', '#59644a', '#76805f', '#959c7c'],
+      ];
+      const YELLOWS = ['#f6d93a', '#fbe45a', '#f1c92a', '#fff07e'];       // rape blossom
+      const LIVERY = [['#e4583a', '#f7eed6'], ['#3f8fd8', '#f7f1e0'], ['#4a9c6c', '#f6ecd0'], ['#f0b429', '#fbf3dc']];   // the little train: [band, body]
+      const kHex = c => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
+      // a colour seen through f of the day's haze: distance pales things toward the sky
+      function kMix(c, f) { const a = kHex(c), b = DAY[kSeason].haze; return 'rgb(' + a.map((v, i) => Math.round(v + (b[i] - v) * f)).join(', ') + ')'; }
+      function kRound(g, x, y, W, H, r) {
+        g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + W, y, x + W, y + H, r); g.arcTo(x + W, y + H, x, y + H, r); g.arcTo(x, y + H, x, y, r); g.arcTo(x, y, x + W, y, r); g.closePath();
+      }
 
       // the day brings its season's scene, as <head> or the switch has set it
       function pickDay() {
@@ -2016,6 +2018,7 @@
         kAcc = 0; kLast = 0; kStart = kt;
         kGustAt = { at: kt + 12, dur: 240, str: 1 };                 // it opens on a gust
         kNextGust = kt + 12 + 240 + rand(600, 900);
+        kTrain = null; kNextTrain = kt + 200; kSkein = null; kNextSkein = kt + 420;   // the first train, the first geese, come soon
       }
 
       // a cherry petal: rounded, narrowing to its base, with the little notch at its tip; base at (0, 0), tip at (0, -L)
@@ -2029,21 +2032,25 @@
         g.closePath();
       }
 
-      // a maple leaf (伊呂波紅葉): seven toothed lobes spread like a hand, the middle one up; petiole joint at (0, 0)
-      const LOBES = [[-170, 0.6], [-130, 0.9], [-90, 1], [-50, 0.9], [-10, 0.6], [35, 0.3], [145, 0.3]];
+      // a leaf of the Japanese maple (伊呂波紅葉), not the broad maple of the West: seven slender lobes spread like a
+      // star, cut deep toward the middle, each widest a third of the way out and drawn into a long fine point, its
+      // edges finely and doubly toothed; the lowest pair small. Petiole joint at (0, 0)
+      const LOBES = [[-170, 0.72], [-130, 0.92], [-90, 1], [-50, 0.92], [-10, 0.72], [30, 0.38], [150, 0.38]];
       function leafPath(g, R) {
         g.beginPath();
         let first = true;
         for (const [deg, k] of LOBES) {
-          const a = deg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a), L = R * k, W = L * 0.27, sinus = R * (k > 0.5 ? 0.2 : 0.08);
+          const a = deg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a), L = R * k, W = L * 0.16, sinus = R * (k > 0.5 ? 0.1 : 0.06), N = 24;
           const edge = (f, side, i) => {
-            const r = sinus + (L - sinus) * f;
-            let wd = W * Math.pow(1 - f, 0.6) * (0.75 + 0.5 * Math.sin(Math.PI * f * 0.85));
-            if (i % 2 && f > 0.2 && f < 0.95) wd *= 1.16;             // the teeth
+            let r = sinus + (L - sinus) * f;
+            let wd = W * (f < 0.35 ? 0.4 + 0.6 * Math.sin(Math.PI / 2 * f / 0.35) : Math.pow(1 - (f - 0.35) / 0.65, 1.5));
+            if (f > 0.12 && f < 0.94) {                                // the teeth, pointing toward the tip, every fourth a bigger one
+              if (i % 2) { wd *= i % 4 === 1 ? 1.3 : 1.16; r += L * 0.015; } else wd *= 0.92;
+            }
             return [ca * r + side * sa * wd, sa * r - side * ca * wd];
           };
-          for (let i = 0; i <= 10; i++) { const [x, y] = edge(i / 10, 1, i); if (first) { g.moveTo(x, y); first = false; } else g.lineTo(x, y); }
-          for (let i = 10; i >= 0; i--) { const [x, y] = edge(i / 10, -1, i); g.lineTo(x, y); }
+          for (let i = 0; i <= N; i++) { const [x, y] = edge(i / N, 1, i); if (first) { g.moveTo(x, y); first = false; } else g.lineTo(x, y); }
+          for (let i = N; i >= 0; i--) { const [x, y] = edge(i / N, -1, i); g.lineTo(x, y); }
         }
         g.closePath();
       }
@@ -2095,10 +2102,10 @@
           const gr = g.createRadialGradient(0, 0, 0, 0, 0, s * 0.42);
           gr.addColorStop(0, base); gr.addColorStop(1, tip);
           g.fillStyle = gr; g.fill();
-          g.strokeStyle = 'rgba(255, 228, 186, 0.35)'; g.lineWidth = s * 0.012;   // veins
+          g.strokeStyle = 'rgba(255, 214, 170, 0.32)'; g.lineWidth = s * 0.01;    // veins
           for (const [deg, k] of LOBES) { const a = deg * Math.PI / 180; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * s * 0.4 * k * 0.85, Math.sin(a) * s * 0.4 * k * 0.85); g.stroke(); }
-          g.strokeStyle = tip; g.lineWidth = s * 0.022;                 // petiole
-          g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(s * 0.02, s * 0.12, s * 0.05, s * 0.22); g.stroke();
+          g.strokeStyle = tip; g.lineWidth = s * 0.016;                 // petiole, long and fine
+          g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(s * 0.02, s * 0.14, s * 0.06, s * 0.3); g.stroke();
         }));
         kSprites = {
           sakura: { fall: petals, far: petals.map(p => soft(p, 1.4)), near: petals.map(p => soft(p, 3)), blooms, bud, canopy },
@@ -2124,7 +2131,7 @@
 
       function seedKyoto() {
         const small = w < 760, sc = small ? 0.75 : Math.min(1.15, Math.max(0.8, Math.sqrt(w * h) / 1140));
-        const colL = Math.max(0, (w - 960) / 2) + 24, colR = w - colL, P = KYOTO[kSeason];
+        const colL = Math.max(0, (w - 960) / 2) + 24, colR = w - colL, P = DAY[kSeason];
         const overCol = (side, x) => (side < 0 ? x > colL - 60 : x < colR + 60);   // would it sit over the text?
         kLimbs = []; kTwigs = []; kLimbBlooms = []; kCanopy = []; kLeaves = [];
 
@@ -2170,7 +2177,7 @@
             for (let k = 0; k < n; k++) {
               const roll = Math.random();
               kLeaves.push({ x: x + rand(-6, 6), y: y + rand(-4, 4), a: Math.PI / 2 + rand(-1.35, 1.35), s: rand(19, 33) * sc * (over ? 0.75 : 1),
-                             c: roll < 0.28 ? 0 : roll < 0.58 ? 1 : roll < 0.82 ? 2 : roll < 0.96 ? 3 : 4, ph: rand(0, TAU), stiff: rand(0.6, 1.4) });
+                             c: roll < 0.3 ? 0 : roll < 0.62 ? 1 : roll < 0.82 ? 2 : roll < 0.94 ? 3 : 4, ph: rand(0, TAU), stiff: rand(0.6, 1.4) });
             }
           };
           for (let i = 0; i < nLimbs; i++) {
@@ -2198,201 +2205,538 @@
           if (!small) maple(-1, 1, Math.min(w * 0.17, colL + 50));
         }
 
-        // far below: Higashiyama in the haze, a temple among the hills, trees along the canal
-        const Hs = Math.round(h * (small ? 0.2 : 0.25));
-        kSkyTop = h - Hs;
-        kWaterY = h - Math.round(h * (small ? 0.03 : 0.036));
-        kSkyline = document.createElement('canvas');
-        kSkyline.width = Math.max(1, Math.round(w * dpr)); kSkyline.height = Math.max(1, Math.round(Hs * dpr));
-        const g = kSkyline.getContext('2d');
-        g.setTransform(dpr, 0, 0, dpr, 0, -kSkyTop * dpr);
-        const canBlur = 'filter' in g;
-        const k0 = 2.2 * Math.PI / Math.max(w, 600);
-        const ridge = (x, base, amp, k, ph) => base - amp * (0.55 * Math.sin(x * k + ph) + 0.3 * Math.sin(x * k * 2.3 + ph * 1.7) + 0.15 * Math.sin(x * k * 5.1 + ph * 0.6));
-        const hill = (base, amp, k, ph, [top, bottom]) => {
-          g.beginPath(); g.moveTo(0, h);
-          for (let x = 0; x <= w + 8; x += 8) g.lineTo(x, ridge(x, base, amp, k, ph));
-          g.lineTo(w, h); g.closePath();
-          const gr = g.createLinearGradient(0, base - amp, 0, kWaterY);
-          gr.addColorStop(0, top); gr.addColorStop(1, bottom);
-          g.fillStyle = gr; g.fill();
+        // the sky: clear blue paling toward the horizon, cloud drifting across it, the sun beyond the top right
+        kSky = ctx.createLinearGradient(0, 0, 0, h * 0.74);
+        for (const [o, c] of P.sky) kSky.addColorStop(o, c);
+        kClouds = [];
+        const cloud = (kind, fy, fw, a) => {
+          const wd = Math.max(170, w * fw * (small ? 1.6 : 1)), cw = Math.round(Math.min(820, wd)), hg = wd * (kind === 'cumulus' ? rand(0.3, 0.38) : kind === 'cirrus' ? rand(0.2, 0.26) : rand(0.3, 0.4));
+          kClouds.push({ img: cloudSprite(cw, Math.max(8, Math.round(cw * hg / wd)), kind, P.cloudShade), x: rand(-0.2, 0.95) * w, y: h * fy, wd, hg, v: rand(0.03, 0.07) * (1.5 - fy * 2), a });
         };
-        const soft = (blur, draw) => {                                // drawn on a layer of its own, then blurred once onto the strip
-          const L = document.createElement('canvas');
-          L.width = kSkyline.width; L.height = kSkyline.height;
-          const lg = L.getContext('2d');
-          lg.setTransform(dpr, 0, 0, dpr, 0, -kSkyTop * dpr);
-          draw(lg);
-          if (canBlur) g.filter = 'blur(' + blur + 'px)';
-          g.drawImage(L, 0, kSkyTop, w, Hs);
-          if (canBlur) g.filter = 'none';
-        };
-        const dots = (at, colors, step, spread, r0, r1, blur) => soft(blur, lg => {   // blossom or turning leaves across a hillside, softly
-          for (let x = 3; x < w; x += step) {
-            if (Math.random() > 0.55) continue;
-            lg.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-            lg.beginPath(); lg.arc(x, at(x) + rand(2, spread), rand(r0, r1), 0, TAU); lg.fill();
-          }
-        });
-        const wash = (y0, a) => {                                   // ぼかし: the haze swallowing what's further off
-          const gr = g.createLinearGradient(0, y0, 0, kWaterY);
-          gr.addColorStop(0, 'rgba(' + P.wash + ', 0)'); gr.addColorStop(1, 'rgba(' + P.wash + ', ' + a + ')');
-          g.fillStyle = gr; g.fillRect(0, y0, w, kWaterY - y0);
-        };
-        const pFar = rand(0, TAU), pMid = rand(0, TAU);
-        const farBase = kSkyTop + Hs * 0.42, farAmp = Hs * 0.16, midBase = kSkyTop + Hs * 0.64, midAmp = Hs * 0.09;
-        const farAt = x => ridge(x, farBase, farAmp, k0 * 0.8, pFar), midAt = x => ridge(x, midBase, midAmp, k0 * 1.3, pMid);
-        hill(farBase, farAmp, k0 * 0.8, pFar, P.far);
-        dots(farAt, P.farDots, 6, Hs * 0.2, 2.5, 5, 1.6);
-        wash(farBase - farAmp, 0.5);
-        hill(midBase, midAmp, k0 * 1.3, pMid, P.mid);
-        const lx = small ? w * 0.18 : Math.max(70, colL * 0.5), rx = Math.min(w - 70, colR + (w - colR) * 0.5);
         if (kSeason === 'sakura') {
-          drawPagoda(g, lx, midAt(lx) + Hs * 0.1, Hs * (small ? 0.62 : 0.7), P.silhouette, 5);   // 八坂の塔
-          if (!small) {
-            drawHall(g, rx, midAt(rx) + Hs * 0.1, Hs * 0.5, Hs * 0.2, P.silhouette);
-            drawHall(g, rx - Hs * 0.42, midAt(rx - Hs * 0.42) + Hs * 0.12, Hs * 0.32, Hs * 0.13, P.silhouette2);
-          }
+          cloud('cumulus', 0.05, 0.4, 0.96); cloud('cumulus', 0.21, 0.28, 0.92); cloud('cumulus', 0.31, 0.2, 0.9); cloud('cumulus', 0.37, 0.15, 0.85);
+          if (!small) cloud('cumulus', 0.13, 0.24, 0.9);
         } else {
-          const sw = small ? Hs * 0.8 : Math.min(colL * 0.9, Hs * 1.1);
-          drawStage(g, lx - sw * 0.5, midAt(lx) + Hs * 0.16, sw, Hs * 0.5, P.silhouette);         // 清水の舞台
-          if (!small) drawPagoda(g, rx, midAt(rx) + Hs * 0.1, Hs * 0.56, P.silhouette2, 3);       // and its vermilion three-storey pagoda
+          cloud('cirrus', 0.04, 0.62, 0.9); cloud('cirrus', 0.17, 0.48, 0.8); if (!small) cloud('cirrus', 0.1, 0.36, 0.7);
+          cloud('cumulus', 0.33, 0.16, 0.85); cloud('cumulus', 0.38, 0.12, 0.8);
         }
-        dots(midAt, P.midDots, 7, Hs * 0.16, 3, 6.5, 1.2);
-        wash(midBase - midAmp, 0.35);
-        // the near bank: rows of trees along the canal, their crowns running together into one soft band,
-        // broken here and there by the low roofs of machiya
-        const bank = kWaterY - 3, crowns = [];
-        for (let x = rand(-20, 20); x < w + 30; ) {
-          if (Math.random() < 0.3) {
-            const rw = rand(40, 90), rh = rand(7, 12) * sc;
-            g.fillStyle = P.roofs;
-            g.beginPath();
-            g.moveTo(x - 4, bank - rh * 0.55); g.lineTo(x + rw * 0.18, bank - rh); g.lineTo(x + rw * 0.82, bank - rh); g.lineTo(x + rw + 4, bank - rh * 0.55);
-            g.lineTo(x + rw, bank); g.lineTo(x, bank); g.closePath(); g.fill();
-            x += rw + rand(4, 14);
-          } else {
-            const run = rand(70, 180), top = rand(16, 28) * sc;
-            g.fillStyle = P.trunks;
-            for (let tx = x + rand(6, 16); tx < x + run - 6; tx += rand(26, 44)) g.fillRect(tx, bank - top * 0.55, 1.6, top * 0.55);
-            for (let px2 = x; px2 < x + run; px2 += 5) {
-              const env = Math.sin(Math.PI * (px2 - x) / run), hgt = top * (0.55 + 0.45 * env);
-              for (let m = 0; m < 2; m++) crowns.push({ x: px2 + rand(-3, 3), y: bank - hgt * rand(0.45, 1), r: rand(5, 10) * sc * (0.7 + 0.3 * env), c: Math.floor(Math.random() * P.crowns.length) });
-            }
-            x += run + rand(0, 10);
-          }
-        }
-        for (const c of crowns) { g.fillStyle = P.crowns[c.c]; g.beginPath(); g.arc(c.x, c.y, c.r, 0, TAU); g.fill(); }
-        g.fillStyle = P.crownLight;                                    // where the sun catches them
-        for (const c of crowns) { if (Math.random() < 0.18) { g.beginPath(); g.arc(c.x - c.r * 0.3, c.y - c.r * 0.35, c.r * 0.45, 0, TAU); g.fill(); } }
-        g.fillStyle = P.stone[0];                                      // the stone embankment
-        g.fillRect(0, bank, w, 3);
-        g.fillStyle = P.stone[1];
-        for (let x = 0; x < w; x += 16) g.fillRect(x, bank, 1, 3);
-        const water = g.createLinearGradient(0, kWaterY, 0, h);        // the canal
-        water.addColorStop(0, P.water[0]); water.addColorStop(1, P.water[1]);
-        g.fillStyle = water; g.fillRect(0, kWaterY, w, h - kWaterY);
-        g.save();                                                      // the trees, softly reflected
-        g.beginPath(); g.rect(0, kWaterY, w, h - kWaterY); g.clip();
-        soft(2, lg => {
-          lg.fillStyle = P.reflect;
-          for (let i = 0; i < crowns.length; i += 6) { const c = crowns[i]; lg.beginPath(); lg.ellipse(c.x, kWaterY + c.r * 0.8, c.r * 2, c.r, 0, 0, TAU); lg.fill(); }
-        });
-        g.restore();
-
-        kHaze = ctx.createLinearGradient(0, 0, 0, h);                  // haze over the whole sky
-        kHaze.addColorStop(0, 'rgba(255, 255, 255, 0)'); kHaze.addColorStop(0.55, P.haze[0]); kHaze.addColorStop(1, P.haze[1]);
         kRays = [];                                                    // a few faint shafts of sunlight from the top right
         for (let i = 0; i < (small ? 2 : 4); i++) kRays.push({ a: rand(2.05, 2.55), wd: rand(40, 110) * sc, ph: rand(0, TAU), sp: rand(0.004, 0.008) });
+        if (!kSprites.shade) {                                         // a cloud's shadow on the land
+          const c = document.createElement('canvas'); c.width = c.height = 64;
+          const g = c.getContext('2d'), rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+          rg.addColorStop(0, 'rgba(34, 38, 86, 0.3)'); rg.addColorStop(0.6, 'rgba(34, 38, 86, 0.16)'); rg.addColorStop(1, 'rgba(34, 38, 86, 0)');
+          g.fillStyle = rg; g.fillRect(0, 0, 64, 64);
+          kSprites.shade = c;
+        }
+
+        kFlutter = []; kWalkers = []; kBoats = []; kBridge = null; kStone = null; kShade = []; kReeds = []; kFliers = []; kPoles = []; kWires = []; kRefl = null; kXing = null; kTrain = null; kSkein = null; kHill = null;
+        if (kSeason === 'sakura') landSakura(small, sc, colL, colR); else landMomiji(small, sc, colL, colR);
+        for (let i = 0; i < 3; i++) kShade.push({ x: rand(-0.2, 1) * w, y: kSkyTop + (h - kSkyTop) * rand(0.2, 0.9), rw: rand(0.16, 0.28) * Math.max(w, 700), rh: rand(0.07, 0.12) * h, v: rand(0.14, 0.24), a: rand(0.6, 1) });
 
         kFall = []; kRafts = [];
         for (let i = 0, n = fallBase(); i < n; i++) kFall.push(newFall('any'));
-        kWaves = [];
-        for (let i = 0; i < Math.round(w / 45); i++) kWaves.push({ x: rand(0, w), y: rand(kWaterY + 3, h - 2), len: rand(6, 16), v: rand(0.12, 0.28), ph: rand(0, TAU) });
       }
 
-      // a pagoda: storeys of broad, upswept eaves (five for 八坂の塔, three for Kiyomizu's), and the spire with its nine rings
-      function drawPagoda(g, cx, y0, H, col, tiers) {
-        g.fillStyle = col;
-        const f = 5 / tiers, hw0 = H * 0.075 * (tiers < 5 ? 1.15 : 1), th0 = H * 0.085 * f * 0.9, rt = H * 0.045 * Math.min(1.4, f * 0.9);
-        let y = y0;
-        g.fillRect(cx - hw0 * 1.4, y - H * 0.03, hw0 * 2.8, H * 0.03);
-        y -= H * 0.03;
-        for (let i = 0; i < tiers; i++) {
-          const hw = hw0 * (1 - 0.07 * i), ehw = hw * 2.3, th = th0 * (i ? 0.9 : 1.05);
-          g.fillRect(cx - hw, y - th, hw * 2, th);
-          y -= th;
-          g.beginPath();
-          g.moveTo(cx - ehw, y - rt * 0.55);
-          g.quadraticCurveTo(cx - ehw * 0.6, y + rt * 0.3, cx - hw * 0.55, y - rt * 1.05);
-          g.lineTo(cx + hw * 0.55, y - rt * 1.05);
-          g.quadraticCurveTo(cx + ehw * 0.6, y + rt * 0.3, cx + ehw, y - rt * 0.55);
-          g.quadraticCurveTo(cx + ehw * 0.7, y + rt * 0.7, cx, y + rt * 0.55);
-          g.quadraticCurveTo(cx - ehw * 0.7, y + rt * 0.7, cx - ehw, y - rt * 0.55);
-          g.closePath(); g.fill();
-          y -= rt * 0.9;
+      // a cloud, made once. Cumulus: soft puffs heaped into towers on a level base, white where the sun is and shaded
+      // underneath. Cirrus: long wisps combed upward. うろこ雲: a shoal of little puffs, the sky of autumn
+      function cloudSprite(W, H, kind, shade) {
+        const c = document.createElement('canvas'); c.width = W; c.height = H;
+        const g = c.getContext('2d'), base = H * 0.82;
+        const puff = (x, y, r, a) => {
+          const rg = g.createRadialGradient(x, y, r * 0.15, x, y, r);
+          rg.addColorStop(0, 'rgba(255, 255, 255, ' + a + ')'); rg.addColorStop(0.72, 'rgba(255, 255, 255, ' + (a * 0.92).toFixed(3) + ')'); rg.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          g.fillStyle = rg; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+        };
+        if (kind === 'cumulus') {
+          const n = Math.max(7, Math.round(W / (H * 0.24))), t1 = rand(0.28, 0.44), t2 = rand(0.56, 0.74);
+          for (let i = 0; i < n; i++) {
+            const u = clamp01((i + rand(-0.3, 0.3)) / (n - 1)), env = Math.pow(Math.sin(Math.PI * (0.06 + 0.88 * u)), 0.8);
+            const tower = Math.max(1 - Math.abs(u - t1) * 4.5, 0.75 - Math.abs(u - t2) * 4, 0.3);
+            const top = H * (0.1 + 0.62 * env * tower), r0 = H * rand(0.12, 0.17) * (0.65 + 0.5 * env), x = W * (0.09 + 0.82 * u);
+            for (let y = base - r0 * 0.6; y > base - top; y -= r0 * 0.6) puff(x + rand(-0.5, 0.5) * r0, y, r0 * rand(0.85, 1.2), 1);
+          }
+          g.globalCompositeOperation = 'destination-out';              // a level base
+          const cut = g.createLinearGradient(0, base - H * 0.05, 0, base + H * 0.06);
+          cut.addColorStop(0, 'rgba(0, 0, 0, 0)'); cut.addColorStop(1, 'rgba(0, 0, 0, 1)');
+          g.fillStyle = cut; g.fillRect(0, base - H * 0.05, W, H);
+          g.globalCompositeOperation = 'source-atop';                  // and shade underneath
+          const sh = g.createLinearGradient(0, H * 0.3, 0, base);
+          sh.addColorStop(0, 'rgba(255, 255, 255, 0)'); sh.addColorStop(1, shade);
+          g.fillStyle = sh; g.fillRect(0, 0, W, H);
+        } else {
+          // cirrus: long wisps combed up at one end, each a ribbon thinning to nothing, laid in out of focus
+          const L = document.createElement('canvas'); L.width = W; L.height = H;
+          const lg = L.getContext('2d');
+          for (let s = 0; s < 7; s++) {
+            const x0 = rand(0, 0.3) * W, y0 = rand(0.35, 0.85) * H, len = rand(0.45, 0.7) * W, lift = rand(0.12, 0.34) * H, r = H * rand(0.035, 0.07), ph = rand(0, TAU);
+            const pt = u => [x0 + len * u, y0 - lift * Math.pow(u, 1.7) + Math.sin(u * 7 + ph) * H * 0.012];
+            const ribbon = (k, a) => {
+              const up = [], dn = [];
+              for (let i = 0; i <= 40; i++) {
+                const u = i / 40, [x, y] = pt(u), [x2, y2] = pt(Math.min(1, u + 0.01)), d = Math.hypot(x2 - x, y2 - y) || 1;
+                const wd = r * k * Math.sin(Math.PI * Math.min(1, u * 3)) * (1 - 0.75 * u) + 0.2;
+                up.push([x - (y2 - y) / d * wd, y + (x2 - x) / d * wd]); dn.push([x + (y2 - y) / d * wd, y - (x2 - x) / d * wd]);
+              }
+              lg.fillStyle = 'rgba(255, 255, 255, ' + a + ')'; lg.beginPath();
+              up.forEach(([x, y], i) => i ? lg.lineTo(x, y) : lg.moveTo(x, y)); dn.reverse().forEach(([x, y]) => lg.lineTo(x, y));
+              lg.closePath(); lg.fill();
+            };
+            ribbon(1, 0.34); ribbon(0.45, 0.4);
+          }
+          if ('filter' in g) g.filter = 'blur(' + Math.max(1.5, H * 0.025).toFixed(1) + 'px)';
+          g.drawImage(L, 0, 0);
+          g.filter = 'none';
         }
-        const sh = H * 0.3;
-        g.fillRect(cx - H * 0.007, y - sh, H * 0.014, sh);
-        for (let i = 0; i < 9; i++) g.fillRect(cx - H * 0.02, y - sh * 0.18 - i * sh * 0.068, H * 0.04, H * 0.006);
-        g.beginPath(); g.arc(cx, y - sh, H * 0.014, 0, TAU); g.fill();
+        return c;
       }
 
-      // a temple hall: a broad hipped-and-gabled roof, eaves turned up at the ends
-      function drawHall(g, cx, y0, W, H, col) {
-        g.fillStyle = col;
-        g.fillRect(cx - W * 0.36, y0 - H * 0.45, W * 0.72, H * 0.45);
-        g.beginPath();
-        g.moveTo(cx - W * 0.58, y0 - H * 0.52);
-        g.quadraticCurveTo(cx - W * 0.42, y0 - H * 0.5, cx - W * 0.3, y0 - H * 0.9);
-        g.lineTo(cx + W * 0.3, y0 - H * 0.9);
-        g.quadraticCurveTo(cx + W * 0.42, y0 - H * 0.5, cx + W * 0.58, y0 - H * 0.52);
-        g.quadraticCurveTo(cx, y0 - H * 0.36, cx - W * 0.58, y0 - H * 0.52);
-        g.closePath(); g.fill();
-        g.fillRect(cx - W * 0.31, y0 - H * 0.97, W * 0.62, H * 0.08);
+      // the far view is painted once into a strip, in screen coordinates, from its top down to the foot of the screen
+      function landStrip(Hs) {
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(w * dpr)); c.height = Math.max(1, Math.round(Hs * dpr));
+        const g = c.getContext('2d');
+        g.setTransform(dpr, 0, 0, dpr, 0, -kLandTop * dpr);
+        const ridge = (x, base, amp, k, ph) => base - amp * (0.55 * Math.sin(x * k + ph) + 0.3 * Math.sin(x * k * 2.3 + ph * 1.7) + 0.15 * Math.sin(x * k * 5.1 + ph * 0.6));
+        const below = at => { g.beginPath(); g.moveTo(-4, h + 2); for (let x = -4; x <= w + 8; x += 6) g.lineTo(x, at(x)); g.lineTo(w + 8, h + 2); g.closePath(); };
+        const vgrad = (y0, y1, c0, c1) => { const gr = g.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, c0); gr.addColorStop(1, c1); return gr; };
+        const dot = (x, y, r) => { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); };
+        // a wash over what's painted so far, and only there (the sky above stays clear)
+        const wash = (style, y0, y1) => { g.globalCompositeOperation = 'source-atop'; g.fillStyle = style; g.fillRect(0, y0, w, y1 - y0); g.globalCompositeOperation = 'source-over'; };
+        return { c, g, ridge, below, vgrad, dot, wash };
       }
 
-      // 清水の舞台: the main hall's great sweeping roof, and before it the stage standing out over the slope
-      // on a lattice of tall pillars
-      function drawStage(g, x0, y0, W, H, col) {
-        g.fillStyle = col; g.strokeStyle = col;
-        const deck = y0 - H * 0.42, sx1 = x0 + W * 0.56;
-        g.lineWidth = Math.max(1, W * 0.012);
-        for (let i = 0; i <= 8; i++) {                                 // the pillars, standing on the slope
-          const x = x0 + W * 0.03 + i * (sx1 - x0 - W * 0.03) / 8, foot = y0 - (i / 8) * H * 0.16;
-          g.beginPath(); g.moveTo(x, deck); g.lineTo(x, foot); g.stroke();
+      // spring's far view: hills still streaked with snow, a little town, the cherry trees along the railway,
+      // and the field of rape blossom this side of it, with the lane that crosses the line
+      function landSakura(small, sc, colL, colR) {
+        const Hs = Math.round(h * (small ? 0.4 : 0.54));
+        kLandTop = h - Hs; kTrackY = h - Math.round(Hs * (small ? 0.36 : 0.33)); kWaterY = kTrackY + 12 * sc; kFloatY = kWaterY; kSkyTop = kLandTop + Hs * 0.3;
+        const { c: land, g, ridge, below, vgrad, dot, wash } = landStrip(Hs), k0 = TAU / Math.max(w, 600), ty = kTrackY;
+        const hills = (b, a, k, c0, c1, snow) => {
+          const ph = rand(0, TAU), at = x => ridge(x, kLandTop + Hs * b, Hs * a, k0 * k, ph);
+          below(at); g.fillStyle = vgrad(kLandTop + Hs * (b - a), kLandTop + Hs * (b + 0.2), c0, c1); g.fill();
+          if (!snow) return;
+          g.save(); below(at); g.clip();                               // 残雪: the snow that's left, lying in the gullies
+          const line = kLandTop + Hs * (b - a * 0.3);
+          g.fillStyle = 'rgba(255, 255, 255, 0.92)';
+          g.beginPath(); g.moveTo(-4, kLandTop - 4);
+          for (let x = -4; x <= w + 8; x += 4) g.lineTo(x, line + Math.abs(Math.sin(x * 0.045 + ph)) * Hs * 0.035 + Math.sin(x * 0.19 + ph * 3) * Hs * 0.012 + rand(-1, 1) * Hs * 0.006);
+          g.lineTo(w + 8, kLandTop - 4); g.closePath(); g.fill();
+          g.restore();
+        };
+        hills(0.2, 0.12, 0.6, '#a9c7ea', '#dfeaf6', true);
+        hills(0.3, 0.07, 1.2, '#9cbde1', '#d9e7f4', false);
+        const phG = rand(0, TAU), green = x => ridge(x, kLandTop + Hs * 0.4, Hs * 0.045, k0 * 2.1, phG);
+        below(green); g.fillStyle = vgrad(kLandTop + Hs * 0.35, ty, '#a2cd98', '#cfe6bf'); g.fill();   // low green hills, wild cherry here and there
+        for (let x = 0; x < w; x += 5) {
+          if (Math.random() < 0.45) continue;
+          g.fillStyle = ['rgba(255, 238, 244, 0.75)', 'rgba(246, 208, 222, 0.6)', 'rgba(134, 188, 118, 0.5)', 'rgba(196, 226, 160, 0.5)'][Math.floor(Math.random() * 4)];
+          dot(x, green(x) + rand(2, Hs * 0.1), rand(2.5, 6) * sc);
         }
-        for (let k = 1; k <= 3; k++) {                                 // and the tie beams across them
-          const y = deck + (y0 - deck) * k / 4.2;
-          g.beginPath(); g.moveTo(x0 + W * 0.03, y); g.lineTo(sx1, y - H * 0.04 * k / 3); g.stroke();
+        const townY = kLandTop + Hs * 0.52;                             // the town beyond the line
+        for (let x = rand(-10, 30); x < w; ) {
+          if (Math.random() < 0.3) { x += rand(20, 70) * sc; continue; }
+          const W2 = rand(16, 30) * sc, H2 = rand(9, 14) * sc, y = townY + rand(-3, 7) * sc;
+          g.fillStyle = ['#f4efe6', '#ebe4d8', '#f7f1e4', '#e3e8ee'][Math.floor(Math.random() * 4)]; g.fillRect(x, y - H2, W2, H2);
+          g.fillStyle = 'rgba(96, 116, 146, 0.55)'; g.fillRect(x + W2 * 0.18, y - H2 * 0.72, W2 * 0.2, H2 * 0.32); g.fillRect(x + W2 * 0.6, y - H2 * 0.72, W2 * 0.2, H2 * 0.32);
+          g.fillStyle = ['#7f93ad', '#a9735c', '#6b7c8d', '#8f7166', '#5f7f8f'][Math.floor(Math.random() * 5)];
+          g.beginPath(); g.moveTo(x - 2, y - H2); g.lineTo(x + W2 * 0.25, y - H2 * 1.55); g.lineTo(x + W2 * 0.75, y - H2 * 1.55); g.lineTo(x + W2 + 2, y - H2); g.closePath(); g.fill();
+          x += W2 + rand(2, 12) * sc;
         }
-        g.fillRect(x0 - W * 0.02, deck - H * 0.035, sx1 - x0 + W * 0.08, H * 0.035);   // the deck
-        g.fillRect(x0 - W * 0.02, deck - H * 0.09, sx1 - x0 + W * 0.02, H * 0.012);    // its railing
-        for (let x = x0; x < sx1; x += W * 0.07) g.fillRect(x, deck - H * 0.09, W * 0.008, H * 0.06);
-        const hx0 = x0 + W * 0.36, hx1 = x0 + W * 1.02;                // the hall behind, on the hillside
-        g.fillRect(hx0 + W * 0.04, deck - H * 0.26, hx1 - hx0 - W * 0.08, H * 0.26);
-        g.beginPath();                                                 // its great hipped roof
-        g.moveTo(hx0 - W * 0.06, deck - H * 0.24);
-        g.quadraticCurveTo(hx0 + W * 0.08, deck - H * 0.3, hx0 + W * 0.16, deck - H * 0.56);
-        g.lineTo(hx1 - W * 0.16, deck - H * 0.56);
-        g.quadraticCurveTo(hx1 - W * 0.08, deck - H * 0.3, hx1 + W * 0.06, deck - H * 0.24);
-        g.quadraticCurveTo((hx0 + hx1) / 2, deck - H * 0.18, hx0 - W * 0.06, deck - H * 0.24);
-        g.closePath(); g.fill();
+        wash(vgrad(kLandTop + Hs * 0.3, ty, 'rgba(250, 234, 242, 0.14)', 'rgba(250, 234, 242, 0.44)'), kLandTop, ty);   // 春霞: the haze of a spring day, pink with blossom
+
+        // 染井吉野: a short trunk, limbs spreading wide and dividing again and again, and on every twig a cluster
+        // of blossom, each a little ball lit from the top right, so the whole crown heaps up like a cloud
+        const trees = (by, Hmin, Hmax, step, hz, rr) => {
+          for (let x = rand(-step * 0.4, 0); x < w + step * 0.4; x += step * rand(0.75, 1.2)) {
+            const H2 = rand(Hmin, Hmax), A = [];
+            const limb = (x0, y0, a, len, wd, d) => {
+              const bend = rand(-0.4, 0.4), x1 = x0 + Math.cos(a) * len, y1 = y0 + Math.sin(a) * len;
+              const cx = x0 + Math.cos(a + bend) * len * 0.55, cy = y0 + Math.sin(a + bend) * len * 0.55;
+              g.lineWidth = Math.max(0.6, wd); g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(cx, cy, x1, y1); g.stroke();
+              if (d >= 2) A.push([x1, y1]);
+              if (d >= 3) A.push([(cx + x1) / 2, (cy + y1) / 2]);
+              if (d >= 5) return;
+              const n = d === 0 ? 3 : Math.random() < 0.4 ? 3 : 2;
+              for (let i = 0; i < n; i++) {
+                const na = Math.max(-Math.PI + 0.12, Math.min(-0.12, a + (i - (n - 1) / 2) * rand(0.55, 0.95) + rand(-0.2, 0.2)));   // spreading, never downward
+                limb(x1, y1, na, len * rand(0.62, 0.82), wd * 0.6, d + 1);
+              }
+            };
+            g.strokeStyle = kMix('#4b3a3c', hz); g.lineCap = 'round';
+            limb(x, by, -Math.PI / 2 + rand(-0.15, 0.15), H2 * 0.3, H2 * 0.05, 0);
+            for (let i = A.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)), q = A[i]; A[i] = A[j]; A[j] = q; }
+            const C = ['#d48aac', '#f0aec6', '#f7c8d8', '#fde3ec', '#e57ba2'].map(c => kMix(c, hz));
+            for (const [ax, ay] of A) {
+              const r = rr * rand(0.75, 1.25);
+              g.fillStyle = C[0]; dot(ax - r * 0.1, ay + r * 0.22, r);
+              g.fillStyle = C[1]; dot(ax, ay, r * 0.86);
+              g.fillStyle = C[2]; dot(ax + r * 0.12, ay - r * 0.16, r * 0.66);
+              g.fillStyle = C[3]; dot(ax + r * 0.22, ay - r * 0.3, r * 0.42);
+              for (let k = 0; k < 3; k++) { g.fillStyle = Math.random() < 0.25 ? C[4] : '#ffffff'; dot(ax + rand(-1, 1) * r, ay + rand(-1, 1) * r, rand(0.7, 1.6) * sc); }
+            }
+          }
+        };
+        trees(ty - 12 * sc, Hs * 0.3, Hs * 0.38, 150 * sc, 0.48, 9 * sc);      // a further row, deep in the haze
+        trees(ty - 2 * sc, Hs * 0.42, Hs * 0.54, 230 * sc, 0, 13 * sc);         // and the row along the line
+
+        // the embankment and the single track: ballast, sleepers, the rail shining, the poles and their wire
+        g.fillStyle = vgrad(ty - 8 * sc, ty + 12 * sc, '#9ccd72', '#86bd5c'); g.fillRect(0, ty - 5 * sc, w, 18 * sc);
+        g.fillStyle = '#aca096'; g.fillRect(0, ty - 1.5 * sc, w, 5 * sc);
+        g.fillStyle = '#75655a'; for (let x = 0; x < w; x += 8 * sc) g.fillRect(x, ty - 0.5 * sc, 3 * sc, 3.2 * sc);
+        g.fillStyle = '#585b66'; g.fillRect(0, ty - 1.6 * sc, w, 1.8 * sc);
+        g.fillStyle = '#eef1f6'; g.fillRect(0, ty - 1.6 * sc, w, 0.6 * sc);
+        g.strokeStyle = 'rgba(92, 102, 122, 0.8)'; g.lineWidth = Math.max(0.7, 0.9 * sc);
+        const span = 150 * sc;
+        for (let x = rand(20, span) - span; x < w + span; x += span) {
+          g.fillStyle = '#7c8696';
+          g.fillRect(x - 1.1 * sc, ty - 70 * sc, 2.2 * sc, 70 * sc);
+          g.fillRect(x - 1.1 * sc, ty - 64 * sc, 15 * sc, 1.5 * sc);
+          g.beginPath(); g.moveTo(x + 12 * sc, ty - 66 * sc); g.quadraticCurveTo(x + 12 * sc + span / 2, ty - 58 * sc, x + 12 * sc + span, ty - 66 * sc); g.stroke();
+        }
+        g.beginPath(); g.moveTo(0, ty - 56 * sc); g.lineTo(w, ty - 56 * sc); g.stroke();
+
+        // 菜の花: the field this side of the line, yellow with rape blossom, thicker and bigger toward us; a lane
+        // runs through it and over the crossing
+        const fy = ty + 10 * sc, xr = small ? w * 0.78 : Math.min(w - 90, colR + (w - colR) * 0.45);
+        g.fillStyle = vgrad(fy, h, '#a7d268', '#8cc04e'); g.fillRect(0, fy, w, h - fy + 2);
+        const lane = y => { const t = (y - ty) / Math.max(1, h - ty), m = xr + t * 26 * sc, hw = (9 + 34 * t) * sc; return [m - hw, m + hw]; };
+        const [a0, b0] = lane(ty - 4 * sc), [a1, b1] = lane(h + 4);
+        g.fillStyle = '#ded9d0'; g.beginPath(); g.moveTo(a0, ty - 4 * sc); g.lineTo(b0, ty - 4 * sc); g.lineTo(b1, h + 4); g.lineTo(a1, h + 4); g.closePath(); g.fill();
+        g.fillStyle = '#8d7a69'; g.fillRect(a0 - 1, ty - 2.6 * sc, b0 - a0 + 2, 6.4 * sc);                       // planks between the rails
+        g.fillStyle = '#eef1f6'; g.fillRect(a0 - 1, ty - 1.6 * sc, b0 - a0 + 2, 0.6 * sc);
+        for (let i = 0, n = Math.round(w * (h - fy) / (small ? 16 : 11)); i < n; i++) {
+          const t = Math.pow(Math.random(), 0.75), y = fy + 2 + t * (h - fy), x = rand(0, w), [la, lb] = lane(y);
+          if (x > la - 3 && x < lb + 3) continue;
+          if (Math.sin(x * 0.012 + y * 0.05) + Math.sin(x * 0.031 - y * 0.02) < rand(-1.6, 0.2)) continue;      // gaps, where the green shows
+          const r = (0.8 + 2.4 * t) * sc;
+          if (t > 0.45) { g.strokeStyle = '#6da544'; g.lineWidth = Math.max(0.6, 0.9 * t * sc); g.beginPath(); g.moveTo(x, y); g.lineTo(x + rand(-1, 1), y + r * 3.2); g.stroke(); }
+          g.fillStyle = YELLOWS[Math.floor(Math.random() * 4)]; dot(x, y, r);
+        }
+        for (let i = 0, n = Math.round(w / (small ? 22 : 15)); i < n; i++) {     // the nearest heads, which nod in the wind
+          const t = rand(0.55, 1), y = fy + t * (h - fy) + rand(0, 8), x = rand(0, w), [la, lb] = lane(y);
+          if (x > la - 5 && x < lb + 5) continue;
+          kFlutter.push({ x, y, len: rand(10, 20) * sc * t, s: rand(1.7, 2.8) * sc * t, ph: rand(0, TAU), c: Math.floor(Math.random() * 4) });
+        }
+        const gy = ty + 9 * sc, [ga, gb] = lane(gy);
+        kXing = { x: ga - 5 * sc, y: gy, len: gb - ga + 9 * sc, arm: 0, on: false, k: sc };
+
+        // 電柱: the concrete poles of a country road, one standing tall in the field by the lane, one by the crossing
+        // beyond the line, one out in the left margin and a small far one, with their wires sagging across the sky
+        // over the trees (the long ones kept below the hero's text)
+        const pole = (x, by, top, o) => { const P2 = Object.assign({ x, by, top, H: by - top, arms: [], clamp: 0 }, o); P2.wd = Math.max(1.6, P2.H * 0.0125); kPoles.push(P2); return P2; };
+        const at = (P2, f, dx) => [P2.x + dx * P2.H, P2.top + f * P2.H];            // a point on a pole: f of its height down, dx across
+        const wire = (a, b, sag, wd) => kWires.push({ a, b, sag, wd, ph: rand(0, TAU) });
+        const HI = [-0.066, 0, 0.066], LO = [-0.05, 0.05];
+        const line2 = (P2, P3, ai, xs, sag) => { const f2 = P2.arms[ai][0] - 0.007, f3 = P3.arms[ai][0] - 0.007; for (const dx of xs) wire(at(P2, f2, dx), at(P3, f3, dx), sag, 1.05); };
+        const off = (P2, ai, xs, x, dy, sag) => { const f2 = P2.arms[ai][0] - 0.007; for (const dx of xs) wire(at(P2, f2, dx), [x, P2.top + f2 * P2.H + dy], sag, 1.1); };
+        if (!small) {
+          const P1 = pole(Math.min(w - 26 * sc, xr + 72 * sc), h * 0.985, h * 0.25, { arms: [[0.035, 0.082, HI], [0.09, 0.066, LO]], clamp: 0.31, trans: true, guy: -1, plate: true });
+          const P2 = pole(xr - 16 * sc, ty - 3 * sc, ty - Hs * 0.36, { arms: [[0.035, 0.082, HI], [0.09, 0.066, LO]], clamp: 0.31 });
+          const PL = pole(Math.max(24 * sc, colL * 0.42), ty + 26 * sc, h * 0.405, { arms: [[0.04, 0.072, LO]], clamp: 0.27, guy: -1, plate: true });
+          const P4 = pole(colL + 74 * sc, ty - 6 * sc, ty - Hs * 0.2, { arms: [[0.04, 0.072, LO]], clamp: 0.27 });
+          line2(P1, P2, 0, HI, h * 0.012); line2(P1, P2, 1, LO, h * 0.012);
+          off(P1, 0, HI, w + 60, h * 0.03, h * 0.015); off(P1, 1, LO, w + 60, h * 0.03, h * 0.015);
+          line2(PL, P4, 0, LO, h * 0.01); off(PL, 0, LO, -60, -h * 0.015, h * 0.03);
+          // the long cables right across, from clamps on the near pole to those in the margin, each its own sag
+          for (const [dx, sag, wd] of [[-0.012, 0.05, 1.2], [0.012, 0.066, 1.2], [0, 0.082, 2.3]]) wire(at(P1, P1.clamp, dx), at(PL, PL.clamp, dx * 0.6), h * sag, wd);
+          wire(at(P1, P1.clamp, 0), [w + 60, P1.top + P1.clamp * P1.H + h * 0.04], h * 0.012, 2.3);
+          wire(at(PL, PL.clamp, 0), [-60, PL.top + PL.clamp * PL.H + h * 0.03], h * 0.02, 2.3);
+          wire(at(P2, P2.clamp, 0), at(P1, P1.clamp, 0), h * 0.01, 1.6);
+        } else {                                                         // phones: one pole by the lane, its wires off to the left
+          const P1 = pole(Math.min(w - 16, xr + 46 * sc), h * 0.985, h * 0.6, { arms: [[0.04, 0.09, LO]], clamp: 0.3, trans: true, plate: true });
+          off(P1, 0, LO, -60, h * 0.02, h * 0.05);
+          for (const [dx, sag, wd] of [[-0.014, 0.04, 1.1], [0, 0.06, 2]]) wire(at(P1, P1.clamp, dx), [-60, P1.top + P1.clamp * P1.H + h * 0.03], h * sag, wd);
+        }
+        kPoles.sort((a, b) => a.H - b.H);                                // far ones first
+        kHill = new Path2D(); kHill.rect(0, fy, w, h - fy);
+        for (let i = 0, n = small ? 2 : 4; i < n; i++) {                // cabbage whites over the blossom
+          const x = rand(0.05, 0.95) * w, y = rand(fy + 10, h - 10);
+          kFliers.push({ x, y, tx: x, ty: y, vx: 0, vy: 0, ph: rand(0, TAU), s: rand(4, 5.5) * sc });
+        }
+        {                                                              // the distance out of focus, as if seen through spring air: a
+          const B = document.createElement('canvas'), bg = B.getContext('2d');   // blurred copy laid over it, full at the hills, gone by the field
+          B.width = land.width; B.height = land.height;
+          if ('filter' in bg) bg.filter = 'blur(' + (2.6 * dpr).toFixed(1) + 'px)';
+          bg.drawImage(land, 0, 0); bg.filter = 'none';
+          bg.globalCompositeOperation = 'destination-in';
+          const m = bg.createLinearGradient(0, 0, 0, B.height), at2 = y => clamp01((y - kLandTop) / Hs);
+          m.addColorStop(0, 'rgba(0, 0, 0, 1)'); m.addColorStop(at2(ty - Hs * 0.25), 'rgba(0, 0, 0, 0.55)'); m.addColorStop(at2(ty + 16 * sc), 'rgba(0, 0, 0, 0)'); m.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          bg.fillStyle = m; bg.fillRect(0, 0, B.width, B.height);
+          g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(B, 0, 0);
+          const veil = g.createLinearGradient(0, 0, 0, B.height);        // and a veil of light over it, paling the far side
+          veil.addColorStop(0, 'rgba(252, 230, 240, 0.38)'); veil.addColorStop(at2(ty), 'rgba(252, 230, 240, 0.12)'); veil.addColorStop(1, 'rgba(252, 230, 240, 0)');
+          g.globalCompositeOperation = 'source-atop'; g.fillStyle = veil; g.fillRect(0, 0, B.width, B.height);
+          g.restore();
+        }
+        kLand = land;
       }
 
-      function fallBase() { return kSeason === 'sakura' ? Math.max(22, Math.round(w * h / 11000)) : Math.max(9, Math.round(w * h / 36000)); }
+      // autumn's far view, after Arashiyama (嵐山): the mountain in its colours across the river, red maples with dark
+      // pines among them, tea-houses and a red parasol or two on the far bank, the river mist along its foot, 渡月橋
+      // stretched long and low over the water, and the jade river mirroring it all
+      function landMomiji(small, sc, colL, colR) {
+        const Hs = Math.round(h * (small ? 0.4 : 0.54));
+        kLandTop = h - Hs; kSkyTop = kLandTop + Hs * 0.3; kTrackY = 0;
+        const bank = Math.round(h * (small ? 0.82 : 0.77)), yD = h * (small ? 0.846 : 0.796), yW = h * (small ? 0.878 : 0.836);
+        kWaterY = bank; kFloatY = yW + 6;
+        const { c: land, g, ridge, below, vgrad, dot, wash } = landStrip(Hs), k0 = TAU / Math.max(w, 600);
+        // 遠山: ridge behind ridge, paler and bluer the further off
+        [[0.2, 0.1, 0.7, '#aebccc', '#dbe0e6'], [0.29, 0.085, 1.15, '#9aa9bb', '#d4d9e0'], [0.37, 0.07, 1.7, '#958f9a', '#ddd5d2']].forEach(([b, a, k, c0, c1]) => {
+          const ph = rand(0, TAU), at = x => ridge(x, kLandTop + Hs * b, Hs * a, k0 * k, ph);
+          below(at); g.fillStyle = vgrad(kLandTop + Hs * (b - a), kLandTop + Hs * (b + 0.16), c0, c1); g.fill();
+        });
+        // 嵐山: a great rounded mountain left of the middle, a lower one to the right, coming down to the river
+        const cx1 = w * (small ? 0.3 : 0.28), cx2 = w * 0.8, top0 = kLandTop + Hs * (small ? 0.2 : 0.15), phH = rand(0, TAU);
+        const hillTop = x => {
+          const e = Math.max(Math.exp(-Math.pow((x - cx1) / (w * 0.36), 2)), 0.66 * Math.exp(-Math.pow((x - cx2) / (w * 0.24), 2)), 0.24);
+          return bank - (bank - top0) * e + Hs * 0.022 * (Math.sin(x * k0 * 3.3 + phH) + 0.55 * Math.sin(x * k0 * 7.9 + phH * 2) + 0.3 * Math.sin(x * k0 * 17 + phH * 3));
+        };
+        below(hillTop); g.fillStyle = vgrad(top0, bank, '#5e1c26', '#3a1a1e'); g.fill();
+        const p1 = rand(0, TAU), p2 = rand(0, TAU);
+        const tone = (x, r) => {                                       // which colour: loosely in patches, mostly the reds
+          const n = (Math.sin(x * 0.0045 + r * 1.3 + p1) + 0.6 * Math.sin(x * 0.0125 - r * 0.8 + p2)) * 0.31 + 0.5 + rand(-0.22, 0.22);
+          return n < 0.3 ? 0 : n < 0.62 ? 1 : n < 0.86 ? 2 : n < 0.93 ? 3 : 4;
+        };
+        // a maple's crown: its mass in shade, the leaf colour heaped on it, sunlight on the upper right, a scatter of
+        // single leaves bright or dark
+        const crown = (x, y, rad, tn, hz) => {
+          const T = TONES[tn].map(c => kMix(c, hz));
+          g.fillStyle = T[0]; dot(x, y + rad * 0.12, rad);
+          g.fillStyle = T[1];
+          for (let i = 0; i < 5; i++) { const a = rand(0, TAU), d = rand(0.1, 0.55) * rad; dot(x + Math.cos(a) * d, y + Math.sin(a) * d * 0.8 - rad * 0.1, rad * rand(0.4, 0.6)); }
+          g.fillStyle = T[2];
+          for (let i = 0; i < 3; i++) { const a = rand(-2.3, -0.3), d = rand(0.2, 0.62) * rad; dot(x + Math.cos(a) * d + rad * 0.14, y + Math.sin(a) * d - rad * 0.06, rad * rand(0.22, 0.38)); }
+          for (let i = 0, n = Math.round(rad * 0.6); i < n; i++) {
+            const a = rand(0, TAU), d = Math.sqrt(Math.random()) * rad * 0.95, px = x + Math.cos(a) * d, py = y + Math.sin(a) * d * 0.9;
+            g.fillStyle = (px - x) - (py - y) > rand(-0.6, 0.6) * rad ? T[3] : Math.random() < 0.5 ? T[0] : T[1];
+            dot(px, py, rand(0.6, 1.3) * sc);
+          }
+        };
+        const pine = (x, y, rad, hz) => {                              // 赤松: a dark, flat-topped clump of pine among the colour
+          const C = ['#26392c', '#365240', '#4f6e52'].map(c => kMix(c, hz));
+          g.fillStyle = C[0]; g.beginPath(); g.ellipse(x, y + rad * 0.1, rad * 1.1, rad * 0.75, 0, 0, TAU); g.fill();
+          g.fillStyle = C[1];
+          for (let i = 0; i < 3; i++) { g.beginPath(); g.ellipse(x + rand(-0.5, 0.5) * rad, y - rand(0.1, 0.5) * rad, rad * rand(0.45, 0.7), rad * rand(0.22, 0.32), 0, 0, TAU); g.fill(); }
+          g.fillStyle = C[2]; g.beginPath(); g.ellipse(x + rad * 0.3, y - rad * 0.45, rad * 0.35, rad * 0.15, 0, 0, TAU); g.fill();
+        };
+        // the trees, scattered all over it, the higher the smaller and the hazier, drawn from the top down so the
+        // nearer ones stand in front; a line of them along the skyline first, so it is all trees, not a shape
+        const T2 = [];
+        for (let x = rand(-8, 0); x < w + 8; x += 6 * sc) T2.push([x, hillTop(x) + 2 * sc]);
+        for (let i = 0, n = Math.round(w * (bank - top0) * (small ? 0.9 : 1.1) / Math.pow(9 * sc, 2)); i < n; i++) {
+          const x = rand(-10, w + 10), top = hillTop(x);
+          T2.push([x, top + (bank - top) * Math.random()]);
+        }
+        T2.sort((a, b) => a[1] - b[1]);
+        for (const [x, y] of T2) {
+          const f = clamp01((y - top0) / (bank - top0)), rad = (5 + 7.5 * f) * sc * (small ? 0.9 : 1) * rand(0.85, 1.2), hz = 0.1 + (1 - f) * 0.24;
+          if (Math.random() < 0.12) pine(x, y, rad, hz); else crown(x, y, rad, tone(x, y * 0.04), hz);
+        }
+        // the sun from the top right on it, and 川霧: the river mist lying along the mountain's foot
+        const sunW = g.createRadialGradient(w * 0.95, kLandTop, 0, w * 0.95, kLandTop, Math.max(w, Hs) * 0.9);
+        sunW.addColorStop(0, 'rgba(255, 236, 226, 0.16)'); sunW.addColorStop(1, 'rgba(255, 236, 226, 0)');
+        wash(sunW, kLandTop, bank);
+        wash(vgrad(bank - Hs * 0.16, bank, 'rgba(236, 232, 236, 0)', 'rgba(236, 232, 236, 0.5)'), bank - Hs * 0.16, bank);
+        // the far bank: its stone edge, and at either end the low tea-houses of Arashiyama, with a red parasol (野点傘)
+        g.fillStyle = kMix('#7d736c', 0.25); g.fillRect(0, bank - 2.5 * sc, w, 3 * sc);
+        const house = (x, W2) => {
+          const H2 = W2 * rand(0.36, 0.48), y = bank - 2 * sc;
+          g.fillStyle = kMix('#efe9df', 0.2); g.fillRect(x, y - H2, W2, H2);
+          g.fillStyle = kMix('#5b4a40', 0.2);
+          for (let k = 1; k < 4; k++) g.fillRect(x + W2 * k / 4 - 0.6, y - H2, 1.2, H2);
+          g.fillRect(x, y - H2 * 0.45, W2, 1.2);
+          g.fillStyle = kMix('#45424a', 0.2);
+          g.beginPath(); g.moveTo(x - W2 * 0.08, y - H2); g.lineTo(x + W2 * 0.12, y - H2 - W2 * 0.18); g.lineTo(x + W2 * 0.88, y - H2 - W2 * 0.18); g.lineTo(x + W2 * 1.08, y - H2); g.closePath(); g.fill();
+        };
+        const parasol = x => {
+          const y = bank - 2 * sc, r = 9 * sc;
+          g.fillStyle = kMix('#a92a30', 0.15); g.fillRect(x - r * 0.9, y - r * 0.4, r * 1.8, r * 0.22);   // the bench under its red cloth
+          g.strokeStyle = kMix('#4a3c34', 0.2); g.lineWidth = Math.max(0.8, sc); g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - r * 1.25); g.stroke();
+          g.fillStyle = kMix('#b8262e', 0.15); g.beginPath(); g.moveTo(x - r * 1.05, y - r * 1.0); g.quadraticCurveTo(x, y - r * 1.8, x + r * 1.05, y - r * 1.0); g.closePath(); g.fill();
+        };
+        const ends = small ? [[2, w * 0.2], [w * 0.84, w - 2]] : [[4, colL - 24], [colR + 30, w - 4]];
+        ends.forEach(([x0, x1], i) => {
+          for (let x = x0 + rand(0, 14); x < x1 - 20 * sc; x += rand(34, 56) * sc) house(x, rand(24, 40) * sc);
+          if (!small || i === 0) parasol(i ? x0 + 16 * sc : x1 - 10 * sc);
+        });
+        kHill = new Path2D(); kHill.moveTo(0, bank);
+        for (let x = 0; x <= w + 8; x += 8) kHill.lineTo(x, hillTop(x) - 8 * sc);
+        kHill.lineTo(w + 8, bank); kHill.closePath();
+
+        // 渡月橋: long and low across the water, rising a little in the middle, its deck on rows of piers, a plain wooden
+        // railing along it; drawn once on its own strip, so the river can shimmer under it
+        const bTop = yD - h * 0.03, bBot = yW + 4, cam = x => -h * 0.006 * (1 - Math.pow((x - w * 0.5) / (w * 0.6), 2));
+        kDeckAt = x => yD + cam(x);
+        kBridge = document.createElement('canvas');
+        kBridge.width = Math.round(w * dpr); kBridge.height = Math.max(1, Math.round((bBot - bTop) * dpr)); kBridge.top = bTop; kBridge.hgt = bBot - bTop;
+        const b = kBridge.getContext('2d');
+        b.setTransform(dpr, 0, 0, dpr, 0, -bTop * dpr);
+        const dk = Math.max(3, h * 0.009), rh = Math.max(6, h * 0.012), span = (small ? 26 : 36) * sc;
+        for (let x = rand(0, span); x < w + span; x += span) {         // the piers, in bents: a far post in the light under the deck, a near one, a tie beam
+          const y0 = yD + dk + cam(x);
+          b.fillStyle = '#7b6c62'; b.fillRect(x + 3.5 * sc, y0, 1.6 * sc, yW - y0 + 2);
+          b.fillStyle = '#4e423c'; b.fillRect(x - 1.2 * sc, y0, 2.4 * sc, yW - y0 + 2);
+          b.fillRect(x - 1.5 * sc, y0 + (yW - y0) * 0.45, 6.5 * sc, 1.3 * sc);
+          b.fillStyle = 'rgba(255, 255, 255, 0.35)'; b.fillRect(x - 3 * sc, yW + 0.5, 9 * sc, 1);   // the water parting round them
+        }
+        b.fillStyle = 'rgba(40, 30, 28, 0.25)';                        // the shade under the deck
+        b.beginPath(); for (let x = 0; x <= w + 4; x += 4) b.lineTo(x, yD + dk + cam(x)); for (let x = w + 4; x >= 0; x -= 4) b.lineTo(x, yD + dk * 2.2 + cam(x)); b.closePath(); b.fill();
+        b.fillStyle = '#5d4d44';                                       // the deck
+        b.beginPath(); for (let x = 0; x <= w + 4; x += 4) b.lineTo(x, yD + cam(x)); for (let x = w + 4; x >= 0; x -= 4) b.lineTo(x, yD + dk + cam(x)); b.closePath(); b.fill();
+        b.strokeStyle = '#9a877a'; b.lineWidth = 1;
+        b.beginPath(); for (let x = 0; x <= w + 4; x += 4) b.lineTo(x, yD + cam(x) + 0.5); b.stroke();
+        b.fillStyle = '#6a594e';                                       // the railing
+        for (let x = rand(0, 11 * sc); x < w; x += 11 * sc) b.fillRect(x - 0.6 * sc, yD - rh + cam(x), 1.2 * sc, rh);
+        b.strokeStyle = '#6a594e'; b.lineWidth = Math.max(1, 1.5 * sc);
+        b.beginPath(); for (let x = 0; x <= w + 4; x += 4) b.lineTo(x, yD - rh + cam(x)); b.stroke();
+        b.lineWidth = Math.max(0.8, sc);
+        b.beginPath(); for (let x = 0; x <= w + 4; x += 4) b.lineTo(x, yD - rh * 0.45 + cam(x)); b.stroke();
+        kWalkers = [];                                                 // people strolling across it
+        for (let i = 0, n = small ? 4 : 9; i < n; i++) {
+          kWalkers.push({ x: rand(0, w), v: rand(0.1, 0.22) * (Math.random() < 0.5 ? 1 : -1), s: rand(0.9, 1.1) * sc * (small ? 0.85 : 1),
+                          c: ['#3b4560', '#e9e2d4', '#9b3a36', '#5e5a58', '#c9b38f', '#6d7b8c'][Math.floor(Math.random() * 6)], um: Math.random() < 0.2 });
+        }
+
+        // the river: the sky's pale light on jade-green water, with the mountain and the bridge upside down in it
+        const Hw = h - bank, srcH = Math.min(bank - kLandTop, Hw * 1.15);
+        kRefl = document.createElement('canvas'); kRefl.width = land.width; kRefl.height = Math.max(1, Math.round(Hw * dpr));
+        const rg = kRefl.getContext('2d'), sky = rg.createLinearGradient(0, 0, 0, kRefl.height);
+        sky.addColorStop(0, '#c6d0d2'); sky.addColorStop(1, '#7f9a9a');
+        rg.fillStyle = sky; rg.fillRect(0, 0, kRefl.width, kRefl.height);
+        rg.save(); rg.translate(0, Math.round(srcH * dpr)); rg.scale(1, -1); rg.globalAlpha = 0.85;
+        if ('filter' in rg) rg.filter = 'blur(' + (1.1 * dpr).toFixed(1) + 'px)';
+        rg.drawImage(land, 0, Math.round((bank - kLandTop - srcH) * dpr), land.width, Math.round(srcH * dpr), 0, 0, kRefl.width, Math.round(srcH * dpr));
+        rg.restore();
+        rg.save(); rg.globalAlpha = 0.45;
+        if ('filter' in rg) rg.filter = 'blur(' + (0.8 * dpr).toFixed(1) + 'px)';
+        rg.setTransform(1, 0, 0, -1, 0, Math.round((2 * yW - bTop - bank) * dpr)); rg.drawImage(kBridge, 0, 0);
+        rg.restore();
+        const deep = rg.createLinearGradient(0, 0, 0, kRefl.height);
+        deep.addColorStop(0, 'rgba(64, 92, 96, 0.05)'); deep.addColorStop(1, 'rgba(64, 92, 96, 0.42)');
+        rg.fillStyle = deep; rg.fillRect(0, 0, kRefl.width, kRefl.height);
+        kBoats = []; kBoats.push(newBoat(true)); kNextBoat = kt + rand(900, 1600);
+        // ススキ: pampas grass on the near bank, in the corners
+        for (const [x0, x1] of small ? [[0, w * 0.18], [w * 0.82, w]] : [[0, colL - 30], [colR + 30, w]]) {
+          for (let x = x0 + rand(5, 30); x < x1; x += rand(40, 90) * sc) {
+            const st = [];
+            for (let i = 0, n = 4 + Math.floor(Math.random() * 4); i < n; i++) st.push({ dx: rand(-7, 7) * sc, len: rand(34, 64) * sc, lean: rand(-0.3, 0.45), ph: rand(0, TAU), k: rand(0.7, 1.3) });
+            kReeds.push({ x, y: h + 2, st });
+          }
+        }
+        // the bridge's name post: at our end of 渡月橋, on the paving of the near bank, a square post of weathered
+        // wood with the name brushed down its face in black ink, so it is plain which bridge this is
+        const makePost = () => {
+          const W2 = (small ? 30 : 40) * sc, H2 = (small ? 108 : 140) * sc, fs = Math.max(15, W2 * 0.8), sd = W2 * 0.2;   // sd: its side, in the light
+          const cx = small ? w - W2 * 0.5 - sd - 10 : Math.min(w - W2 * 0.5 - sd - 26 * sc, colR + (w - colR) * 0.58), y0 = h - (small ? 16 : 22) * sc;
+          const x0 = Math.min(cx - W2 * 2.2, small ? w * 0.7 : colR + 12), top = y0 - H2 - 8 * sc;
+          const c = document.createElement('canvas'), cw = w - x0, ch = h - top;
+          c.width = Math.max(1, Math.round(cw * dpr)); c.height = Math.max(1, Math.round(ch * dpr));
+          const sg = c.getContext('2d'); sg.setTransform(dpr, 0, 0, dpr, -x0 * dpr, -top * dpr);
+          const bt = h - (small ? 24 : 32) * sc;                         // the near bank: granite paving at the bridge's end
+          const pv = sg.createLinearGradient(0, bt, 0, h);
+          pv.addColorStop(0, '#a49b93'); pv.addColorStop(1, '#7d746d');
+          sg.fillStyle = pv; sg.beginPath(); sg.moveTo(x0, h + 2); sg.lineTo(x0 + 26 * sc, bt + 3 * sc); sg.lineTo(w + 2, bt); sg.lineTo(w + 2, h + 2); sg.closePath(); sg.fill();
+          sg.fillStyle = '#c9c1b8'; sg.beginPath(); sg.moveTo(x0 + 26 * sc, bt + 3 * sc); sg.lineTo(w + 2, bt); sg.lineTo(w + 2, bt + 1.5 * sc); sg.lineTo(x0 + 26 * sc, bt + 4.5 * sc); sg.closePath(); sg.fill();
+          sg.strokeStyle = 'rgba(70, 62, 56, 0.4)'; sg.lineWidth = 1;
+          for (let x = x0 + 40 * sc; x < w; x += rand(26, 40) * sc) { sg.beginPath(); sg.moveTo(x, bt + 4 * sc); sg.lineTo(x - 4 * sc, h); sg.stroke(); }
+          sg.beginPath(); sg.moveTo(x0 + 18 * sc, bt + 14 * sc); sg.lineTo(w, bt + 12 * sc); sg.stroke();
+          sg.fillStyle = 'rgba(40, 40, 38, 0.25)';                       // its shadow on the paving
+          sg.beginPath(); sg.ellipse(cx - W2 * 0.35, y0 + 1, W2 * 0.95, 3.5 * sc, 0, 0, TAU); sg.fill();
+          const L = cx - W2 / 2, T = y0 - H2;
+          const side = sg.createLinearGradient(0, T, 0, y0);             // its side, weathered darker toward the foot
+          side.addColorStop(0, '#e2d9c9'); side.addColorStop(0.65, '#cfc5b3'); side.addColorStop(1, '#9d9a83');
+          sg.fillStyle = side; sg.beginPath(); sg.moveTo(L + W2, T); sg.lineTo(L + W2 + sd, T - sd * 0.45); sg.lineTo(L + W2 + sd, y0 - sd * 0.45); sg.lineTo(L + W2, y0); sg.closePath(); sg.fill();
+          sg.fillStyle = '#ebe3d5';                                      // its flat top
+          sg.beginPath(); sg.moveTo(L, T); sg.lineTo(L + sd, T - sd * 0.45); sg.lineTo(L + W2 + sd, T - sd * 0.45); sg.lineTo(L + W2, T); sg.closePath(); sg.fill();
+          const face = sg.createLinearGradient(L, 0, L + W2, 0);         // its face, the grey-beige of old cypress
+          face.addColorStop(0, '#bdb2a0'); face.addColorStop(0.5, '#cdc3b1'); face.addColorStop(1, '#d6ccbb');
+          sg.fillStyle = face; sg.fillRect(L, T, W2, H2);
+          sg.save(); sg.beginPath(); sg.rect(L, T, W2, H2); sg.clip();
+          for (let i = 0, n = Math.round(W2 / 2.2); i < n; i++) {        // the grain running down it
+            const gx = L + rand(0, W2), wob = rand(-1.5, 1.5) * sc;
+            sg.strokeStyle = Math.random() < 0.7 ? 'rgba(120, 104, 86, 0.22)' : 'rgba(255, 250, 240, 0.25)'; sg.lineWidth = rand(0.5, 1.1);
+            sg.beginPath(); sg.moveTo(gx, T); sg.bezierCurveTo(gx + wob, T + H2 * 0.3, gx - wob, T + H2 * 0.7, gx + wob * 0.5, y0); sg.stroke();
+          }
+          const stain = sg.createLinearGradient(0, T + H2 * 0.45, 0, y0);   // the weather on its lower half, greenish grey
+          stain.addColorStop(0, 'rgba(110, 118, 92, 0)'); stain.addColorStop(1, 'rgba(110, 118, 92, 0.5)');
+          sg.fillStyle = stain; sg.fillRect(L, T, W2, H2);
+          sg.restore();
+          sg.font = fs.toFixed(1) + 'px "Yuji Boku", "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "Noto Serif JP", serif';
+          sg.textAlign = 'center'; sg.textBaseline = 'middle'; sg.fillStyle = '#1f1c1a';
+          ['渡', '月', '橋'].forEach((ch2, i) => sg.fillText(ch2, cx + rand(-0.6, 0.6), T + H2 * 0.13 + fs * 0.55 + i * fs * 1.12));   // 渡月橋, in ink
+          return { c, x: x0, y: top, cw, ch, cx, W2 };
+        };
+        kStone = makePost();
+        kReeds = kReeds.filter(R => Math.abs(R.x - kStone.cx) > kStone.W2 * 1.4);   // keep the grass off its name
+        if (document.fonts && document.fonts.load) {                     // the brush hand may arrive after the scene is laid out: then write it again
+          const mine = kStone;
+          document.fonts.load('40px "Yuji Boku"', '渡月橋').then(f => { if (f && f.length && kStone === mine) kStone = makePost(); }).catch(() => {});
+        }
+        for (let i = 0, n = small ? 3 : 6; i < n; i++) {                // 赤とんぼ: red dragonflies
+          const x = rand(0.04, 0.96) * w, y = rand(kLandTop + Hs * 0.45, h - 12);
+          kFliers.push({ x, y, tx: x, ty: y, a: rand(0, TAU), wait: rand(20, 120), ph: rand(0, TAU), s: (small ? 0.85 : 1) * sc });
+        }
+        kLand = land;
+      }
+
+      // a boat on the river: a 屋形船 with its roofed cabin, or a little rowing boat with someone at the oar,
+      // drifting slowly across
+      function newBoat(anywhere) {
+        const roofed = Math.random() < 0.55, dir = Math.random() < 0.5 ? 1 : -1, s = w < 760 ? 0.72 : Math.min(1.15, Math.max(0.8, Math.sqrt(w * h) / 1140));
+        const L = (roofed ? 86 : 34) * s;
+        return { roofed, dir, s, L, x: anywhere ? rand(0.15, 0.85) * w : dir > 0 ? -L - 20 : w + L + 20, y: rand(kFloatY + h * 0.035, h - h * 0.035), v: rand(0.1, 0.17) * (roofed ? 1 : 1.3), ph: rand(0, TAU) };
+      }
+      function drawBoat(B, A) {
+        const s = B.s, L = B.L, y = B.y + Math.sin(kt * 0.018 + B.ph) * 0.6;
+        ctx.setTransform(dpr * B.dir, 0, 0, dpr, B.x * dpr, y * dpr);
+        ctx.globalAlpha = A;
+        ctx.fillStyle = 'rgba(40, 52, 56, 0.18)'; ctx.fillRect(-L / 2, 1.5 * s, L, 5 * s);         // its reflection
+        ctx.fillStyle = '#4f3e33';                                     // the hull, its bow raised
+        ctx.beginPath(); ctx.moveTo(-L / 2, -3 * s); ctx.lineTo(L / 2 + 4 * s, -5.5 * s); ctx.lineTo(L / 2 - 3 * s, 2 * s); ctx.lineTo(-L / 2 + 2 * s, 2 * s); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#8a7362'; ctx.fillRect(-L / 2, -3.2 * s, L, 0.9 * s);
+        if (B.roofed) {
+          const x0 = -L / 2 + 8 * s, x1 = L / 2 - 12 * s;
+          ctx.fillStyle = '#ece5d7'; ctx.fillRect(x0, -15 * s, x1 - x0, 12 * s);                     // shoji all round the cabin
+          ctx.fillStyle = '#4a3c33';
+          for (let x = x0; x <= x1; x += 7 * s) ctx.fillRect(x, -15 * s, 0.9 * s, 12 * s);
+          ctx.fillRect(x0, -9.5 * s, x1 - x0, 0.7 * s);
+          ctx.fillStyle = '#3f3b3d'; kRound(ctx, x0 - 4 * s, -19 * s, x1 - x0 + 8 * s, 4.2 * s, 1.5 * s); ctx.fill();   // its roof
+          ctx.fillStyle = '#b8352a';                                   // two red lanterns at the eaves
+          for (const lx of [x0 - 1 * s, x1 + 1 * s]) { ctx.beginPath(); ctx.ellipse(lx, -12.5 * s, 1.6 * s, 2.3 * s, 0, 0, TAU); ctx.fill(); }
+        } else {
+          ctx.fillStyle = '#3b4560'; kRound(ctx, -2.5 * s, -12 * s, 5 * s, 9 * s, 2 * s); ctx.fill();   // the rower
+          ctx.fillStyle = '#d9c4a8'; ctx.beginPath(); ctx.arc(0, -14 * s, 2 * s, 0, TAU); ctx.fill();
+          ctx.strokeStyle = '#6b5a4c'; ctx.lineWidth = 1.1 * s;
+          ctx.beginPath(); ctx.moveTo(-L * 0.38, 3 * s); ctx.lineTo(1 * s, -8 * s); ctx.stroke();
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      // someone crossing the bridge: a little figure in their coat, now and then under an umbrella
+      function drawWalker(p, A) {
+        const s = p.s, y = kDeckAt(p.x);
+        ctx.setTransform(dpr, 0, 0, dpr, p.x * dpr, y * dpr);
+        ctx.globalAlpha = A;
+        ctx.fillStyle = '#3a3230'; ctx.fillRect(-0.9 * s, -1.6 * s, 0.8 * s, 1.6 * s); ctx.fillRect(0.2 * s, -1.6 * s, 0.8 * s, 1.6 * s);
+        ctx.fillStyle = p.c; kRound(ctx, -1.4 * s, -7 * s, 2.8 * s, 5.6 * s, 1 * s); ctx.fill();
+        ctx.fillStyle = '#3a2f2a'; ctx.beginPath(); ctx.arc(0, -8.2 * s, 1.3 * s, 0, TAU); ctx.fill();
+        if (p.um) { ctx.fillStyle = '#a8343a'; ctx.beginPath(); ctx.arc(0, -9 * s, 3.6 * s, Math.PI, TAU); ctx.fill(); }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function fallBase() { return kSeason === 'sakura' ? Math.max(22, Math.round(w * h / 11000)) : Math.max(10, Math.round(w * h / 30000)); }
 
       // something falling: depth z sets size, speed and focus — far ones soft, a rare near one big and blurred
       function newFall(kind) {
         const leaf = kSeason === 'momiji', zr = Math.random(), roll = Math.random();
-        const z = zr < 0.3 ? rand(0.45, 0.75) : zr < 0.95 ? rand(0.8, 1.25) : rand(1.7, 2.4);
+        const z = zr < 0.3 ? rand(0.45, 0.75) : zr < (leaf ? 0.95 : 0.9) ? rand(0.8, 1.25) : rand(1.7, 2.4);   // in spring more of them near, and out of focus
         const p = {
           z, s: (leaf ? rand(22, 34) : rand(8, 14)) * z * (w < 760 ? 0.85 : 1),
-          c: leaf ? (roll < 0.28 ? 0 : roll < 0.58 ? 1 : roll < 0.82 ? 2 : roll < 0.97 ? 3 : 4) : (roll < 0.3 ? 0 : roll < 0.62 ? 1 : roll < 0.88 ? 2 : 3),
+          c: leaf ? (roll < 0.3 ? 0 : roll < 0.62 ? 1 : roll < 0.82 ? 2 : roll < 0.94 ? 3 : 4) : (roll < 0.3 ? 0 : roll < 0.62 ? 1 : roll < 0.88 ? 2 : 3),
           flip: rand(0, TAU), fsp: leaf ? rand(0.02, 0.055) : rand(0.04, 0.11), rot: rand(0, TAU), rsp: leaf ? rand(-0.03, 0.03) : rand(-0.025, 0.025),
           drag: rand(0.7, 1.25), fs: leaf ? rand(0.008, 0.018) : rand(0.012, 0.03), ph: rand(0, TAU),
-          vy: leaf ? rand(0.5, 0.95) : rand(0.45, 0.85), sway: leaf ? rand(0.6, 1.2) : 0.35, vx: 0, x: 0, y: 0,
-          land: z > 1.5 ? h + 200 : z < 0.8 ? kSkyTop + (h - kSkyTop) * rand(0.3, 0.6) : kWaterY + rand(2, Math.max(3, h - kWaterY - 3)),
+          vy: leaf ? rand(0.5, 0.95) : rand(0.36, 0.68), sway: leaf ? rand(0.6, 1.2) : 0.35, vx: 0, x: 0, y: 0,
+          land: z > 1.5 ? h + 200 : z < 0.8 ? kSkyTop + (h - kSkyTop) * rand(0.3, 0.6) : kFloatY + rand(2, Math.max(3, h - kFloatY - 3)),
         };
         if (kind === 'top') { p.x = rand(-0.15 * w, w); p.y = -rand(10 + p.s, h * 0.25); }
         else if (kind === 'any') { p.x = rand(0, w); p.y = rand(-0.1 * h, kWaterY - 10); }
@@ -2417,7 +2761,7 @@
         renderKyoto();
       }
 
-      // one 60 Hz step: the wind, everything falling, what floats on the canal
+      // one 60 Hz step: the wind, the cloud, everything falling, what floats on the pond, and whoever is passing
       function stepKyoto() {
         kReading += (Math.min(1, Math.max(0, (window.scrollY - h * 0.3) / (h * 0.7))) - kReading) * 0.05;
         if (!kGustAt && kt >= kNextGust) { kGustAt = { at: kt, dur: rand(200, 280), str: rand(0.7, 1) }; kNextGust = kt + rand(900, 1400); }
@@ -2440,8 +2784,8 @@
           p.flip += p.fsp * (1 + 1.5 * kGust);
           p.rot += p.rsp * (1 + 2.5 * kGust);
           if (p.y >= p.land) {
-            if (p.z >= 0.8 && p.z <= 1.5 && kRafts.length < (small ? 90 : leaf ? 70 : 220)) {   // it settles on the canal
-              kRafts.push({ x: p.x, y: p.land, s: p.s * 0.9, c: p.c, rot: p.rot, rs: rand(-0.004, 0.004), v: rand(0.12, 0.28), age: 0, L: rand(700, 1100) });
+            if (p.z >= 0.8 && p.z <= 1.5 && kRafts.length < (small ? 90 : leaf ? 70 : 220)) {   // it settles: on the pond, or on the field
+              kRafts.push({ x: p.x, y: p.land, s: p.s * 0.9, c: p.c, rot: p.rot, rs: leaf ? rand(-0.004, 0.004) : 0, v: leaf ? rand(0.12, 0.28) : 0, age: 0, L: rand(700, 1100) });
             }
             kFall[i] = kFall[kFall.length - 1]; kFall.pop(); continue;
           }
@@ -2449,22 +2793,79 @@
         }
         for (let i = kRafts.length - 1; i >= 0; i--) {
           const r = kRafts[i];
-          r.x += r.v + kGust * 0.25; r.rot += r.rs; r.age++;
+          if (leaf) r.x += r.v + kGust * 0.25;
+          r.rot += r.rs; r.age++;
           if (r.age > r.L || r.x > w + 20) { kRafts[i] = kRafts[kRafts.length - 1]; kRafts.pop(); }
         }
-        for (const wl of kWaves) { wl.x += wl.v; if (wl.x > w + 20) wl.x = -20; }
+        for (const c of kClouds) { c.x += c.v * (1 + 2 * kGust); if (c.x > w + 20) c.x = -c.wd - 20; }
+        for (const s of kShade) { s.x += s.v * (1 + 2 * kGust); if (s.x - s.rw > w) s.x = -s.rw; }
+        if (leaf) {
+          // 月に雁, by day: now and then a skein of wild geese crosses the sky
+          if (!kSkein && kt >= kNextSkein) {
+            const dir = Math.random() < 0.5 ? 1 : -1, n = 7 + Math.floor(Math.random() * 8), s = (small ? 0.8 : 1) * rand(0.85, 1.2);
+            kSkein = { dir, x: dir > 0 ? -40 : w + 40, y: h * rand(0.1, 0.36), v: rand(1.3, 1.9), n, s, slope: rand(-0.06, 0.03), ph: rand(0, TAU), skew: rand(0.6, 1.4) };
+          }
+          if (kSkein) {
+            const S = kSkein, tail = 60 + S.n * 8 * S.s;
+            S.x += S.v * S.dir; S.y += S.slope * S.v;
+            if (S.x < -tail || S.x > w + tail) { kSkein = null; kNextSkein = kt + rand(1500, 2800); }
+          }
+          for (const p of kWalkers) { p.x += p.v; if (p.x > w + 12) p.x = -12; else if (p.x < -12) p.x = w + 12; }
+          for (let i = kBoats.length - 1; i >= 0; i--) {
+            const B = kBoats[i];
+            B.x += B.v * B.dir;
+            if (B.x < -B.L - 40 || B.x > w + B.L + 40) { kBoats.splice(i, 1); kNextBoat = kt + rand(600, 1400); }
+          }
+          if (kBoats.length < (small ? 1 : 2) && kt >= kNextBoat) { kBoats.push(newBoat(false)); kNextBoat = kt + rand(1200, 2400); }
+          for (const b of kFliers) {                                   // a dragonfly hangs in the air, then darts off somewhere else
+            if (b.wait > 0) {
+              b.wait--; b.x += Math.sin(kt * 0.3 + b.ph) * 0.15; b.y += Math.cos(kt * 0.23 + b.ph) * 0.12;
+              if (b.wait <= 0) { b.tx = Math.max(10, Math.min(w - 10, b.x + rand(-180, 180))); b.ty = Math.max(kSkyTop + 20, Math.min(h - 10, b.y + rand(-70, 70))); }
+            } else {
+              const dx = b.tx - b.x, dy = b.ty - b.y, d = Math.hypot(dx, dy);
+              if (d < 4) b.wait = rand(40, 170); else { b.a = Math.atan2(dy, dx); b.x += dx / d * 3.4; b.y += dy / d * 3.4; }
+            }
+          }
+        } else {
+          for (const b of kFliers) {                                   // a butterfly wanders
+            b.vx += (b.tx - b.x) * 0.002 - b.vx * 0.03 + rand(-0.06, 0.06);
+            b.vy += (b.ty - b.y) * 0.002 - b.vy * 0.03 + rand(-0.06, 0.06) + Math.sin(kt * 0.2 + b.ph) * 0.05;
+            b.x += b.vx; b.y += b.vy;
+            if (Math.hypot(b.tx - b.x, b.ty - b.y) < 20 || Math.random() < 0.004) { b.tx = rand(0.03, 0.97) * w; b.ty = rand(kWaterY + 6, h - 8); }
+          }
+          const X = kXing;
+          if (X) {
+            // the train: the lamps blink and the arm comes down, it runs through with its wind behind it, and when
+            // it's well gone the arm goes up again
+            if (!kTrain && kt >= kNextTrain) {
+              const k = (small ? 0.82 : 1) * X.k, cars = small ? 2 : 2 + (Math.random() < 0.45 ? 1 : 0);
+              kTrain = { k, cars, len: cars * 155 * k, x: -20, v: rand(5.2, 6.6) * X.k, c: LIVERY[Math.floor(Math.random() * LIVERY.length)], age: 0, gone: 0 };
+            }
+            const T = kTrain;
+            if (T) {
+              T.age++;
+              if (T.age > 150) T.x += T.v;
+              if (T.age === 190 && !kGustAt) { kGustAt = { at: kt, dur: 230, str: 0.8 }; kNextGust = Math.max(kNextGust, kt + 700); }
+              if (T.x - T.len > w + 30) T.gone++;
+              X.on = T.gone < 70;
+              X.arm += ((T.age > 25 && T.gone < 45 ? 1 : 0) - X.arm) * 0.06;
+              if (T.gone > 150) { kTrain = null; kNextTrain = kt + rand(1300, 2300); }
+            } else { X.on = false; X.arm *= 0.94; }
+          }
+        }
         kt++;
       }
 
       function renderKyoto() {
-        const S = kSprites[kSeason], P = KYOTO[kSeason], leaf = kSeason === 'momiji';
+        const S = kSprites[kSeason], P = DAY[kSeason], leaf = kSeason === 'momiji';
         const fadeIn = reduceMotion ? 1 : clamp01((kt - kStart) / 45);
+        const dot = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.globalAlpha = fadeIn;
-        ctx.fillStyle = kHaze;
+        ctx.fillStyle = kSky;
         ctx.fillRect(0, 0, w, h);
         // the sun just beyond the top right, and a few faint shafts of its light
-        const sx = w * 0.9, sy = -h * 0.04, sr = Math.max(w, h) * 0.42;
+        const sx = w * 0.9, sy = -h * 0.04, sr = Math.max(w, h) * (leaf ? 0.42 : 0.56);
         const sun = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr);
         sun.addColorStop(0, 'rgba(' + P.sun + ', 0.85)'); sun.addColorStop(0.35, 'rgba(' + P.sun + ', 0.35)'); sun.addColorStop(1, 'rgba(' + P.sun + ', 0)');
         ctx.fillStyle = sun;
@@ -2480,19 +2881,85 @@
           ctx.lineTo(ex - nx * r.wd * 3, ey - ny * r.wd * 3); ctx.lineTo(ex + nx * r.wd * 3, ey + ny * r.wd * 3);
           ctx.closePath(); ctx.fill();
         }
-        ctx.globalAlpha = fadeIn;
-        ctx.drawImage(kSkyline, 0, kSkyTop, w, h - kSkyTop);
-        ctx.strokeStyle = '#ffffff';                                   // ripples on the canal
-        ctx.lineWidth = 1;
-        for (const wl of kWaves) {
-          ctx.globalAlpha = fadeIn * (0.3 + 0.3 * Math.sin(kt * 0.05 + wl.ph));
-          ctx.beginPath(); ctx.moveTo(wl.x, wl.y); ctx.lineTo(wl.x + wl.len, wl.y); ctx.stroke();
+        for (const c of kClouds) { ctx.globalAlpha = fadeIn * c.a; ctx.drawImage(c.img, c.x, c.y, c.wd, c.hg); }
+        if (kSkein) {                                                  // the geese: a leader and two trailing lines, each bird beating its wings
+          const K = kSkein;
+          ctx.strokeStyle = 'rgba(52, 60, 88, 0.72)'; ctx.lineWidth = 1.5 * K.s; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+          ctx.globalAlpha = fadeIn;
+          ctx.beginPath();
+          for (let i = 0; i < K.n; i++) {
+            const rank = Math.ceil(i / 2), sd = i % 2 ? 1 : -1, bx = K.x - K.dir * rank * 13 * K.s;
+            const by = K.y + sd * rank * 6.5 * K.s * (sd > 0 ? K.skew : 1) + Math.sin(kt * 0.05 + i) * 1.2, a = Math.sin(kt * 0.17 + i * 0.9 + K.ph);
+            ctx.moveTo(bx - 6.5 * K.s, by - a * 4.2 * K.s); ctx.lineTo(bx, by); ctx.lineTo(bx + 6.5 * K.s, by - a * 4.2 * K.s);
+            ctx.moveTo(bx, by); ctx.lineTo(bx + K.dir * 4 * K.s, by - 0.8 * K.s);
+          }
+          ctx.stroke();
         }
-        for (const r of kRafts) {                                      // 花筏 / 紅葉流し: floating flat on the water
+        ctx.globalAlpha = fadeIn;
+        ctx.drawImage(kLand, 0, kLandTop, w, h - kLandTop);
+        if (kHill) {                                                   // the clouds' shadows, passing over the land
+          ctx.save(); ctx.clip(kHill);
+          for (const s of kShade) { ctx.globalAlpha = fadeIn * s.a; ctx.drawImage(kSprites.shade, s.x - s.rw, s.y - s.rh, s.rw * 2, s.rh * 2); }
+          ctx.restore();
+        }
+        ctx.lineCap = 'round';
+        if (leaf) {
+          // the river: the mountain and the bridge upside down in it, shivering in rows, stiller toward the far bank
+          const Hw = h - kWaterY;
+          ctx.globalAlpha = fadeIn;
+          for (let y = 0; y < Hw; y += 3) {
+            const d = y / Hw, dx = Math.sin(kt * 0.045 + y * 0.42) * (0.5 + 3 * d) * (1 + 1.5 * kGust) + Math.sin(kt * 0.021 + y * 0.13) * 1.5 * d;
+            const sy2 = Math.min(kRefl.height - 1, Math.round(y * dpr)), sh = Math.max(1, Math.min(kRefl.height - sy2, Math.round(3 * dpr)));
+            ctx.drawImage(kRefl, 0, sy2, kRefl.width, sh, dx - 6, kWaterY + y, w + 12, 3.4);
+          }
+          ctx.drawImage(kBridge, 0, kBridge.top, w, kBridge.hgt);
+          for (const p of kWalkers) drawWalker(p, fadeIn);
+          for (const B of kBoats) drawBoat(B, fadeIn);
+          ctx.globalAlpha = fadeIn; ctx.drawImage(kStone.c, kStone.x, kStone.y, kStone.cw, kStone.ch);
+          ctx.globalAlpha = fadeIn;
+        } else {
+          for (const P2 of kPoles) if (P2.by < kTrackY) drawPole(P2, fadeIn);   // the poles beyond the line, and every wire
+          ctx.lineCap = 'round';
+          for (const W2 of kWires) {
+            const sw = Math.sin(kt * 0.012 + W2.ph) * 1.2 * (1 + 2.5 * kGust);
+            ctx.globalAlpha = fadeIn; ctx.strokeStyle = 'rgba(66, 74, 92, 0.62)'; ctx.lineWidth = W2.wd * 0.85;
+            ctx.beginPath(); ctx.moveTo(W2.a[0], W2.a[1]);
+            ctx.quadraticCurveTo((W2.a[0] + W2.b[0]) / 2, (W2.a[1] + W2.b[1]) / 2 + 2 * W2.sag + sw, W2.b[0], W2.b[1]); ctx.stroke();
+          }
+          if (kTrain) drawTrain(fadeIn);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.globalAlpha = fadeIn;
+          for (const q of kFlutter) {                                  // the nearest rape blossom, nodding
+            const tx = q.x + Math.sin(kt * 0.026 + q.ph) * 1.6 + kGust * 7, ty = q.y - q.len;
+            ctx.strokeStyle = '#6da544'; ctx.lineWidth = Math.max(0.7, q.s * 0.4);
+            ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.quadraticCurveTo(q.x, q.y - q.len * 0.5, tx, ty); ctx.stroke();
+            ctx.fillStyle = YELLOWS[q.c];
+            dot(tx - q.s * 0.7, ty, q.s); dot(tx + q.s * 0.7, ty, q.s); dot(tx, ty - q.s * 0.7, q.s);
+          }
+          if (kXing) drawCrossing(fadeIn);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          for (const P2 of kPoles) if (P2.by >= kTrackY) drawPole(P2, fadeIn);  // and the ones this side of it, the train passing behind
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        for (const r of kRafts) {                                      // 紅葉流し on the pond; petals lying where they fell
           const cs = Math.cos(r.rot), sn = Math.sin(r.rot), sy2 = 0.42;
           ctx.setTransform(cs * dpr, sn * sy2 * dpr, -sn * dpr, cs * sy2 * dpr, r.x * dpr, r.y * dpr);
           ctx.globalAlpha = fadeIn * 0.9 * Math.min(1, (r.L - r.age) / 120);
           ctx.drawImage(S.fall[r.c], -r.s / 2, -r.s / 2, r.s, r.s);
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (leaf) {
+          for (const R of kReeds) {
+            for (const s of R.st) {
+              const lean = s.lean + Math.sin(kt * 0.018 * s.k + s.ph) * 0.07 + kGust * 0.4 * s.k, bx = R.x + s.dx, by = R.y;
+              const tx = bx + Math.sin(lean) * s.len, ty = by - Math.cos(lean) * s.len, pa = lean + 0.5, pl = s.len * 0.34;
+              ctx.globalAlpha = fadeIn;
+              ctx.strokeStyle = '#b9a56a'; ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.moveTo(bx, by); ctx.quadraticCurveTo(bx + Math.sin(lean * 0.3) * s.len * 0.5, by - s.len * 0.55, tx, ty); ctx.stroke();
+              ctx.strokeStyle = 'rgba(252, 245, 226, 0.94)'; ctx.lineWidth = 2.8;                           // its plume
+              ctx.beginPath(); ctx.moveTo(tx, ty); ctx.quadraticCurveTo(tx + Math.sin(pa) * pl * 0.5, ty - Math.cos(pa) * pl * 0.6, tx + Math.sin(pa + 0.5) * pl, ty - Math.cos(pa + 0.5) * pl * 0.7); ctx.stroke();
+            }
+          }
         }
         const fallA = fadeIn * (1 - 0.25 * kReading);
         const drawFall = layer => {                                    // 0: far (soft), 1: in focus, 2: near (big, soft)
@@ -2508,7 +2975,32 @@
           }
         };
         drawFall(0);
-        // the tree, lifting away a little and fading while reading
+        for (const b of kFliers) {
+          if (leaf) {                                                  // 赤とんぼ: a red body, and four clear wings held out still as it glides
+            const cs = Math.cos(b.a) * b.s * dpr, sn = Math.sin(b.a) * b.s * dpr;
+            ctx.setTransform(cs, sn, -sn, cs, b.x * dpr, b.y * dpr);
+            ctx.globalAlpha = fadeIn * 0.6;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'; ctx.strokeStyle = 'rgba(120, 110, 110, 0.55)'; ctx.lineWidth = 0.35;
+            for (const [x0, len, sw] of [[1.6, 7.6, 0.16], [-0.8, 7, 0.32]]) {
+              for (const sd of [-1, 1]) {
+                ctx.beginPath(); ctx.ellipse(x0 - sd * sd * len * sw * 0.5, sd * len * 0.52, 1.3, len * 0.5, sd * sw, 0, TAU); ctx.fill(); ctx.stroke();
+              }
+            }
+            ctx.globalAlpha = fadeIn;
+            ctx.strokeStyle = '#c9301c'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(-8, 0); ctx.lineTo(3, 0); ctx.stroke();
+            ctx.fillStyle = '#8a1f14'; dot(4, 0, 1.6);
+          } else {                                                     // モンシロチョウ: two white wings opening and closing
+            const fl = Math.abs(Math.sin(kt * 0.3 + b.ph));
+            ctx.setTransform(dpr, 0, 0, dpr, b.x * dpr, b.y * dpr);
+            ctx.globalAlpha = fadeIn;
+            ctx.fillStyle = '#ffffff'; ctx.strokeStyle = 'rgba(110, 120, 150, 0.55)'; ctx.lineWidth = 0.6;
+            for (const sd of [-1, 1]) {
+              ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(sd * b.s * (0.25 + 0.75 * fl), -b.s * 0.9); ctx.lineTo(sd * b.s * (0.3 + 0.8 * fl), b.s * 0.35); ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
+          }
+        }
+        // the bough in the corner, lifting away a little and fading while reading
         const lift = -kReading * h * 0.06, ta = fadeIn * (1 - 0.35 * kReading);
         ctx.setTransform(dpr, 0, 0, dpr, 0, lift * dpr);
         if (!leaf) {
@@ -2533,12 +3025,6 @@
             ctx.setTransform(cs * dpr, sn * dpr, -sn * dpr, cs * dpr, l.x * dpr, (l.y + lift) * dpr);
             ctx.drawImage(S.fall[l.c], -D / 2, -D * 0.92, D, D);
           }
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);                      // the low sun shining through the leaves
-          ctx.globalCompositeOperation = 'soft-light';
-          ctx.globalAlpha = ta * 0.6;
-          ctx.fillStyle = sun;
-          ctx.fillRect(sx - sr, 0, sr * 2, sr + sy);
-          ctx.globalCompositeOperation = 'source-over';
         } else {
           const shapes = kTwigs.map(twigNow);
           ctx.strokeStyle = '#8b777e';
@@ -2564,8 +3050,167 @@
         }
         drawFall(1);
         drawFall(2);
+        if (!leaf) {
+          // 光の滲み: in spring the light bleeds over every edge, as through a soft lens, so poles and wires and
+          // branches half dissolve into the bright air. A small, blurred copy of the picture laid back over it
+          const bw = Math.max(1, Math.round(w / 6)), bh = Math.max(1, Math.round(h / 6));
+          if (!kGlowA || kGlowA.width !== bw || kGlowA.height !== bh) {
+            kGlowA = document.createElement('canvas'); kGlowB = document.createElement('canvas');
+            kGlowA.width = kGlowB.width = bw; kGlowA.height = kGlowB.height = bh;
+          }
+          const ga = kGlowA.getContext('2d'), gb = kGlowB.getContext('2d');
+          ga.globalCompositeOperation = 'copy'; ga.imageSmoothingQuality = 'medium'; ga.drawImage(canvas, 0, 0, bw, bh);
+          gb.globalCompositeOperation = 'copy'; if ('filter' in gb) gb.filter = 'blur(2.5px)'; gb.drawImage(kGlowA, 0, 0); gb.filter = 'none';
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.42 * fadeIn;
+          ctx.drawImage(kGlowB, 0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = fadeIn; ctx.fillStyle = 'rgba(255, 192, 216, 0.13)';   // and the light itself pink, as if through blossom
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'source-over';
+        }
+        // the whole day a little softer, like an old print: every colour drawn part of the way toward grey of its own
+        // brightness (the next season's peek is drawn after this, so it keeps its colour)
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.globalCompositeOperation = 'saturation';
+        ctx.globalAlpha = DAY_MUTE[kSeason] * fadeIn;                           // (while the scene fades in, a pale grey: what shows where it isn't yet)
+        ctx.fillStyle = '#eeeeee';
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = 1;
+      }
+
+      // the little train, in car units along the rail (150 to a car, the rail at y = 0): a cream body with a band of
+      // colour, a row of windows full of sky, doors, a cab at the front, and a pantograph up to the wire
+      function drawTrain(A) {
+        const T = kTrain, k = T.k, L = 150, gap = 5, dot = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
+        for (let i = T.cars - 1; i >= 0; i--) {
+          const x0 = T.x - (i + 1) * L * k - i * gap * k;               // the car's rear end; its front is L further on
+          if (x0 > w + 10 || x0 + L * k < -10) continue;
+          ctx.setTransform(dpr * k, 0, 0, dpr * k, x0 * dpr, (kTrackY - 1.6 * T.k) * dpr);
+          ctx.globalAlpha = A;
+          const front = i === 0, rear = i === T.cars - 1;
+          ctx.fillStyle = 'rgba(40, 50, 44, 0.24)'; ctx.fillRect(4, 0, L - 8, 2.6);                         // its shadow on the ballast
+          ctx.fillStyle = '#3d4049'; ctx.fillRect(6, -9.5, L - 12, 5.5);
+          ctx.fillStyle = '#4a4d57'; ctx.fillRect(13, -7.5, 36, 3.4); ctx.fillRect(L - 49, -7.5, 36, 3.4);
+          for (const bx of [22, 40, L - 40, L - 22]) { ctx.fillStyle = '#2c2e35'; dot(bx, -4.2, 4.2); ctx.fillStyle = '#9a9eaa'; dot(bx, -4.2, 1.6); }
+          if (!rear) { ctx.fillStyle = '#3d4049'; ctx.fillRect(-gap, -8, gap, 2.4); ctx.fillStyle = '#5a5d68'; ctx.fillRect(-gap, -40, gap, 30); }   // the coupling, and the bellows
+          ctx.fillStyle = T.c[1]; kRound(ctx, 0.5, -44, L - 1, 36, front ? 7 : 4); ctx.fill();
+          ctx.fillStyle = T.c[0]; ctx.fillRect(0.5, -24, L - 1, 13);
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(0.5, -25.2, L - 1, 1.3);
+          ctx.fillStyle = '#b4b8c2'; kRound(ctx, 4, -47, L - 8, 4, 2); ctx.fill();
+          ctx.fillStyle = '#9da1ac'; ctx.fillRect(30, -49.4, 26, 3); ctx.fillRect(L - 60, -49.4, 26, 3);
+          const gl = ctx.createLinearGradient(0, -40, 0, -28);
+          gl.addColorStop(0, '#cfe4f7'); gl.addColorStop(1, '#5f86b3');
+          for (const dx of [38, L - 50]) {                              // the doors
+            ctx.fillStyle = 'rgba(40, 30, 20, 0.1)'; ctx.fillRect(dx, -42, 12, 31);
+            ctx.fillStyle = gl; ctx.fillRect(dx + 2.5, -39.5, 7, 12);
+          }
+          ctx.fillStyle = gl;
+          for (let x = 54; x < L - 62; x += 12) ctx.fillRect(x, -39.5, 9.6, 11.5);
+          ctx.fillRect(front ? 12 : 10, -39.5, 22, 11.5);
+          if (front) { kRound(ctx, L - 13, -40, 10.5, 13.5, 2.5); ctx.fill(); ctx.fillStyle = '#fff6c8'; dot(L - 2.6, -15, 1.7); }
+          else ctx.fillRect(L - 34, -39.5, 22, 11.5);
+          if (rear && !front) { ctx.fillStyle = gl; kRound(ctx, 2.5, -40, 6, 13.5, 2); ctx.fill(); ctx.fillStyle = '#d6392c'; dot(2.6, -15, 1.4); }
+          if (i === Math.min(1, T.cars - 1)) {                          // the pantograph
+            ctx.strokeStyle = '#5c606c'; ctx.lineWidth = 1.1;
+            ctx.beginPath(); ctx.moveTo(62, -47); ctx.lineTo(74, -51.5); ctx.lineTo(63, -56); ctx.moveTo(54, -56); ctx.lineTo(72, -56); ctx.stroke();
+          }
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      // the crossing by the lane (踏切), in its own units, standing at (0, 0): a striped post with its cross-shaped
+      // sign, two red lamps that take turns when a train is coming, and the striped arm that comes down across the lane
+      // a concrete utility pole (電柱), lit from the right: the shaft tapering up to its cap, step bolts up its sides,
+      // steel crossarms with braces and white insulators, a clamp for the cables, perhaps a transformer, a number
+      // plate, and a stay wire to the ground in its yellow guard
+      function drawPole(P, A) {
+        const H = P.H, x = P.x, wt = P.wd * 0.8, wb = P.wd * 1.2, seg = (x0, y0, x1, y1) => { ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); };
+        const wAt = y => wt + (wb - wt) * (y - P.top) / H;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = A * (H < 300 ? 0.72 : 0.94); ctx.lineCap = 'butt';   // far ones half lost in the haze
+        if (P.guy) {
+          const sx = x, sy = P.top + H * 0.36, gx = x + P.guy * H * 0.3, gy = P.by;
+          ctx.strokeStyle = 'rgba(58, 62, 72, 0.85)'; ctx.lineWidth = Math.max(0.8, H * 0.0016); seg(sx, sy, gx, gy);
+          const f0 = 0.84, n = 8;                                      // 支線ガード: yellow and black, where people walk
+          ctx.lineWidth = Math.max(2.2, H * 0.006);
+          for (let i = 0; i < n; i++) {
+            const a = f0 + (1 - f0) * i / n, b = f0 + (1 - f0) * (i + 1) / n;
+            ctx.strokeStyle = i % 2 ? '#2e3036' : '#efc22c'; seg(sx + (gx - sx) * a, sy + (gy - sy) * a, sx + (gx - sx) * b, sy + (gy - sy) * b);
+          }
+        }
+        const gr = ctx.createLinearGradient(x - wb, 0, x + wb, 0);
+        gr.addColorStop(0, '#7d828d'); gr.addColorStop(0.45, '#b2b6bf'); gr.addColorStop(0.8, '#e0e3e9'); gr.addColorStop(1, '#c3c7cf');
+        ctx.fillStyle = gr;
+        ctx.beginPath(); ctx.moveTo(x - wt, P.top); ctx.lineTo(x + wt, P.top); ctx.lineTo(x + wb, P.by); ctx.lineTo(x - wb, P.by); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#6a6e78'; ctx.fillRect(x - wt * 1.15, P.top - wt * 0.6, wt * 2.3, wt * 0.75);
+        if (H > 160) {
+          ctx.fillStyle = '#4a4e58';                                   // step bolts, from above head height to the arms
+          for (let y = P.top + H * 0.13, i = 0; y < P.by - H * 0.33; y += H * 0.03, i++) {
+            const ww = wAt(y), L = H * 0.011, t = Math.max(0.8, H * 0.0022);
+            ctx.fillRect(i % 2 ? x + ww : x - ww - L, y, L, t);
+          }
+        }
+        if (P.plate) {                                                 // its number plate
+          const y = P.by - H * 0.36, ww = wAt(y);
+          ctx.fillStyle = '#f4f5f7'; ctx.fillRect(x - ww * 0.9, y, ww * 1.8, H * 0.03);
+          ctx.fillStyle = '#3f6fb0'; ctx.fillRect(x - ww * 0.9, y, ww * 1.8, H * 0.007);
+          ctx.fillStyle = 'rgba(40, 44, 54, 0.7)'; ctx.fillRect(x - ww * 0.55, y + H * 0.013, ww * 1.1, H * 0.003); ctx.fillRect(x - ww * 0.55, y + H * 0.02, ww * 0.8, H * 0.003);
+        }
+        if (P.clamp) {
+          const y = P.top + P.clamp * H, ww = wAt(y);
+          ctx.fillStyle = '#4a4e58'; ctx.fillRect(x - ww - H * 0.016, y - H * 0.003, ww * 2 + H * 0.032, Math.max(1.2, H * 0.006));
+        }
+        if (P.trans) {                                                 // 柱上変圧器: a grey drum hung on the shaded side
+          const tw = H * 0.036, th = H * 0.07, tx = x - wt - tw - H * 0.006, ty0 = P.top + H * 0.13;
+          ctx.strokeStyle = '#4a4e58'; ctx.lineWidth = Math.max(1, H * 0.003);
+          seg(tx + tw, ty0 + th * 0.25, x, ty0 + th * 0.25); seg(tx + tw, ty0 + th * 0.75, x, ty0 + th * 0.75);
+          const tg = ctx.createLinearGradient(tx, 0, tx + tw, 0);
+          tg.addColorStop(0, '#7f848f'); tg.addColorStop(0.6, '#bfc3cb'); tg.addColorStop(1, '#a3a8b2');
+          ctx.fillStyle = tg; kRound(ctx, tx, ty0, tw, th, tw * 0.18); ctx.fill();
+          ctx.fillStyle = 'rgba(70, 74, 84, 0.5)'; for (let k = 1; k < 4; k++) ctx.fillRect(tx, ty0 + th * k / 4, tw, Math.max(0.6, H * 0.0015));
+          ctx.fillStyle = '#6a6e78'; ctx.fillRect(tx - tw * 0.06, ty0 - th * 0.06, tw * 1.12, th * 0.08);
+          ctx.strokeStyle = 'rgba(52, 58, 72, 0.8)'; ctx.lineWidth = Math.max(0.7, H * 0.0014);       // its leads up to the arm
+          const ay = P.top + P.arms[P.arms.length - 1][0] * H;
+          seg(tx + tw * 0.3, ty0, x - H * 0.05, ay - H * 0.006); seg(tx + tw * 0.7, ty0, x - H * 0.02, ay + H * 0.01);
+        }
+        for (const [f, hl, xs] of P.arms) {
+          const y = P.top + f * H, L = hl * H, t = Math.max(1.2, H * 0.0048);
+          ctx.strokeStyle = '#555963'; ctx.lineWidth = Math.max(0.7, H * 0.0017);
+          seg(x - L * 0.6, y + t, x, y + H * 0.026); seg(x + L * 0.6, y + t, x, y + H * 0.026);   // the braces
+          ctx.fillStyle = '#555963'; ctx.fillRect(x - L, y, L * 2, t);
+          ctx.fillStyle = 'rgba(232, 234, 240, 0.75)'; ctx.fillRect(x - L, y, L * 2, t * 0.35);
+          for (const dx of xs) {                                       // the insulators
+            const ix = x + dx * H, r = Math.max(1.2, H * 0.0058);
+            ctx.fillStyle = '#eceef2'; ctx.beginPath(); ctx.ellipse(ix, y - r, r, r * 1.15, 0, 0, TAU); ctx.fill();
+            ctx.fillStyle = 'rgba(118, 124, 138, 0.6)'; ctx.beginPath(); ctx.ellipse(ix - r * 0.3, y - r * 0.8, r * 0.55, r * 0.9, 0, 0, TAU); ctx.fill();
+          }
+        }
+      }
+
+      function drawCrossing(A) {
+        const X = kXing, k = X.k, dot = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
+        ctx.setTransform(dpr * k, 0, 0, dpr * k, X.x * dpr, X.y * dpr);
+        ctx.globalAlpha = A;
+        for (let i = 0; i < 7; i++) { ctx.fillStyle = i % 2 ? '#2b2d33' : '#f2c21a'; ctx.fillRect(-1.6, -8 - (i + 1) * 6.4, 3.2, 6.4); }
+        ctx.fillStyle = '#2b2d33'; ctx.fillRect(-2.4, -8, 4.8, 8);
+        for (const s of [-1, 1]) {                                     // the cross
+          ctx.save(); ctx.translate(0, -52); ctx.rotate(s * 0.62);
+          ctx.fillStyle = '#f2c21a'; ctx.fillRect(-12, -1.9, 24, 3.8);
+          ctx.fillStyle = '#2b2d33'; for (let j = -2; j <= 2; j++) ctx.fillRect(j * 5 - 1, -1.9, 2, 3.8);
+          ctx.restore();
+        }
+        ctx.fillStyle = '#2b2d33'; ctx.fillRect(-9.5, -43.5, 19, 6.4);
+        const lit = X.on ? Math.floor(kt / 24) % 2 : -1;
+        for (const s of [0, 1]) {
+          const lx = s ? 5.8 : -5.8;
+          ctx.fillStyle = '#2b2d33'; dot(lx, -40.3, 3.7);
+          if (lit === s) { ctx.globalAlpha = A * 0.35; ctx.fillStyle = '#ff5a4a'; dot(lx, -40.3, 8); ctx.globalAlpha = A; }
+          ctx.fillStyle = lit === s ? '#ff3b2f' : '#6a2622'; dot(lx, -40.3, 2.7);
+        }
+        ctx.translate(0, -16); ctx.rotate(-(1 - X.arm) * 1.38);          // the arm: up, or down across the lane
+        const L = X.len / k;
+        for (let i = 0, n = Math.ceil(L / 9); i < n; i++) { ctx.fillStyle = i % 2 ? '#2b2d33' : '#f2c21a'; ctx.fillRect(i * 9, -1.3, Math.min(9, L - i * 9), 2.6); }
+        ctx.fillStyle = '#2b2d33'; dot(0, 0, 2.6);
       }
 
       /* --- night, winter: a snowy night in Otaru (小樽の雪夜) ---
