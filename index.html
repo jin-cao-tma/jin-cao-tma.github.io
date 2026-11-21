@@ -1969,8 +1969,10 @@
          cloud, the sun just beyond the top right, and below it a landscape painted once into a strip.
          Spring, pink and hazy as in 5 Centimeters per Second: far hills still streaked with snow, cherry trees in
          full bloom along a single-track railway, utility poles with their wires sagging across the sky, and a
-         field of rape blossom in front. Now and then the crossing's arm comes down and a little train runs
-         through, its wind pulling a flurry of petals after it (花吹雪). The light bleeds over every edge.
+         meadow strewn with fallen petals in front. Now and then the crossing's arm comes down and a little train
+         runs through, its wind pulling a flurry of petals after it (花吹雪). The light bleeds over every edge.
+         And, as at the film's end, two people wait on either side of the crossing: the first train passes
+         between them, and when it has gone, the far side is empty.
          Autumn, after Arashiyama: the mountain across the river red with maples, dark pines among them, mist along
          its foot, 渡月橋 long and low over the water with people crossing it and its name post on our bank, the
          jade river mirroring it all, boats drifting by, red dragonflies, and now and then wild geese. Nothing in
@@ -1984,9 +1986,9 @@
       let kt = 0, kAcc = 0, kLast = 0, kReading = 0, kGust = 0, kGustAt = null, kNextGust = 0, kStart = 0;   // the scene's own clock: 60 steps a second
       let kFall = [], kRafts = [], kLimbs = [], kTwigs = [], kLimbBlooms = [], kCanopy = [], kLeaves = [], kRays = [];
       let kSprites = null, kSky = null, kClouds = [], kLand = null, kLandTop = 0, kSkyTop = 0, kWaterY = 0, kTrackY = 0;
-      let kRefl = null, kFlutter = [], kShade = [], kReeds = [], kFliers = [], kHill = null, kFloatY = 0;
+      let kRefl = null, kShade = [], kReeds = [], kFliers = [], kHill = null, kFloatY = 0;
       let kBridge = null, kDeckAt = null, kWalkers = [], kBoats = [], kNextBoat = 0, kStone = null;
-      let kSkein = null, kNextSkein = 0, kTrain = null, kNextTrain = 0, kXing = null, kPoles = [], kWires = [], kGlowA = null, kGlowB = null;
+      let kSkein = null, kNextSkein = 0, kTrain = null, kNextTrain = 0, kXing = null, kFolk = null, kFolkGone = false, kPoles = [], kWires = [], kGlowA = null, kGlowB = null;
       const SAKURA_TIP = ['#fdf0f4', '#fbdfe8', '#f8cad9', '#f3afc5'];    // petals, near-white to deeper pink
       const SAKURA_BASE = ['#f5cfdc', '#f2bccd', '#eda2b9', '#e4849f'];   // each a little deeper where it joined the flower
       const SHIDARE = [['#f8d6e2', '#ec9db9'], ['#f5c3d5', '#e88cad'], ['#f1aec7', '#df789d']];   // weeping cherry: [petal, centre]
@@ -2000,7 +2002,6 @@
         ['#55101c', '#88162a', '#b0263c', '#d4505e'], ['#6a1018', '#a2182a', '#c92b38', '#e65b5e'], ['#7a1814', '#b8261f', '#da3f2c', '#ef6c52'],
         ['#7e3418', '#b5522a', '#d07042', '#e8946a'], ['#7e6424', '#ad8c3c', '#c9a857', '#e0c682'], ['#3b4532', '#59644a', '#76805f', '#959c7c'],
       ];
-      const YELLOWS = ['#f6d93a', '#fbe45a', '#f1c92a', '#fff07e'];       // rape blossom
       const LIVERY = [['#e4583a', '#f7eed6'], ['#3f8fd8', '#f7f1e0'], ['#4a9c6c', '#f6ecd0'], ['#f0b429', '#fbf3dc']];   // the little train: [band, body]
       const kHex = c => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
       // a colour seen through f of the day's haze: distance pales things toward the sky
@@ -2023,7 +2024,8 @@
         kAcc = 0; kLast = 0; kStart = kt;
         kGustAt = { at: kt + 12, dur: 240, str: 1 };                 // it opens on a gust
         kNextGust = kt + 12 + 240 + rand(600, 900);
-        kTrain = null; kNextTrain = kt + 200; kSkein = null; kNextSkein = kt + 420;   // the first train, the first geese, come soon
+        kTrain = null; kNextTrain = kt + 420; kSkein = null; kNextSkein = kt + 420;   // the first train and the first geese come after a few seconds
+        kFolkGone = false;                                             // and the two at the crossing are both there again
       }
 
       // a cherry petal: rounded, narrowing to its base, with the little notch at its tip; base at (0, 0), tip at (0, -L)
@@ -2235,7 +2237,7 @@
           kSprites.shade = c;
         }
 
-        kFlutter = []; kWalkers = []; kBoats = []; kBridge = null; kStone = null; kShade = []; kReeds = []; kFliers = []; kPoles = []; kWires = []; kRefl = null; kXing = null; kTrain = null; kSkein = null; kHill = null;
+        kFolk = null; kWalkers = []; kBoats = []; kBridge = null; kStone = null; kShade = []; kReeds = []; kFliers = []; kPoles = []; kWires = []; kRefl = null; kXing = null; kTrain = null; kSkein = null; kHill = null;
         if (kSeason === 'sakura') landSakura(small, sc, colL, colR); else landMomiji(small, sc, colL, colR);
         for (let i = 0; i < 3; i++) kShade.push({ x: rand(-0.2, 1) * w, y: kSkyTop + (h - kSkyTop) * rand(0.2, 0.9), rw: rand(0.16, 0.28) * Math.max(w, 700), rh: rand(0.07, 0.12) * h, v: rand(0.14, 0.24), a: rand(0.6, 1) });
 
@@ -2312,7 +2314,7 @@
       }
 
       // spring's far view: hills still streaked with snow, a little town, the cherry trees along the railway,
-      // and the field of rape blossom this side of it, with the lane that crosses the line
+      // and the meadow this side of it, with the lane that crosses the line
       function landSakura(small, sc, colL, colR) {
         const Hs = Math.round(h * (small ? 0.4 : 0.54));
         kLandTop = h - Hs; kTrackY = h - Math.round(Hs * (small ? 0.36 : 0.33)); kWaterY = kTrackY + 12 * sc; kFloatY = kWaterY; kSkyTop = kLandTop + Hs * 0.3;
@@ -2352,8 +2354,10 @@
 
         // 染井吉野: a short trunk, limbs spreading wide and dividing again and again, and on every twig a cluster
         // of blossom, each a little ball lit from the top right, so the whole crown heaps up like a cloud
-        const trees = (by, Hmin, Hmax, step, hz, rr) => {
+        const xr = small ? w * 0.78 : Math.min(w - 90, colR + (w - colR) * 0.45);   // where the lane crosses the line
+        const trees = (by, Hmin, Hmax, step, hz, rr, clear) => {
           for (let x = rand(-step * 0.4, 0); x < w + step * 0.4; x += step * rand(0.75, 1.2)) {
+            if (clear && Math.abs(x - xr) < 30 * sc) continue;           // (the road on past the crossing goes between them)
             const H2 = rand(Hmin, Hmax), A = [];
             const limb = (x0, y0, a, len, wd, d) => {
               const bend = rand(-0.4, 0.4), x1 = x0 + Math.cos(a) * len, y1 = y0 + Math.sin(a) * len;
@@ -2383,10 +2387,10 @@
           }
         };
         trees(ty - 12 * sc, Hs * 0.3, Hs * 0.38, 150 * sc, 0.48, 9 * sc);      // a further row, deep in the haze
-        trees(ty - 2 * sc, Hs * 0.42, Hs * 0.54, 230 * sc, 0, 13 * sc);         // and the row along the line
+        trees(ty - 2 * sc, Hs * 0.42, Hs * 0.54, 230 * sc, 0, 13 * sc, true);   // and the row along the line
 
         // the embankment and the single track: ballast, sleepers, the rail shining, the poles and their wire
-        g.fillStyle = vgrad(ty - 8 * sc, ty + 12 * sc, '#9ccd72', '#86bd5c'); g.fillRect(0, ty - 5 * sc, w, 18 * sc);
+        g.fillStyle = vgrad(ty - 8 * sc, ty + 12 * sc, '#a8d28c', '#93c47b'); g.fillRect(0, ty - 5 * sc, w, 18 * sc);
         g.fillStyle = '#aca096'; g.fillRect(0, ty - 1.5 * sc, w, 5 * sc);
         g.fillStyle = '#75655a'; for (let x = 0; x < w; x += 8 * sc) g.fillRect(x, ty - 0.5 * sc, 3 * sc, 3.2 * sc);
         g.fillStyle = '#585b66'; g.fillRect(0, ty - 1.6 * sc, w, 1.8 * sc);
@@ -2401,30 +2405,56 @@
         }
         g.beginPath(); g.moveTo(0, ty - 56 * sc); g.lineTo(w, ty - 56 * sc); g.stroke();
 
-        // 菜の花: the field this side of the line, yellow with rape blossom, thicker and bigger toward us; a lane
-        // runs through it and over the crossing
-        const fy = ty + 10 * sc, xr = small ? w * 0.78 : Math.min(w - 90, colR + (w - colR) * 0.45);
-        g.fillStyle = vgrad(fy, h, '#a7d268', '#8cc04e'); g.fillRect(0, fy, w, h - fy + 2);
+        // the meadow this side of the line: fresh grass strewn with fallen petals, which the wind has heaped along the
+        // line and along the edges of the lane that runs through it and over the crossing
+        const fy = ty + 10 * sc;
+        g.fillStyle = vgrad(fy, h, '#c2e1a9', '#9ac983'); g.fillRect(0, fy, w, h - fy + 2);
+        for (let i = 0; i < 14; i++) {                                  // the grass a little thicker here, a little thinner there
+          const t = rand(0.05, 1), x = rand(-0.1, 1.1) * w, y = fy + t * (h - fy), rx = rand(60, 200) * sc * (0.4 + t);
+          g.fillStyle = Math.random() < 0.5 ? 'rgba(110, 168, 96, 0.13)' : 'rgba(236, 248, 222, 0.2)';
+          g.beginPath(); g.ellipse(x, y, rx, rx * rand(0.12, 0.2), 0, 0, TAU); g.fill();
+        }
         const lane = y => { const t = (y - ty) / Math.max(1, h - ty), m = xr + t * 26 * sc, hw = (9 + 34 * t) * sc; return [m - hw, m + hw]; };
         const [a0, b0] = lane(ty - 4 * sc), [a1, b1] = lane(h + 4);
         g.fillStyle = '#ded9d0'; g.beginPath(); g.moveTo(a0, ty - 4 * sc); g.lineTo(b0, ty - 4 * sc); g.lineTo(b1, h + 4); g.lineTo(a1, h + 4); g.closePath(); g.fill();
+        const on = g.createLinearGradient(0, ty - 4 * sc, 0, ty - 13 * sc), hw0 = (b0 - a0) / 2;   // and on past the line, into the haze
+        on.addColorStop(0, '#ddd8cf'); on.addColorStop(1, 'rgba(238, 234, 236, 0)');
+        g.fillStyle = on; g.beginPath(); g.moveTo(a0, ty - 4 * sc); g.lineTo(b0, ty - 4 * sc); g.lineTo(xr + hw0 * 0.7, ty - 13 * sc); g.lineTo(xr - hw0 * 0.7, ty - 13 * sc); g.closePath(); g.fill();
         g.fillStyle = '#8d7a69'; g.fillRect(a0 - 1, ty - 2.6 * sc, b0 - a0 + 2, 6.4 * sc);                       // planks between the rails
         g.fillStyle = '#eef1f6'; g.fillRect(a0 - 1, ty - 1.6 * sc, b0 - a0 + 2, 0.6 * sc);
-        for (let i = 0, n = Math.round(w * (h - fy) / (small ? 16 : 11)); i < n; i++) {
+        // (blades and petals are gathered into one path per colour and size, so the meadow paints in a few strokes)
+        const GRASS = ['#86bb6d', '#a9d38f', '#74aa5e', '#b9dd9f'], blades = GRASS.map(() => [new Path2D(), new Path2D(), new Path2D()]);
+        for (let i = 0, n = Math.round(w * (h - fy) / (small ? 30 : 20)); i < n; i++) {   // the grass: short blades, longer toward us
           const t = Math.pow(Math.random(), 0.75), y = fy + 2 + t * (h - fy), x = rand(0, w), [la, lb] = lane(y);
-          if (x > la - 3 && x < lb + 3) continue;
-          if (Math.sin(x * 0.012 + y * 0.05) + Math.sin(x * 0.031 - y * 0.02) < rand(-1.6, 0.2)) continue;      // gaps, where the green shows
-          const r = (0.8 + 2.4 * t) * sc;
-          if (t > 0.45) { g.strokeStyle = '#6da544'; g.lineWidth = Math.max(0.6, 0.9 * t * sc); g.beginPath(); g.moveTo(x, y); g.lineTo(x + rand(-1, 1), y + r * 3.2); g.stroke(); }
-          g.fillStyle = YELLOWS[Math.floor(Math.random() * 4)]; dot(x, y, r);
+          if (x > la - 2 && x < lb + 2) continue;
+          const b = blades[Math.floor(Math.random() * GRASS.length)][Math.min(2, Math.floor(t * 3))];
+          b.moveTo(x, y); b.lineTo(x + rand(-1, 1) * (1 + 2 * t) * sc, y - (1.5 + 6 * t) * sc);
         }
-        for (let i = 0, n = Math.round(w / (small ? 22 : 15)); i < n; i++) {     // the nearest heads, which nod in the wind
-          const t = rand(0.55, 1), y = fy + t * (h - fy) + rand(0, 8), x = rand(0, w), [la, lb] = lane(y);
-          if (x > la - 5 && x < lb + 5) continue;
-          kFlutter.push({ x, y, len: rand(10, 20) * sc * t, s: rand(1.7, 2.8) * sc * t, ph: rand(0, TAU), c: Math.floor(Math.random() * 4) });
+        GRASS.forEach((c, i) => blades[i].forEach((b, j) => { g.strokeStyle = c; g.lineWidth = Math.max(0.6, (0.65 + 0.3 * j) * sc); g.stroke(b); }));
+        const PETAL = ['#fbe3ea', '#f6cfdc', '#ffffff', '#f0b9cb', '#f9dbe5'], lying = PETAL.map(() => new Path2D());
+        for (let i = 0, n = Math.round(w * (h - fy) / (small ? 22 : 14)); i < n; i++) {   // the petals lying on it
+          const t = Math.pow(Math.random(), 0.9), y = fy + 1 + t * (h - fy), x = rand(0, w), [la, lb] = lane(y);
+          const edge = Math.min(Math.abs(x - la), Math.abs(x - lb)), heap = Math.exp(-edge * edge / (64 * sc * sc)), line = Math.max(0, 1 - t * 3);
+          const drift = Math.sin(x * 0.012 + y * 0.05) + Math.sin(x * 0.031 - y * 0.02);
+          if (Math.random() > 0.08 + 0.5 * line + 0.5 * heap + 0.25 * Math.max(0, drift)) continue;
+          const r = (0.9 + 2.6 * t) * sc, rot = rand(-0.6, 0.6), q = lying[Math.floor(Math.random() * PETAL.length)];
+          q.moveTo(x + r * Math.cos(rot), y + r * Math.sin(rot)); q.ellipse(x, y, r, r * rand(0.4, 0.6), rot, 0, TAU);
+        }
+        PETAL.forEach((c, i) => { g.fillStyle = c; g.fill(lying[i]); });
+        for (let i = 0, n = Math.round(w / (small ? 18 : 12)); i < n; i++) {     // and a few white clover heads
+          const t = rand(0.2, 1), y = fy + t * (h - fy), x = rand(0, w), [la, lb] = lane(y);
+          if (x > la - 4 && x < lb + 4) continue;
+          g.fillStyle = '#7fb468'; dot(x + 0.8 * sc * t, y + 1.2 * sc * t, (0.8 + 1.4 * t) * sc);
+          g.fillStyle = '#fbfaf2'; dot(x, y, (0.7 + 1.5 * t) * sc);
         }
         const gy = ty + 9 * sc, [ga, gb] = lane(gy);
-        kXing = { x: ga - 5 * sc, y: gy, len: gb - ga + 9 * sc, arm: 0, on: false, k: sc };
+        kXing = { x: ga - 5 * sc, y: gy, len: gb - ga + 9 * sc, k: sc, arm: 0, on: false,
+                  far: { x: b0 + 4 * sc, y: ty - 5 * sc, len: b0 - a0 + 6 * sc, k: sc * 0.9 } };   // and its twin across the line, its arm toward ours
+        // 秒速5センチメートル: two people waiting on either side of the crossing, as at the film's end. He stands this
+        // side, his back to us; she stands across the line, facing him. The first train passes between them, and when
+        // it has gone she is gone too (stepKyoto). Each is drawn 100 units tall, he a little nearer and so larger
+        const ny = ty + 24 * sc, nt = (ny - ty) / Math.max(1, h - ty), ns = (9 + 34 * nt) / 9;
+        kFolk = { near: { x: xr + nt * 26 * sc - 4.5 * sc * ns, y: ny, s: 0.205 * sc * ns }, far: { x: xr + 4 * sc, y: ty - 6.5 * sc, s: 0.19 * sc } };
 
         // 電柱: the concrete poles of a country road, one standing tall in the field by the lane, one by the crossing
         // beyond the line, one out in the left margin and a small far one, with their wires sagging across the sky
@@ -2455,7 +2485,7 @@
         }
         kPoles.sort((a, b) => a.H - b.H);                                // far ones first
         kHill = new Path2D(); kHill.rect(0, fy, w, h - fy);
-        for (let i = 0, n = small ? 2 : 4; i < n; i++) {                // cabbage whites over the blossom
+        for (let i = 0, n = small ? 2 : 4; i < n; i++) {                // cabbage whites over the grass
           const x = rand(0.05, 0.95) * w, y = rand(fy + 10, h - 10);
           kFliers.push({ x, y, tx: x, ty: y, vx: 0, vy: 0, ph: rand(0, TAU), s: rand(4, 5.5) * sc });
         }
@@ -2844,12 +2874,13 @@
             // it's well gone the arm goes up again
             if (!kTrain && kt >= kNextTrain) {
               const k = (small ? 0.82 : 1) * X.k, cars = small ? 2 : 2 + (Math.random() < 0.45 ? 1 : 0);
-              kTrain = { k, cars, len: cars * 155 * k, x: -20, v: rand(5.2, 6.6) * X.k, c: LIVERY[Math.floor(Math.random() * LIVERY.length)], age: 0, gone: 0 };
+              kTrain = { k, cars, len: cars * 155 * k, x: -20, v: rand(5.2, 6.6) * X.k, c: LIVERY[kFolkGone ? Math.floor(Math.random() * LIVERY.length) : 1], age: 0, gone: 0 };   // (the first in white and blue, as in the film)
             }
             const T = kTrain;
             if (T) {
               T.age++;
               if (T.age > 150) T.x += T.v;
+              if (kFolk && !kFolkGone && T.x - T.len * 0.5 > kFolk.far.x) kFolkGone = true;   // the train is between them now; when it has gone, so has she
               if (T.age === 190 && !kGustAt) { kGustAt = { at: kt, dur: 230, str: 0.8 }; kNextGust = Math.max(kNextGust, kt + 700); }
               if (T.x - T.len > w + 30) T.gone++;
               X.on = T.gone < 70;
@@ -2931,17 +2962,11 @@
             ctx.beginPath(); ctx.moveTo(W2.a[0], W2.a[1]);
             ctx.quadraticCurveTo((W2.a[0] + W2.b[0]) / 2, (W2.a[1] + W2.b[1]) / 2 + 2 * W2.sag + sw, W2.b[0], W2.b[1]); ctx.stroke();
           }
+          if (kFolk && !kFolkGone) drawFolk(kFolk.far, fadeIn, false);  // across the line: her, waiting behind the far post's arm,
+          if (kXing) drawCrossing(fadeIn, kXing.far, true);            // and the train hides them both
           if (kTrain) drawTrain(fadeIn);
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.globalAlpha = fadeIn;
-          for (const q of kFlutter) {                                  // the nearest rape blossom, nodding
-            const tx = q.x + Math.sin(kt * 0.026 + q.ph) * 1.6 + kGust * 7, ty = q.y - q.len;
-            ctx.strokeStyle = '#6da544'; ctx.lineWidth = Math.max(0.7, q.s * 0.4);
-            ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.quadraticCurveTo(q.x, q.y - q.len * 0.5, tx, ty); ctx.stroke();
-            ctx.fillStyle = YELLOWS[q.c];
-            dot(tx - q.s * 0.7, ty, q.s); dot(tx + q.s * 0.7, ty, q.s); dot(tx, ty - q.s * 0.7, q.s);
-          }
-          if (kXing) drawCrossing(fadeIn);
+          if (kXing) drawCrossing(fadeIn, kXing, false);              // this side: our post, and him
+          if (kFolk) drawFolk(kFolk.near, fadeIn, true);
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           for (const P2 of kPoles) if (P2.by >= kTrackY) drawPole(P2, fadeIn);  // and the ones this side of it, the train passing behind
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -3124,8 +3149,6 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
 
-      // the crossing by the lane (踏切), in its own units, standing at (0, 0): a striped post with its cross-shaped
-      // sign, two red lamps that take turns when a train is coming, and the striped arm that comes down across the lane
       // a concrete utility pole (電柱), lit from the right: the shaft tapering up to its cap, step bolts up its sides,
       // steel crossarms with braces and white insulators, a clamp for the cables, perhaps a transformer, a number
       // plate, and a stay wire to the ground in its yellow guard
@@ -3192,9 +3215,56 @@
         }
       }
 
-      function drawCrossing(A) {
-        const X = kXing, k = X.k, dot = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
-        ctx.setTransform(dpr * k, 0, 0, dpr * k, X.x * dpr, X.y * dpr);
+      // a person standing, 100 units tall with the feet at (0, 0), lit from the top right like everything else: him,
+      // seen from behind in a dark coat; or her, facing us in a camel coat and a rose scarf, a little into the haze
+      function drawFolk(P, A, back) {
+        const el = (x, y, rx, ry) => { ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, TAU); ctx.fill(); };
+        const poly = (...pts) => { ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); };
+        const both = (f) => { f(1); f(-1); }, c = back ? (x => x) : (x => kMix(x, 0.08));
+        const coat = (top, sh, hem, y1) => {                           // shoulders sh wide at the top, hem wide at y1
+          ctx.beginPath(); ctx.moveTo(-5, top); ctx.quadraticCurveTo(-sh, top + 1, -sh - 1, top + 9); ctx.lineTo(-hem, y1);
+          ctx.lineTo(hem, y1); ctx.lineTo(sh + 1, top + 9); ctx.quadraticCurveTo(sh, top + 1, 5, top); ctx.closePath(); ctx.fill();
+        };
+        ctx.setTransform(dpr * P.s, 0, 0, dpr * P.s, P.x * dpr, P.y * dpr);
+        ctx.globalAlpha = A;
+        ctx.fillStyle = 'rgba(46, 72, 50, 0.22)'; el(-11, 0, 19, 3);   // the shadow, toward the bottom left
+        if (back) {
+          ctx.fillStyle = '#3b404c'; both(d => poly([d * 1, -45], [d * 10, -45], [d * 9, -3], [d * 1.6, -3]));   // trousers
+          ctx.fillStyle = '#24262c'; both(d => el(d * 5.4, -1.6, 5, 2.4));                                         // shoes
+          ctx.fillStyle = '#2f3b54'; coat(-83, 15, 18, -37);
+          ctx.fillStyle = '#485a7c'; poly([12, -80], [16, -74], [18.2, -38], [14, -38]);                          // the lit side
+          ctx.fillStyle = '#26304a'; poly([-0.5, -60], [0.5, -60], [0.5, -37], [-0.5, -37]);                       // the vent
+          ctx.fillStyle = '#28324a'; both(d => poly([d * 12.5, -77], [d * 16.5, -76], [d * 18, -47], [d * 13.5, -47]));   // sleeves
+          ctx.fillStyle = '#e4c0a9'; both(d => el(d * 15.6, -44.6, 2.3, 2.9));                                     // hands
+          ctx.fillStyle = '#e0b9a2'; poly([-3.4, -87], [3.4, -87], [3.6, -82], [-3.6, -82]);                       // neck
+          ctx.fillStyle = '#273148'; el(0, -82.5, 7.5, 2.6);                                                        // collar
+          ctx.fillStyle = '#231d1d'; el(0, -92, 8.4, 9.6);                                                          // hair
+          ctx.fillStyle = '#463835'; el(3.2, -96, 3.6, 3.8);
+        } else {
+          ctx.fillStyle = c('#4f343b'); el(0, -88, 10, 12.5);                                                       // her hair, behind
+          ctx.fillStyle = c('#5a4a52'); both(d => poly([d * 1.6, -38], [d * 6.6, -38], [d * 6, -3], [d * 2.4, -3]));   // tights
+          ctx.fillStyle = c('#6b4a3f'); both(d => el(d * 4.4, -1.5, 3.8, 2.2));                                    // shoes
+          ctx.fillStyle = c('#dcc3a1'); coat(-82, 13, 19, -35);
+          ctx.fillStyle = c('#c4a982'); poly([-14, -74], [-10, -74], [-13.5, -35], [-19, -35]);                    // the side in shade
+          ctx.fillStyle = c('#eed9bb'); poly([10.5, -77], [14, -73], [19, -36], [15.5, -36]);                      // and the lit side
+          ctx.fillStyle = c('#b49771'); poly([-0.4, -75], [0.4, -75], [0.4, -35], [-0.4, -35]);                    // its front
+          ctx.fillStyle = c('#cfb48e'); both(d => poly([d * 10.5, -76], [d * 14.5, -75], [d * 16.5, -46], [d * 12, -46]));   // sleeves
+          ctx.fillStyle = c('#f2d4c3'); both(d => el(d * 14.3, -43.8, 2, 2.6));                                    // hands
+          ctx.fillStyle = c('#f6ddcd'); el(0, -90, 6.8, 8.2);                                                       // face
+          ctx.fillStyle = c('#4f343b');                                                                             // her fringe, and her hair down to her shoulders
+          poly([-7.6, -95], [-4, -99.5], [4, -99.5], [7.6, -95], [7, -90.5], [3.5, -92.6], [0, -91.2], [-3.5, -92.6], [-7, -90.5]);
+          both(d => poly([d * 6.4, -94], [d * 9.6, -92], [d * 10.6, -75], [d * 6.6, -77], [d * 6.6, -86]));
+          ctx.fillStyle = c('#6e4f55'); el(3, -97, 3, 1.6);
+          ctx.fillStyle = c('#d47b91'); el(0, -80.6, 7.4, 3.1); poly([1.6, -80], [5.6, -80], [6.2, -66], [2.4, -66]);   // the scarf
+        }
+      }
+
+      // the crossing by the lane (踏切), in its own units, standing at (0, 0): a striped post with its cross-shaped
+      // sign, two red lamps that take turns when a train is coming, and the striped arm that comes down across the lane;
+      // the far post mirrored, its arm reaching toward ours
+      function drawCrossing(A, P, mirror) {                            // P: where the post stands (its lamps and arm move together)
+        const X = kXing, k = P.k, dot = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); };
+        ctx.setTransform(dpr * k * (mirror ? -1 : 1), 0, 0, dpr * k, P.x * dpr, P.y * dpr);
         ctx.globalAlpha = A;
         for (let i = 0; i < 7; i++) { ctx.fillStyle = i % 2 ? '#2b2d33' : '#f2c21a'; ctx.fillRect(-1.6, -8 - (i + 1) * 6.4, 3.2, 6.4); }
         ctx.fillStyle = '#2b2d33'; ctx.fillRect(-2.4, -8, 4.8, 8);
@@ -3213,7 +3283,7 @@
           ctx.fillStyle = lit === s ? '#ff3b2f' : '#6a2622'; dot(lx, -40.3, 2.7);
         }
         ctx.translate(0, -16); ctx.rotate(-(1 - X.arm) * 1.38);          // the arm: up, or down across the lane
-        const L = X.len / k;
+        const L = P.len / k;
         for (let i = 0, n = Math.ceil(L / 9); i < n; i++) { ctx.fillStyle = i % 2 ? '#2b2d33' : '#f2c21a'; ctx.fillRect(i * 9, -1.3, Math.min(9, L - i * 9), 2.6); }
         ctx.fillStyle = '#2b2d33'; dot(0, 0, 2.6);
       }
