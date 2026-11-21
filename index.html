@@ -62,14 +62,14 @@
     }
   </script>
 
-  <!-- set the season before first paint, to avoid a flash. The switch goes round them in order, from spring:
-       spring (cherry blossom, by day), summer (the fireworks, by night), autumn (maples, by day), winter (snow, by night) -->
+  <!-- set the season before first paint, to avoid a flash. The switch goes round them in order, from autumn:
+       autumn (maples, by day), winter (snow, by night), spring (cherry blossom, by day), summer (the fireworks, by night) -->
   <script>
     (function () {
-      var root = document.documentElement, ORDER = ['spring', 'summer', 'autumn', 'winter'];
+      var root = document.documentElement, ORDER = ['autumn', 'winter', 'spring', 'summer'];
       var SCENE = { summer: 'hanabi', autumn: 'momiji', winter: 'yuki', spring: 'sakura' };
       var SEASON = { hanabi: 'summer', momiji: 'autumn', yuki: 'winter', sakura: 'spring' };
-      var still = false, season = 'spring';
+      var still = false, season = 'autumn';
       try {
         still = matchMedia('(prefers-reduced-motion: reduce)').matches;
         var p = new URLSearchParams(location.search), q = p.get('season'), t = p.get('theme');
@@ -1095,12 +1095,12 @@
   <script>
     /* ---------- Theme: the four seasons, in turn ---------- */
     (function () {
-      const root = document.documentElement, ORDER = ['spring', 'summer', 'autumn', 'winter'];
+      const root = document.documentElement, ORDER = ['autumn', 'winter', 'spring', 'summer'];
       const toggle = document.getElementById('theme-toggle');
       const discovered = localStorage.getItem('themeDiscovered') === '1';
       if (window.seasonIcon) window.seasonIcon(root.getAttribute('data-season'));   // the tab's icon, now its <link>s are here
 
-      // each click brings the next season (see setSeason in <head>): spring, summer, autumn, winter, and round again
+      // each click brings the next season (see setSeason in <head>): autumn, winter, spring, summer, and round again
       toggle.addEventListener('click', () => {
         window.setSeason(ORDER[(ORDER.indexOf(root.getAttribute('data-season')) + 1) % ORDER.length]);
         toggle.classList.remove('nudge');
